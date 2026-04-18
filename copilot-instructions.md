@@ -42,3 +42,41 @@
 - オーケストレーションパターンで進める場合は `agents/` 配下のテンプレートを利用する。
 - 中核は `agents/orchestrator.agent.md` とし、要件整理は `product-manager`、技術設計は `architect`、実装は `developer`、レビューは `reviewer`、テストは `tester` を使い分ける。
 - UI を伴う作業では `agents/ui-designer.agent.md` も組み合わせ、情報設計・状態設計・アクセシビリティ観点を早い段階で入れる。
+- CI/CD・インフラ・デプロイ設定には `agents/devops.agent.md` を使う。
+- セキュリティリスクの評価・脆弱性レビューには `agents/security-reviewer.agent.md` を通す。
+
+### agent 一覧（9種類）
+
+| agent | 主な責務 |
+|-------|---------|
+| `orchestrator` | 要件分解・委譲・品質ゲート管理・統合 |
+| `product-manager` | 要件整理・受け入れ条件・優先順位 |
+| `architect` | 技術設計・責務分割・移行戦略 |
+| `developer` | 実装・修正・リファクタリング |
+| `ui-designer` | 情報設計・状態設計・アクセシビリティ |
+| `reviewer` | コードレビュー・リスク指摘・保守性評価 |
+| `tester` | テスト計画・ケース設計・品質リスク評価 |
+| `devops` | CI/CD・インフラ・デプロイ・監視 |
+| `security-reviewer` | セキュリティ脅威分析・脆弱性評価・コンプライアンス |
+
+## プラットフォーム別ガイドライン
+
+各プラットフォームの詳細な開発ガイドラインは以下の指示ファイルを使用すること。
+
+| プラットフォーム | 指示ファイル |
+|--------------|-------------|
+| iOS / iPadOS | `instrctions/ios.instructions.md` |
+| macOS | `instrctions/macos.instructions.md` |
+| Android | `instrctions/android.instructions.md` |
+| Web | `instrctions/web.instructions.md` |
+| Windows | `instrctions/windows.instructions.md` |
+| クロスプラットフォーム | `instrctions/cross-platform.instructions.md` |
+
+## スキル一覧
+
+| カテゴリ | スキル |
+|---------|-------|
+| **コーディング規約** | `swift-coding-standards` / `kotlin-coding-standards` / `typescript-coding-standards` / `javascript-coding-standards` / `python-coding-standards` / `cpp-coding-standards` / `csharp-coding-standards` / `rust-coding-standards` / `css-coding-standards` / `react-coding-standards` |
+| **UI / UX** | `apple-ui-guidelines` / `android-ui-guidelines` / `web-ui-guidelines` / `windows-ui-guidelines` / `ui-accessibility` / `ui-review-checklist` / `design-system` |
+| **品質・セキュリティ** | `security-practices` / `cicd-deployment` / `performance-optimization` |
+| **国際化** | `i18n-localization` |
