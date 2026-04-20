@@ -44,6 +44,7 @@ applyTo: []
 Windows の UI 設計・実装（Fluent Design、WinUI 3、ナビゲーション、タイトルバー統合等）については以下のスキルを参照すること。
 
 - `skills/windows-ui-guidelines/SKILL.md` — Windows UI ガイドライン（Fluent Design / WinUI 3）
+- `skills/mfc-ui-guidelines/SKILL.md` — MFC アプリケーション UI ガイドライン
 - `skills/ui-accessibility/SKILL.md` — アクセシビリティ共通原則
 - `skills/ui-review-checklist/SKILL.md` — UI レビュー時のチェックリスト
 

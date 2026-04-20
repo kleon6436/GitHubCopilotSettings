@@ -78,6 +78,6 @@
 | カテゴリ | スキル |
 |---------|-------|
 | **コーディング規約** | `swift-coding-standards` / `kotlin-coding-standards` / `typescript-coding-standards` / `javascript-coding-standards` / `python-coding-standards` / `cpp-coding-standards` / `csharp-coding-standards` / `rust-coding-standards` / `css-coding-standards` / `react-coding-standards` |
-| **UI / UX** | `apple-ui-guidelines` / `android-ui-guidelines` / `web-ui-guidelines` / `windows-ui-guidelines` / `ui-accessibility` / `ui-review-checklist` / `design-system` |
+| **UI / UX** | `apple-ui-guidelines` / `android-ui-guidelines` / `web-ui-guidelines` / `windows-ui-guidelines` / `mfc-ui-guidelines` / `ui-accessibility` / `ui-review-checklist` / `design-system` |
 | **品質・セキュリティ** | `security-practices` / `cicd-deployment` / `performance-optimization` / `apple-app-store-submission` |
 | **国際化** | `i18n-localization` |
