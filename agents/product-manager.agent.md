@@ -1,7 +1,7 @@
 ---
 name: product-manager
 description: 'ユーザー価値、スコープ、優先順位、受け入れ条件を整理し、曖昧な要求を実行可能な仕様へ変換する。'
-model: Claude Opus 4.6 (copilot)
+model: Glok Code Fast 1 (copilot)
 ---
 
 # Product Manager Agent

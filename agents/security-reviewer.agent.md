@@ -1,7 +1,7 @@
 ---
 name: security-reviewer
 description: 'セキュリティ脅威分析・脆弱性レビュー・コンプライアンス確認・暗号化方針の検討を担当する。コードやアーキテクチャのセキュリティリスクを評価・指摘したいときに使用。'
-model: Claude Sonnet 4.6 (copilot)
+model: GPT-5.4 (copilot)
 ---
 
 # Security Reviewer Agent
