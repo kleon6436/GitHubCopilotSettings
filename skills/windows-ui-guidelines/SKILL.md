@@ -1,57 +1,57 @@
 ---
 name: windows-ui-guidelines
-description: 'Windows 向け UI ガイドライン。Fluent Design System、WinUI 3 / WPF、Mica / Acrylic マテリアル、タイトルバー統合、Narrator アクセシビリティ、タッチ・マウス・ペン入力、Windows 11 デザイン原則を確認・適用したいときに使用。Use when: designing or implementing Windows desktop UI with WinUI 3, WPF, or MAUI; applying Fluent Design; reviewing Windows app UI.'
-argument-hint: '確認したい項目（Fluent / Mica / アクセシビリティ など、省略可）'
+description: 'Windows UI guidelines. Use to review and apply the Fluent Design System, WinUI 3 / WPF, Mica / Acrylic materials, title bar integration, Narrator accessibility, touch/mouse/pen input, and Windows 11 design principles. Use when: designing or implementing Windows desktop UI with WinUI 3, WPF, or MAUI; applying Fluent Design; reviewing Windows app UI.'
+argument-hint: 'Item to review (Fluent / Mica / accessibility, etc. — optional)'
 ---
 
-# Windows UI ガイドライン
+# Windows UI Guidelines
 
-## 概要
+## Overview
 
-このスキルは Windows 11 以降のデスクトップアプリ向け UI 規約を定義します。
-Microsoft の **Fluent Design System** に準拠し、WinUI 3 / WPF / .NET MAUI で一貫した体験を提供するためのルールをまとめています。
+This skill defines UI conventions for Windows 11 and later desktop apps.
+It summarizes the rules for delivering a consistent experience with WinUI 3 / WPF / .NET MAUI, following Microsoft’s **Fluent Design System**.
 
-参考:
+References:
 - [Fluent Design System](https://learn.microsoft.com/windows/apps/design/)
 - [Windows 11 Design principles](https://learn.microsoft.com/windows/apps/design/signature-experiences/design-principles)
 - [WinUI 3 documentation](https://learn.microsoft.com/windows/apps/winui/winui3/)
 
 ---
 
-## 1. Fluent Design 基本原則
+## 1. Fluent Design Core Principles
 
-- **Effortless** — 目的達成までの摩擦を減らす。標準コントロールを使用し、独自実装を最小限に。
-- **Calm** — 視覚的ノイズを抑え、コンテンツを主役にする。過剰なアニメーション・装飾を避ける。
-- **Personal** — ユーザーのテーマ（Light / Dark / アクセントカラー）・システム設定を尊重する。
-- **Familiar** — Windows 11 の標準パターン（ナビゲーションビュー、コマンドバー、コンテキストメニュー）に従う。
-- **Complete** — タッチ・マウス・キーボード・ペン・ゲームパッドすべての入力に対応する。
-
----
-
-## 2. 推奨技術スタック
-
-| 用途 | 推奨 | 備考 |
-|---|---|---|
-| 新規デスクトップアプリ | **WinUI 3** + Windows App SDK | 最新の Fluent、Mica、Windows 11 統合 |
-| 既存 WPF 継続 | **WPF** + ModernWpf / WPF UI | Fluent テーマを外部ライブラリで適用 |
-| クロスプラットフォーム | **.NET MAUI** | Windows / macOS / iOS / Android |
-| Web ベース | **WebView2** ホスト + Fluent UI Web | ハイブリッドアプリ向け |
+- **Effortless** — Reduce friction in achieving goals. Use standard controls and minimize custom implementations.
+- **Calm** — Suppress visual noise and let content take center stage. Avoid excessive animations and decorations.
+- **Personal** — Respect the user’s theme (Light / Dark / accent color) and system settings.
+- **Familiar** — Follow Windows 11 standard patterns (NavigationView, CommandBar, context menus).
+- **Complete** — Support all input methods: touch, mouse, keyboard, pen, and gamepad.
 
 ---
 
-## 3. マテリアル（Mica / Acrylic）
+## 2. Recommended Technology Stack
 
-Windows 11 では背景マテリアルにより階層と奥行きを表現する。
-
-| マテリアル | 用途 | 実装 |
+| Use Case | Recommended | Notes |
 |---|---|---|
-| **Mica** | ウィンドウ背景（長時間表示される領域） | `SystemBackdrop="Mica"` |
-| **Mica Alt** | タブ付きウィンドウ | `SystemBackdrop="MicaAlt"` |
-| **Acrylic** | 一時的 UI（フライアウト、メニュー、ダイアログ） | `AcrylicBrush` |
-| **Smoke** | モーダル背景 | `SystemBackdrop="Smoke"` |
+| New desktop app | **WinUI 3** + Windows App SDK | Latest Fluent, Mica, Windows 11 integration |
+| Existing WPF continuation | **WPF** + ModernWpf / WPF UI | Apply Fluent theme via external libraries |
+| Cross-platform | **.NET MAUI** | Windows / macOS / iOS / Android |
+| Web-based | **WebView2** host + Fluent UI Web | For hybrid apps |
+
+---
+
+## 3. Materials (Mica / Acrylic)
+
+Windows 11 uses background materials to express hierarchy and depth.
+
+| Material | Usage | Implementation |
+|---|---|---|
+| **Mica** | Window background (long-lived areas) | `SystemBackdrop="Mica"` |
+| **Mica Alt** | Tabbed windows | `SystemBackdrop="MicaAlt"` |
+| **Acrylic** | Transient UI (flyouts, menus, dialogs) | `AcrylicBrush` |
+| **Smoke** | Modal background | `SystemBackdrop="Smoke"` |
 
 ```xml
-<!-- WinUI 3: ウィンドウへの Mica 適用 -->
+<!-- WinUI 3: Apply Mica to a window -->
 <Window x:Class="MyApp.MainWindow"
         xmlns="...">
     <Window.SystemBackdrop>
@@ -60,14 +60,14 @@ Windows 11 では背景マテリアルにより階層と奥行きを表現する
 </Window>
 ```
 
-- **Mica は不透明度・色を上書きしない。** ユーザーのデスクトップ壁紙・アクセントカラーを尊重する。
-- Acrylic はコンテンツ領域の背景に使わない（パフォーマンス・可読性に影響）。フライアウトやタスクペインに限定。
+- **Do not override Mica's opacity or color.** Respect the user's desktop wallpaper and accent color.
+- Do not use Acrylic as the background for content areas (affects performance and readability). Limit it to flyouts and task panes.
 
 ---
 
-## 4. タイトルバー統合
+## 4. Title Bar Integration
 
-Windows 11 ではタイトルバーをアプリコンテンツと統合する（`ExtendsContentIntoTitleBar`）。
+In Windows 11, integrate the title bar with app content (`ExtendsContentIntoTitleBar`).
 
 ```csharp
 // WinUI 3
@@ -75,17 +75,17 @@ this.ExtendsContentIntoTitleBar = true;
 this.SetTitleBar(AppTitleBar);
 ```
 
-- タイトルバーにはアプリアイコン・タイトル・検索ボックス・プロファイル等を配置可能。
-- ドラッグ領域（`IsHitTestVisible="False"`）と操作領域を明確に分ける。
-- Caption Button（最小化/最大化/閉じる）は OS に任せ、位置・サイズを再現しない。
+- The title bar can contain an app icon, title, search box, profile, etc.
+- Clearly separate the drag region (`IsHitTestVisible="False"`) from interactive regions.
+- Leave the Caption Buttons (minimize/maximize/close) to the OS — do not reimplement their position or size.
 
 ---
 
-## 5. ナビゲーション構造
+## 5. Navigation Structure
 
-### NavigationView（推奨）
+### NavigationView (Recommended)
 
-トップレベルナビゲーションには **`NavigationView`** を使用する。
+Use **`NavigationView`** for top-level navigation.
 
 ```xml
 <NavigationView PaneDisplayMode="Auto"
@@ -98,23 +98,23 @@ this.SetTitleBar(AppTitleBar);
 </NavigationView>
 ```
 
-- `PaneDisplayMode="Auto"` でウィンドウ幅に応じて Left / Top / LeftCompact / LeftMinimal を自動切替。
-- 5 項目以下は Top、6 項目以上は Left を推奨。
-- 設定は **`IsSettingsVisible="True"`** でフッター固定。
+- `PaneDisplayMode="Auto"` automatically switches between Left / Top / LeftCompact / LeftMinimal based on window width.
+- Recommend Top for 5 items or fewer, Left for 6 or more.
+- Pin Settings to the footer with **`IsSettingsVisible="True"`**.
 
-### TabView（ドキュメント型アプリ）
+### TabView (Document-style Apps)
 
-複数ドキュメントを扱う場合は **`TabView`**（ブラウザ・エディタスタイル）。
+Use **`TabView`** (browser/editor style) when working with multiple documents.
 
 ---
 
-## 6. コマンド表面（コマンドバー）
+## 6. Command Surfaces (Command Bar)
 
-| 表面 | 用途 |
+| Surface | Usage |
 |---|---|
-| **CommandBar** | ページ上部・下部の主要アクション群 |
-| **CommandBarFlyout** | コンテキストメニュー・選択時アクション |
-| **MenuFlyout** | 右クリック・オーバーフロー |
+| **CommandBar** | Primary actions at the top or bottom of a page |
+| **CommandBarFlyout** | Context menus and selection-triggered actions |
+| **MenuFlyout** | Right-click and overflow menus |
 
 ```xml
 <CommandBar DefaultLabelPosition="Right">
@@ -125,68 +125,68 @@ this.SetTitleBar(AppTitleBar);
 </CommandBar>
 ```
 
-- 重要度順に **Primary Command**（左 or 上）、二次は Secondary Command（オーバーフロー）。
-- アイコンには [Segoe Fluent Icons](https://learn.microsoft.com/windows/apps/design/style/segoe-fluent-icons-font) を使用（Windows 11）。
+- Order by importance: **Primary Commands** (left or top), secondary in Secondary Commands (overflow).
+- Use [Segoe Fluent Icons](https://learn.microsoft.com/windows/apps/design/style/segoe-fluent-icons-font) for icons (Windows 11).
 
 ---
 
-## 7. コントロール
+## 7. Controls
 
-- 標準 WinUI コントロールを優先（`Button` / `ToggleSwitch` / `Slider` / `ComboBox` / `CalendarDatePicker` 等）。
-- ボタンスタイル:
-  - **AccentButtonStyle**: 画面内の主要 1 アクションのみ
-  - **DefaultButton**: 通常操作
-  - **SubtleButtonStyle**: 補助操作
-- 破壊的操作は `Foreground="{ThemeResource SystemFillColorCriticalBrush}"` で赤系に。
+- Prefer standard WinUI controls (`Button` / `ToggleSwitch` / `Slider` / `ComboBox` / `CalendarDatePicker`, etc.).
+- Button styles:
+  - **AccentButtonStyle**: Only one primary action per screen
+  - **DefaultButton**: Normal operations
+  - **SubtleButtonStyle**: Supplementary operations
+- Destructive actions use `Foreground="{ThemeResource SystemFillColorCriticalBrush}"` (red tones).
 
 ```xml
-<Button Content="保存"
+<Button Content="Save"
         Style="{ThemeResource AccentButtonStyle}" />
 ```
 
 ---
 
-## 8. タイポグラフィ
+## 8. Typography
 
-Windows 11 の **Segoe UI Variable** を基本フォントとする。
+Use Windows 11’s **Segoe UI Variable** as the base font.
 
-| スタイル | サイズ | 用途 |
+| Style | Size | Usage |
 |---|---|---|
-| Caption | 12 | 補助情報 |
-| Body | 14 | 本文 |
-| Body Strong | 14 Semibold | 強調本文 |
-| Body Large | 18 | 本文（強調） |
-| Subtitle | 20 Semibold | サブ見出し |
-| Title | 28 Semibold | セクション見出し |
-| Title Large | 40 Semibold | ページ見出し |
-| Display | 68 Semibold | ヒーロー見出し |
+| Caption | 12 | Supplementary information |
+| Body | 14 | Body text |
+| Body Strong | 14 Semibold | Emphasized body text |
+| Body Large | 18 | Body text (emphasized) |
+| Subtitle | 20 Semibold | Sub-heading |
+| Title | 28 Semibold | Section heading |
+| Title Large | 40 Semibold | Page heading |
+| Display | 68 Semibold | Hero heading |
 
 ```xml
-<TextBlock Text="見出し" Style="{ThemeResource TitleTextBlockStyle}" />
-<TextBlock Text="本文" Style="{ThemeResource BodyTextBlockStyle}" />
+<TextBlock Text="Heading" Style="{ThemeResource TitleTextBlockStyle}" />
+<TextBlock Text="Body" Style="{ThemeResource BodyTextBlockStyle}" />
 ```
 
-- カスタムフォントは Segoe UI Variable を優先し、日本語は Yu Gothic UI にフォールバック。
-- ユーザーの「テキストのサイズ」設定（100% 〜 225%）でレイアウトが崩れないことを確認。
+- Prioritize Segoe UI Variable for custom fonts; fall back to Yu Gothic UI for Japanese.
+- Verify that the layout does not break at the user’s “Text Size” setting (100%–225%).
 
 ---
 
-## 9. カラー・テーマ
+## 9. Color & Themes
 
-- **テーマリソース**（`{ThemeResource ...}`）を使用し、ハードコード色を避ける。
-  - `SystemAccentColor` — システムアクセント
-  - `TextFillColorPrimaryBrush` / `TextFillColorSecondaryBrush` — テキスト
-  - `SolidBackgroundFillColorBaseBrush` — ベース背景
-- Light / Dark / High Contrast の 3 テーマで動作検証。
-- アクセントカラーはシステム設定を尊重（ユーザー選択を上書きしない）。
+- Use **theme resources** (`{ThemeResource ...}`) and avoid hardcoded colors.
+  - `SystemAccentColor` — system accent
+  - `TextFillColorPrimaryBrush` / `TextFillColorSecondaryBrush` — text
+  - `SolidBackgroundFillColorBaseBrush` — base background
+- Test against all three themes: Light, Dark, and High Contrast.
+- Respect the accent color from system settings (do not override the user’s selection).
 
 ---
 
-## 10. スペーシング・グリッド
+## 10. Spacing & Grid
 
-- **4px グリッド** が基本（4, 8, 12, 16, 20, 24, 32, 40）。
-- ページ端パディング: 左右 **24px** 以上。
-- コントロール間隔: 垂直 **12px**、水平 **8px** を基準。
+- Base unit is a **4px grid** (4, 8, 12, 16, 20, 24, 32, 40).
+- Page edge padding: **24px or more** on each side.
+- Control spacing: **12px** vertical, **8px** horizontal as a baseline.
 
 ```xml
 <Thickness x:Key="PageMargin">24,24,24,24</Thickness>
@@ -195,43 +195,43 @@ Windows 11 の **Segoe UI Variable** を基本フォントとする。
 
 ---
 
-## 11. 入力対応
+## 11. Input Support
 
-Windows は複数入力をネイティブにサポートする。
+Windows natively supports multiple input methods.
 
-| 入力 | 考慮点 |
+| Input | Considerations |
 |---|---|
-| **マウス** | ホバー状態・右クリック対応 |
-| **キーボード** | Tab 順序、アクセラレータ（Alt+キー）、ショートカット（Ctrl+S 等） |
-| **タッチ** | ターゲット最小 **40×40 ピクセル**（推奨 48×48） |
-| **ペン** | インク入力対応（`InkCanvas`）、ホバー（Windows Ink） |
-| **ゲームパッド** | Xbox Game Bar / Xbox アプリ向け。XY フォーカスナビゲーション |
+| **Mouse** | Hover states, right-click support |
+| **Keyboard** | Tab order, accelerators (Alt+Key), shortcuts (Ctrl+S, etc.) |
+| **Touch** | Minimum target **40×40 pixels** (48×48 recommended) |
+| **Pen** | Ink input support (`InkCanvas`), hover (Windows Ink) |
+| **Gamepad** | For Xbox Game Bar / Xbox app. XY focus navigation |
 
 ```xml
-<!-- キーボードアクセラレータ -->
-<Button Content="保存">
+<!-- Keyboard accelerator -->
+<Button Content="Save">
     <Button.KeyboardAccelerators>
         <KeyboardAccelerator Key="S" Modifiers="Control" />
     </Button.KeyboardAccelerators>
 </Button>
 ```
 
-- `AccessKey="S"` で Alt ナビゲーションに対応。
+- Use `AccessKey="S"` to support Alt navigation.
 
 ---
 
-## 12. アニメーション・モーション
+## 12. Animations & Motion
 
-- **Connected Animation** で要素の遷移を滑らかに表現。
+- Use **Connected Animation** to smoothly transition elements.
 
 ```csharp
 ConnectedAnimationService.GetForCurrentView()
     .PrepareToAnimate("forwardAnimation", sourceElement);
 ```
 
-- 標準イージング `FluentAnimations.Standard` を使用。
-- モーション持続時間は **150〜300ms** が基本。
-- システム設定「アニメーション効果を表示する」OFF 時はアニメーションをスキップ。
+- Use the standard easing `FluentAnimations.Standard`.
+- Motion duration is **150–300ms** as a baseline.
+- Skip animations when the system setting "Show animations" is OFF.
 
 ```csharp
 if (UISettings.AnimationsEnabled) { /* animate */ }
@@ -239,28 +239,28 @@ if (UISettings.AnimationsEnabled) { /* animate */ }
 
 ---
 
-## 13. アクセシビリティ
+## 13. Accessibility
 
-- **Narrator** で全画面を操作可能にする。
-- `AutomationProperties.Name` / `AutomationProperties.HelpText` を全インタラクティブ要素に設定。
+- Make every screen operable with **Narrator**.
+- Set `AutomationProperties.Name` / `AutomationProperties.HelpText` on all interactive elements.
 
 ```xml
 <Button Icon="Delete"
-        AutomationProperties.Name="削除"
-        ToolTipService.ToolTip="削除" />
+        AutomationProperties.Name="Delete"
+        ToolTipService.ToolTip="Delete" />
 ```
 
-- コントラスト比は **WCAG 2.2 AA 以上**（通常テキスト 4.5:1、大テキスト 3:1）。
-- **High Contrast テーマ**で全 UI が視認可能であること。`SystemColor*Brush` を使用。
-- Tab フォーカスは論理順序、`TabIndex` で明示的に制御可能。
-- 自動フォーカスリング（XAML の既定）を隠さない。
-- 詳細は `skills/ui-accessibility/SKILL.md` 参照。
+- Contrast ratio must meet **WCAG 2.2 AA or above** (4.5:1 for normal text, 3:1 for large text).
+- All UI must be visible in the **High Contrast theme**. Use `SystemColor*Brush`.
+- Tab focus follows logical order; `TabIndex` can be used for explicit control.
+- Do not hide the automatic focus ring (XAML default).
+- For details, see `skills/ui-accessibility/SKILL.md`.
 
 ---
 
-## 14. レスポンシブレイアウト
+## 14. Responsive Layout
 
-- **Adaptive Triggers** でウィンドウ幅に応じたレイアウト切替。
+- Use **Adaptive Triggers** to switch layouts based on window width.
 
 ```xml
 <VisualStateManager.VisualStateGroups>
@@ -279,52 +279,52 @@ if (UISettings.AnimationsEnabled) { /* animate */ }
 </VisualStateManager.VisualStateGroups>
 ```
 
-- ブレークポイント目安: **640 / 1008 / 1366 / 1920 px**。
-- 最小ウィンドウサイズ: 幅 **500px**、高さ **320px** 以上を確保。
-- タブレットモード・縦向きも考慮。
+- Breakpoint guidelines: **640 / 1008 / 1366 / 1920 px**.
+- Minimum window size: at least **500px** wide and **320px** tall.
+- Also consider tablet mode and portrait orientation.
 
 ---
 
-## 15. ダイアログ・Teaching Tip
+## 15. Dialogs & Teaching Tip
 
-- モーダル確認は **`ContentDialog`**。
+- Use **`ContentDialog`** for modal confirmations.
 
 ```csharp
 var dialog = new ContentDialog
 {
-    Title = "削除しますか？",
-    Content = "この操作は元に戻せません。",
-    PrimaryButtonText = "削除",
-    CloseButtonText = "キャンセル",
+    Title = "Delete?",
+    Content = "This action cannot be undone.",
+    PrimaryButtonText = "Delete",
+    CloseButtonText = "Cancel",
     DefaultButton = ContentDialogButton.Close,
     XamlRoot = this.XamlRoot
 };
 ```
 
-- 新機能案内は **`TeachingTip`**。
-- トースト通知は **Windows App Notification**（旧 Toast Notification）。
+- Use **`TeachingTip`** for new feature announcements.
+- Use **Windows App Notification** (formerly Toast Notification) for toast notifications.
 
 ---
 
-## 16. アイコン
+## 16. Icons
 
-- システムアイコンは **Segoe Fluent Icons**（Windows 11）。
-- カスタムアイコンは SVG 推奨（`PathIcon`）。
-- サイズは **16 / 20 / 24 / 32 / 48 px** を基本グリッドに。
-- アプリアイコンは `.ico`（16 / 24 / 32 / 48 / 64 / 256）と `StoreLogo` / `Square44x44Logo` / `Square150x150Logo` / `Wide310x150Logo` を Package.appxmanifest に登録。
-
----
-
-## 17. Windows 11 統合機能
-
-- **Snap Layouts** — 最大化ボタンホバーでレイアウト候補を表示。ウィンドウサイズ制約に注意。
-- **Widgets** — Adaptive Cards ベース。`WindowsAppSDK` で対応。
-- **Share Charm** — `DataTransferManager` で共有元として登録。
-- **File Picker** — `FileOpenPicker` / `FileSavePicker` を使用し、独自実装しない。
+- Use **Segoe Fluent Icons** for system icons (Windows 11).
+- Prefer SVG for custom icons (`PathIcon`).
+- Base sizes on the **16 / 20 / 24 / 32 / 48 px** grid.
+- Register app icons in Package.appxmanifest: `.ico` (16 / 24 / 32 / 48 / 64 / 256) plus `StoreLogo` / `Square44x44Logo` / `Square150x150Logo` / `Wide310x150Logo`.
 
 ---
 
-## 関連スキル
+## 17. Windows 11 Integration Features
 
-- アクセシビリティ全般: `skills/ui-accessibility/SKILL.md`
-- UI レビュー: `skills/ui-review-checklist/SKILL.md`
+- **Snap Layouts** — Show layout candidates on maximize button hover. Note window size constraints.
+- **Widgets** — Adaptive Cards-based. Supported via `WindowsAppSDK`.
+- **Share Charm** — Register as a share source via `DataTransferManager`.
+- **File Picker** — Use `FileOpenPicker` / `FileSavePicker`; do not implement a custom replacement.
+
+---
+
+## Related Skills
+
+- Accessibility in general: `skills/ui-accessibility/SKILL.md`
+- UI Review: `skills/ui-review-checklist/SKILL.md`

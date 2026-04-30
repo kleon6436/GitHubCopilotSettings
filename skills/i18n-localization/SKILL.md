@@ -1,59 +1,59 @@
 ---
 name: i18n-localization
-description: '国際化（i18n）とローカライゼーション（l10n）のガイドラインを参照・適用する。多言語対応、翻訳ファイル管理、日付・数値・通貨フォーマット、RTL 対応、複数形処理、プラットフォーム別実装を確認・適用したいときに使用。Use when: implementing internationalization, managing translation files, locale formatting, RTL layout support, pluralization.'
-argument-hint: '確認・適用したい i18n / l10n の項目（省略可）'
+description: 'Reference and apply internationalization (i18n) and localization (l10n) guidelines. Use when: implementing internationalization, managing translation files, locale formatting, RTL layout support, pluralization.'
+argument-hint: 'i18n / l10n item to review or apply (optional)'
 ---
 
-# 国際化（i18n）/ ローカライゼーション（l10n）ガイドライン
+# Internationalization (i18n) / Localization (l10n) Guidelines
 
-## 概要
+## Overview
 
-このスキルはアプリケーションの国際化・ローカライゼーション実装の規約を定義します。
-多言語・多地域に対応したプロダクトを開発する際はこのガイドラインに従ってください。
-
----
-
-## 1. 基本原則
-
-- **コード中にテキストをハードコードしない** — すべての表示テキストはリソースファイルで管理する
-- **デフォルトロケールは `en`（英語）を基準** にし、各言語への翻訳を派生させる
-- **文化的中立性** — アイコン・色・ジェスチャーが文化的に問題ないか確認する
-- **テキスト膨張を考慮** — 英語の 1.3〜1.5 倍の長さを想定してレイアウトを設計する
+This skill defines conventions for implementing internationalization and localization in applications.
+Follow this guideline when developing products targeting multiple languages and regions.
 
 ---
 
-## 2. 対応ロケールの管理
+## 1. Core Principles
 
-### ロケールコード規則
+- **Do not hardcode text in code** — Manage all display text in resource files
+- **Use `en` (English) as the default locale** and derive translations for each language from it
+- **Cultural neutrality** — Verify that icons, colors, and gestures are not culturally problematic
+- **Account for text expansion** — Design layouts assuming 1.3–1.5× the length of English text
 
-- IETF BCP 47 に従う（例: `en`, `ja`, `zh-Hans`, `zh-Hant`, `ar`, `he`）
-- 地域バリアント（例: `en-US`, `en-GB`）は必要な場合のみ分離する
+---
 
-### 言語ファイルの構造
+## 2. Supported Locale Management
+
+### Locale Code Conventions
+
+- Follow IETF BCP 47 (e.g. `en`, `ja`, `zh-Hans`, `zh-Hant`, `ar`, `he`)
+- Separate regional variants (e.g. `en-US`, `en-GB`) only when necessary
+
+### Language File Structure
 
 ```
 messages/
-  en.json         — デフォルト（必須）
-  ja.json         — 日本語
-  zh-Hans.json    — 中国語（簡体字）
-  zh-Hant.json    — 中国語（繁体字）
-  ar.json         — アラビア語（RTL）
-  ko.json         — 韓国語
-  fr.json         — フランス語
-  de.json         — ドイツ語
-  es.json         — スペイン語
-  pt-BR.json      — ポルトガル語（ブラジル）
+  en.json         — Default (required)
+  ja.json         — Japanese
+  zh-Hans.json    — Chinese (Simplified)
+  zh-Hant.json    — Chinese (Traditional)
+  ar.json         — Arabic (RTL)
+  ko.json         — Korean
+  fr.json         — French
+  de.json         — German
+  es.json         — Spanish
+  pt-BR.json      — Portuguese (Brazil)
 ```
 
 ---
 
-## 3. 翻訳キーの設計
+## 3. Translation Key Design
 
-### キー命名規則
+### Key Naming Conventions
 
-- `スコープ.コンポーネント.意味` の形式を使う（ドット区切りネスト）
-- **動詞で始めない** — 意味の主体を先に書く（`button.submit` ではなく `form.submitButton`）
-- **内容ではなく意味で命名** — `redText` ではなく `errorMessage`
+- Use the `scope.component.meaning` format (dot-separated nesting)
+- **Do not start with a verb** — Put the semantic subject first (use `form.submitButton`, not `button.submit`)
+- **Name by meaning, not appearance** — Use `errorMessage`, not `redText`
 
 ```json
 // ✅ Good
@@ -82,15 +82,15 @@ messages/
 
 // ❌ Bad
 {
-  "loginTitle": "Sign In",        // スコープなし
-  "redText": "Error",             // 見た目で命名
-  "button1": "Submit"             // 意味不明
+  "loginTitle": "Sign In",        // No scope
+  "redText": "Error",             // Named by appearance
+  "button1": "Submit"             // Meaningless name
 }
 ```
 
-### 変数の埋め込み
+### Variable Interpolation
 
-- プレースホルダーは `{変数名}` 形式を使う（ライブラリに応じて変わる場合あり）
+- Use the `{variableName}` format for placeholders (may vary depending on the library)
 
 ```json
 {
@@ -101,12 +101,12 @@ messages/
 
 ---
 
-## 4. 複数形（Plural）処理
+## 4. Plural Handling
 
-- 必ず複数形対応のロジックを使用し、`if count === 1` のようなハードコードをしない
-- `zero` / `one` / `two` / `few` / `many` / `other` の各カテゴリを言語ごとに定義する
+- Always use plural-aware logic; do not hardcode conditions like `if count === 1`
+- Define `zero` / `one` / `two` / `few` / `many` / `other` categories per language
 
-### Web（next-intl の例）
+### Web (next-intl example)
 
 ```json
 {
@@ -117,7 +117,7 @@ messages/
 }
 ```
 
-### iOS / macOS（Localizable.stringsdict）
+### iOS / macOS (Localizable.stringsdict)
 
 ```xml
 <key>%d items</key>
@@ -136,7 +136,7 @@ messages/
 </dict>
 ```
 
-### Android（strings.xml）
+### Android (strings.xml)
 
 ```xml
 <plurals name="items_count">
@@ -147,28 +147,28 @@ messages/
 
 ---
 
-## 5. 日付・時刻・数値・通貨のフォーマット
+## 5. Date / Time / Number / Currency Formatting
 
-- **ハードコードしない** — `Intl` API / ロケール対応ライブラリを使う
-- 日付は ISO 8601 でサーバーとやりとりし、表示時にローカル形式に変換する
+- **Do not hardcode** — Use the `Intl` API / locale-aware libraries
+- Exchange dates with the server in ISO 8601 and convert to local format on display
 
-### Web（Intl API）
+### Web (Intl API)
 
 ```ts
-// 日付
+// Date
 new Intl.DateTimeFormat('ja-JP', { dateStyle: 'long' }).format(date);
-// → 2026年4月18日
+// → April 18, 2026 (locale-formatted)
 
-// 数値
+// Number
 new Intl.NumberFormat('de-DE').format(1234567.89);
 // → 1.234.567,89
 
-// 通貨
+// Currency
 new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' }).format(1500);
 // → ¥1,500
 ```
 
-### iOS / macOS（Swift）
+### iOS / macOS (Swift)
 
 ```swift
 let formatter = DateFormatter()
@@ -176,7 +176,7 @@ formatter.locale = Locale.current
 formatter.dateStyle = .long
 formatter.string(from: Date())
 
-// 通貨
+// Currency
 let nf = NumberFormatter()
 nf.numberStyle = .currency
 nf.locale = Locale.current
@@ -185,41 +185,41 @@ nf.string(from: 1500)
 
 ---
 
-## 6. RTL（Right-to-Left）対応
+## 6. RTL (Right-to-Left) Support
 
-RTL 言語（アラビア語 `ar`、ヘブライ語 `he`、ペルシャ語 `fa` 等）に対応するための原則。
+Principles for supporting RTL languages (Arabic `ar`, Hebrew `he`, Persian `fa`, etc.).
 
 ### Web
 
 ```css
-/* logical properties を使う */
-margin-inline-start: 1rem;    /* ✅ left/right に依存しない */
+/* Use logical properties */
+margin-inline-start: 1rem;    /* ✅ Independent of left/right */
 padding-inline-end: 0.5rem;
 
-/* ❌ 避ける */
+/* ❌ Avoid */
 margin-left: 1rem;
 padding-right: 0.5rem;
 ```
 
 ```html
-<!-- html タグに dir 属性を設定 -->
+<!-- Set dir attribute on the html tag -->
 <html lang="ar" dir="rtl">
 ```
 
-### iOS / macOS（Swift）
+### iOS / macOS (Swift)
 
 ```swift
-// UIKit: semanticContentAttribute を使う
+// UIKit: Use semanticContentAttribute
 view.semanticContentAttribute = .forceRightToLeft
 
-// SwiftUI: environment で自動対応される
-// HStack は RTL で自動反転する
+// SwiftUI: Automatically handled via environment
+// HStack is automatically reversed in RTL
 ```
 
-### Android（Kotlin）
+### Android (Kotlin)
 
 ```xml
-<!-- start/end を使う（left/right ではなく） -->
+<!-- Use start/end instead of left/right -->
 <TextView
     android:paddingStart="16dp"
     android:paddingEnd="16dp"
@@ -228,27 +228,27 @@ view.semanticContentAttribute = .forceRightToLeft
 
 ---
 
-## 7. プラットフォーム別実装
+## 7. Platform-Specific Implementation
 
 ### iOS / macOS
 
-- テキストは `String(localized:)` または `LocalizedStringKey` を使う
-- ファイル: `Localizable.strings`（一般テキスト）+ `Localizable.stringsdict`（複数形）
-- Xcode の **String Catalog（.xcstrings）** を最優先で使用する
+- Use `String(localized:)` or `LocalizedStringKey` for text
+- Files: `Localizable.strings` (general text) + `Localizable.stringsdict` (plurals)
+- Prefer Xcode **String Catalog (.xcstrings)** as the first choice
 
 ```swift
-// ✅ String Catalog（推奨）
+// ✅ String Catalog (recommended)
 Text("auth.login.title")  // SwiftUI
 
-// ✅ コードから
+// ✅ From code
 String(localized: "greeting", defaultValue: "Hello, \(name)!")
 ```
 
 ### Android
 
-- テキストは `strings.xml`、複数形は `plurals` を使う
-- `getString(R.string.key, arg1, arg2)` でプレースホルダーを埋める
-- `Context` なしで文字列を取得しない
+- Use `strings.xml` for text and `plurals` for plurals
+- Fill placeholders with `getString(R.string.key, arg1, arg2)`
+- Do not retrieve strings without a `Context`
 
 ```kotlin
 // ✅ Good
@@ -256,7 +256,7 @@ getString(R.string.greeting, userName)
 resources.getQuantityString(R.plurals.items_count, count, count)
 ```
 
-### Web（next-intl の例）
+### Web (next-intl example)
 
 ```tsx
 import { useTranslations } from 'next-intl';
@@ -267,10 +267,10 @@ function LoginPage() {
 }
 ```
 
-### Windows（C#）
+### Windows (C#)
 
-- テキストは `Resources.resw` で管理する
-- `ResourceLoader` を使って実行時に取得する
+- Manage text in `Resources.resw`
+- Retrieve at runtime using `ResourceLoader`
 
 ```csharp
 var resourceLoader = ResourceLoader.GetForCurrentView();
@@ -279,29 +279,29 @@ string text = resourceLoader.GetString("Auth/Login/Title");
 
 ---
 
-## 8. 翻訳ワークフロー
+## 8. Translation Workflow
 
-### 翻訳ファイルの管理
+### Translation File Management
 
-1. **開発者** がデフォルト言語（`en`）のキーを追加する
-2. **CI** で未翻訳キーを自動検出してアラートを出す
-3. **翻訳担当 / 翻訳ツール**（Crowdin / Phrase / Lokalise 等）が各言語に翻訳する
-4. **PR** で翻訳ファイルをレビューしてマージする
+1. **Developers** add keys in the default language (`en`)
+2. **CI** automatically detects untranslated keys and raises alerts
+3. **Translators / translation tools** (Crowdin / Phrase / Lokalise, etc.) translate into each language
+4. **PRs** review and merge translation files
 
-### 未翻訳キーのハンドリング
+### Handling Untranslated Keys
 
-- デフォルト言語（`en`）にフォールバックする
-- フォールバックが発生した場合はログに記録する（本番環境では過検知に注意）
+- Fall back to the default language (`en`)
+- Log when a fallback occurs (beware of false positives in production)
 
 ---
 
-## 9. チェックリスト
+## 9. Checklist
 
-- [ ] すべての表示テキストがリソースファイルで管理されている
-- [ ] コード中にテキストがハードコードされていない
-- [ ] 複数形処理が適切に実装されている
-- [ ] 日付・時刻・数値・通貨がロケール対応フォーマットを使用している
-- [ ] RTL 言語で表示崩れが起きないことを確認した
-- [ ] テキスト膨張でレイアウトが崩れないことを確認した
-- [ ] プレースホルダーが変数名で命名されている
-- [ ] CI で未翻訳キー検出が動作している
+- [ ] All display text is managed in resource files
+- [ ] No text is hardcoded in source code
+- [ ] Plural handling is properly implemented
+- [ ] Dates, times, numbers, and currencies use locale-aware formatting
+- [ ] Verified that RTL languages do not cause layout breakage
+- [ ] Verified that text expansion does not break the layout
+- [ ] Placeholders are named using variable names
+- [ ] CI untranslated-key detection is working

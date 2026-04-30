@@ -1,110 +1,110 @@
 ---
 name: performance-optimization
-description: 'パフォーマンス最適化のガイドラインを参照・適用する。Core Web Vitals・メモリ管理・レンダリング最適化・ビルドサイズ削減・キャッシュ戦略・プラットフォーム別チューニングを確認・適用したいときに使用。Use when: optimizing app performance, reducing bundle size, improving Core Web Vitals, memory profiling, render optimization, caching strategies.'
-argument-hint: '確認・適用したいパフォーマンス最適化の項目（省略可）'
+description: 'Reference and apply performance optimization guidelines. Use when: optimizing app performance, reducing bundle size, improving Core Web Vitals, memory profiling, render optimization, caching strategies.'
+argument-hint: 'Performance optimization topic to check or apply (optional)'
 ---
 
-# パフォーマンス最適化 ガイドライン
+# Performance Optimization Guidelines
 
-## 概要
+## Overview
 
-このスキルはアプリケーションのパフォーマンス最適化の規約を定義します。
-「計測してから最適化する」を基本原則とし、推測での最適化を避けてください。
-
----
-
-## 1. 共通原則
-
-- **計測が先、最適化が後** — プロファイラーで根拠を持ってから最適化する
-- **ユーザー体験に直結する指標を優先** — FID・LCP・CLS・起動時間・スクロール滑らかさ
-- **早すぎる最適化を避ける** — 可読性を犠牲にする前に必要性を確認する
-- **パフォーマンスバジェットを設定** — 目標値を定め、CI で継続監視する
+This skill defines the performance optimization standards for applications.
+The core principle is "measure before optimizing" — avoid guesswork-based optimization.
 
 ---
 
-## 2. Web パフォーマンス
+## 1. Common Principles
 
-### Core Web Vitals 目標値
+- **Measure first, optimize later** — Profile with evidence before optimizing
+- **Prioritize metrics that directly affect user experience** — FID, LCP, CLS, startup time, scroll smoothness
+- **Avoid premature optimization** — Confirm necessity before sacrificing readability
+- **Set a performance budget** — Define target values and continuously monitor in CI
 
-| 指標 | 良好 | 改善が必要 | 不良 |
-|------|------|-----------|------|
-| LCP（最大コンテンツの描画） | ≤ 2.5s | 2.5 〜 4.0s | > 4.0s |
-| INP（次のペイントへの応答） | ≤ 200ms | 200 〜 500ms | > 500ms |
-| CLS（累積レイアウトシフト） | ≤ 0.1 | 0.1 〜 0.25 | > 0.25 |
+---
 
-### 画像最適化
+## 2. Web Performance
+
+### Core Web Vitals Targets
+
+| Metric | Good | Needs Improvement | Poor |
+|--------|------|-------------------|------|
+| LCP (Largest Contentful Paint) | ≤ 2.5s | 2.5–4.0s | > 4.0s |
+| INP (Interaction to Next Paint) | ≤ 200ms | 200–500ms | > 500ms |
+| CLS (Cumulative Layout Shift) | ≤ 0.1 | 0.1–0.25 | > 0.25 |
+
+### Image Optimization
 
 ```tsx
-// ✅ Good: next/image で自動最適化（Next.js）
+// ✅ Good: automatic optimization with next/image (Next.js)
 import Image from 'next/image';
 <Image src="/hero.jpg" alt="Hero" width={1200} height={600} priority />
 
-// ✅ Good: 適切な format と lazy loading
+// ✅ Good: appropriate format and lazy loading
 <img src="image.webp" loading="lazy" decoding="async" width="400" height="300" />
 
-// ❌ Bad: サイズ未指定（CLS の原因）
+// ❌ Bad: no size specified (causes CLS)
 <img src="image.jpg" />
 ```
 
-### バンドルサイズ削減
+### Bundle Size Reduction
 
 ```ts
-// ✅ Good: 動的インポートで Code Splitting
+// ✅ Good: Code Splitting via dynamic import
 const HeavyComponent = dynamic(() => import('./HeavyComponent'), {
   loading: () => <Skeleton />,
 });
 
-// ✅ Good: ツリーシェイキング対応の named import
+// ✅ Good: named import for tree-shaking support
 import { debounce } from 'lodash-es';
 
-// ❌ Bad: デフォルトインポートでバンドル全体を読み込む
+// ❌ Bad: default import loads the entire bundle
 import _ from 'lodash';
 ```
 
-### キャッシュ戦略
+### Cache Strategy
 
-| リソース | Cache-Control |
-|---------|--------------|
-| HTML | `no-cache`（常に最新を取得） |
-| JS / CSS（ハッシュ付き） | `max-age=31536000, immutable` |
-| 画像 | `max-age=86400`（1日） |
-| API レスポンス | `max-age=60, stale-while-revalidate=300` |
+| Resource | Cache-Control |
+|----------|---------------|
+| HTML | `no-cache` (always fetch fresh) |
+| JS / CSS (hashed) | `max-age=31536000, immutable` |
+| Images | `max-age=86400` (1 day) |
+| API responses | `max-age=60, stale-while-revalidate=300` |
 
-### レンダリング最適化（React）
+### Rendering Optimization (React)
 
 ```tsx
-// ✅ Good: useMemo で重い計算をメモ化
+// ✅ Good: memoize expensive computations with useMemo
 const sortedList = useMemo(() => expensiveSort(data), [data]);
 
-// ✅ Good: useCallback で関数の再生成を防ぐ
+// ✅ Good: prevent function re-creation with useCallback
 const handleClick = useCallback(() => {
   onSelect(item.id);
 }, [item.id, onSelect]);
 
-// ✅ Good: React.memo でコンポーネントの再レンダーを防ぐ
+// ✅ Good: prevent component re-renders with React.memo
 const ListItem = memo(({ item, onSelect }: Props) => {
   return <div onClick={() => onSelect(item.id)}>{item.name}</div>;
 });
 
-// ❌ Bad: レンダー中に高コスト計算を直書き
+// ❌ Bad: expensive computation written directly during render
 const sorted = data.sort((a, b) => /* expensive comparison */);
 ```
 
 ---
 
-## 3. iOS / macOS パフォーマンス
+## 3. iOS / macOS Performance
 
-### Instruments を使った計測
+### Profiling with Instruments
 
-- **Time Profiler** — CPU 使用率のホットスポットを特定する
-- **Allocations** — メモリアロケーション・解放を追跡する
-- **Leaks** — メモリリークを検出する
-- **Core Data** — フェッチ回数・クエリの遅さを確認する
+- **Time Profiler** — identify CPU usage hotspots
+- **Allocations** — track memory allocations and deallocations
+- **Leaks** — detect memory leaks
+- **Core Data** — check fetch frequency and slow queries
 
-### SwiftUI 最適化
+### SwiftUI Optimization
 
 ```swift
-// ✅ Good: equatable で不要な再描画を防ぐ
+// ✅ Good: prevent unnecessary redraws with Equatable
 struct ListRowView: View, Equatable {
     let item: Item
     static func == (lhs: Self, rhs: Self) -> Bool {
@@ -112,65 +112,65 @@ struct ListRowView: View, Equatable {
     }
 }
 
-// ✅ Good: lazy で必要時だけ評価
+// ✅ Good: evaluate lazily only when needed
 LazyVStack {
     ForEach(items) { item in
         ItemRow(item: item)
     }
 }
 
-// ✅ Good: @StateObject は初回のみ生成
+// ✅ Good: @StateObject is created only once
 @StateObject private var viewModel = ItemListViewModel()
 
-// ❌ Bad: @ObservedObject を外部から渡す（毎回再生成の可能性）
+// ❌ Bad: passing @ObservedObject from outside (may be recreated each time)
 ```
 
-### 非同期・バックグラウンド処理
+### Async & Background Processing
 
 ```swift
-// ✅ Good: メインスレッドをブロックしない
+// ✅ Good: do not block the main thread
 Task {
-    let data = await fetchData()  // バックグラウンドで処理
+    let data = await fetchData()  // processed in the background
     await MainActor.run {
-        self.items = data         // UI 更新はメインスレッドで
+        self.items = data         // UI updates on the main thread
     }
 }
 
-// ❌ Bad: メインスレッドで同期的にネットワーク通信
-let data = URLSession.shared.synchronousRequest(url)  // NG
+// ❌ Bad: synchronous network call on the main thread
+let data = URLSession.shared.synchronousRequest(url)  // Not OK
 ```
 
 ---
 
-## 4. Android パフォーマンス
+## 4. Android Performance
 
-### Compose 最適化
+### Compose Optimization
 
 ```kotlin
-// ✅ Good: remember で重い計算をキャッシュ
+// ✅ Good: cache expensive computations with remember
 val sortedItems = remember(items) {
     items.sortedBy { it.name }
 }
 
-// ✅ Good: derivedStateOf で不要な Recomposition を防ぐ
+// ✅ Good: prevent unnecessary recompositions with derivedStateOf
 val isButtonEnabled by remember {
     derivedStateOf { selectedItems.isNotEmpty() }
 }
 
-// ✅ Good: LazyColumn に key を指定してアニメーション最適化
+// ✅ Good: specify keys in LazyColumn for animation optimization
 LazyColumn {
     items(items, key = { it.id }) { item ->
         ItemRow(item = item)
     }
 }
 
-// ❌ Bad: key なしの LazyColumn（全 item が再 Compose される）
+// ❌ Bad: LazyColumn without keys (all items recomposed)
 ```
 
-### ANR 防止
+### ANR Prevention
 
 ```kotlin
-// ✅ Good: IO 処理は Dispatchers.IO で実行
+// ✅ Good: run I/O operations on Dispatchers.IO
 viewModelScope.launch(Dispatchers.IO) {
     val result = repository.fetchData()
     withContext(Dispatchers.Main) {
@@ -178,33 +178,33 @@ viewModelScope.launch(Dispatchers.IO) {
     }
 }
 
-// ❌ Bad: メインスレッドで重い処理
+// ❌ Bad: heavy processing on the main thread
 fun loadData() {
-    _uiState.value = repository.fetchDataBlocking()  // ANR の原因
+    _uiState.value = repository.fetchDataBlocking()  // causes ANR
 }
 ```
 
-### プロファイリングツール
+### Profiling Tools
 
-- **Android Studio Profiler** — CPU・メモリ・ネットワーク・エネルギー
-- **Compose Inspector** — Recomposition の回数を確認
-- **Systrace / Perfetto** — フレームタイムのボトルネックを特定
+- **Android Studio Profiler** — CPU, memory, network, and energy
+- **Compose Inspector** — check Recomposition count
+- **Systrace / Perfetto** — identify frame time bottlenecks
 
 ---
 
-## 5. メモリ管理
+## 5. Memory Management
 
-### 共通パターン
+### Common Patterns
 
 ```swift
-// Swift: 循環参照を [weak self] で防ぐ
+// Swift: use [weak self] to prevent retain cycles
 someViewModel.onComplete = { [weak self] result in
     self?.handleResult(result)
 }
 ```
 
 ```kotlin
-// Kotlin: lifecycleScope を使い、自動的にキャンセルされるようにする
+// Kotlin: use lifecycleScope to automatically cancel on lifecycle end
 viewLifecycleOwner.lifecycleScope.launch {
     viewModel.uiState.collect { state ->
         updateUI(state)
@@ -213,7 +213,7 @@ viewLifecycleOwner.lifecycleScope.launch {
 ```
 
 ```ts
-// React: useEffect のクリーンアップでサブスクリプションを解除する
+// React: unsubscribe in useEffect cleanup
 useEffect(() => {
   const subscription = dataService.subscribe(setData);
   return () => subscription.unsubscribe();
@@ -222,28 +222,28 @@ useEffect(() => {
 
 ---
 
-## 6. パフォーマンスバジェット
+## 6. Performance Budget
 
-プロジェクト開始時に以下の目標値を設定し、CI で監視すること。
+Set the following target values at project start and monitor with CI.
 
-| 指標 | 目標値（例） |
-|------|------------|
-| JS バンドルサイズ（初期ロード） | 200KB 以下（gzip） |
-| TTI（Time to Interactive） | 3.0 秒以下 |
-| LCP | 2.5 秒以下 |
-| アプリ起動時間（iOS cold） | 400ms 以下 |
-| スクロールフレームレート | 60fps（120fps デバイス対応で 120fps） |
-| メモリ使用量（通常利用時） | {プロジェクト固有の目標値} |
+| Metric | Target (example) |
+|--------|------------------|
+| JS bundle size (initial load) | 200 KB or less (gzip) |
+| TTI (Time to Interactive) | 3.0 s or less |
+| LCP | 2.5 s or less |
+| App launch time (iOS cold) | 400 ms or less |
+| Scroll frame rate | 60 fps (120 fps on 120 fps-capable devices) |
+| Memory usage (typical use) | {project-specific target} |
 
 ---
 
-## 7. チェックリスト
+## 7. Checklist
 
-- [ ] プロファイラーで計測済みのボトルネックに対して最適化している
-- [ ] Core Web Vitals の目標値が設定され、CI で監視されている
-- [ ] 画像に適切な format・サイズ・lazy loading が設定されている
-- [ ] バンドルサイズに Code Splitting が適用されている
-- [ ] 重い計算が適切にキャッシュ（memoize）されている
-- [ ] メインスレッドで重い同期処理を実行していない
-- [ ] メモリリークの可能性（循環参照・未解除リスナー）を確認した
-- [ ] リスト描画に仮想化・遅延ロードが適用されている
+- [ ] Optimization is applied to bottlenecks measured with a profiler
+- [ ] Core Web Vitals targets are set and monitored in CI
+- [ ] Images have appropriate format, dimensions, and lazy loading
+- [ ] Code Splitting is applied to reduce bundle size
+- [ ] Expensive computations are properly cached (memoized)
+- [ ] No heavy synchronous processing on the main thread
+- [ ] Potential memory leaks (retain cycles, unremoved listeners) have been checked
+- [ ] Virtualization and lazy loading are applied to list rendering

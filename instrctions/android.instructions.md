@@ -1,116 +1,116 @@
 ---
-description: "Android アプリの開発ガイドライン"
+description: "Development guidelines for Android apps"
 applyTo: []
 ---
 
-# プロジェクトガイドライン（Android アプリ開発用）
+# Project Guidelines (Android App Development)
 
-## プロジェクト概要
+## Project Overview
 
-<!-- プロジェクトに応じて以下を記入してください -->
+<!-- Fill in the following according to your project -->
 
-- **プロジェクト名**: {プロジェクト名}
-- **概要**: {プロジェクトの目的・概要を簡潔に記述}
-- **対象プラットフォーム**: Android 10（API 29）以上
-- **最低 minSdk**: {29}
-- **ターゲット SDK**: {最新安定版}
-- **リポジトリ構成**: {シングルレポ / モノレポ、主なディレクトリ構成の説明}
+- **Project Name**: {Project Name}
+- **Overview**: {Brief description of the project's purpose and overview}
+- **Target Platform**: Android 10 (API 29) or later
+- **Minimum minSdk**: {29}
+- **Target SDK**: {Latest stable}
+- **Repository Structure**: {Single repo / Monorepo, description of main directory structure}
 
-## 技術スタック
+## Tech Stack
 
-| カテゴリ | 技術 / ツール | バージョン | 備考 |
+| Category | Technology / Tool | Version | Notes |
 |---------|-------------|-----------|------|
-| 言語 | Kotlin | 最新安定版 | |
-| IDE | Android Studio | 最新安定版 | |
-| ビルドシステム | Gradle（KTS） | | build.gradle.kts を使用 |
-| UI フレームワーク | Jetpack Compose | 最新安定版 | View システムとの混在は最小限に |
-| DI | Hilt | 最新安定版 | |
-| ナビゲーション | Navigation Compose | 最新安定版 | |
-| 非同期処理 | Kotlin Coroutines / Flow | 最新安定版 | |
-| ネットワーク | Retrofit + OkHttp | 最新安定版 | |
-| アーキテクチャ | MVVM + Clean Architecture | | |
-| テスト | JUnit 5 / Espresso / Compose Testing | 最新安定版 | |
-| リンター | ktlint / Detekt | 最新安定版 | |
-| CI/CD | {例: GitHub Actions} | | |
+| Language | Kotlin | Latest stable | |
+| IDE | Android Studio | Latest stable | |
+| Build System | Gradle (KTS) | | Use build.gradle.kts |
+| UI Framework | Jetpack Compose | Latest stable | Minimize mixing with View system |
+| DI | Hilt | Latest stable | |
+| Navigation | Navigation Compose | Latest stable | |
+| Async | Kotlin Coroutines / Flow | Latest stable | |
+| Networking | Retrofit + OkHttp | Latest stable | |
+| Architecture | MVVM + Clean Architecture | | |
+| Testing | JUnit 5 / Espresso / Compose Testing | Latest stable | |
+| Linter | ktlint / Detekt | Latest stable | |
+| CI/CD | {e.g., GitHub Actions} | | |
 
-## 推奨 Copilot agent 構成
+## Recommended Copilot Agent Configuration
 
-- 複数 agent で進める場合は `agents/orchestrator.agent.md` を起点にする。
-- 要件整理は `agents/product-manager.agent.md`、技術設計は `agents/architect.agent.md`、実装は `agents/developer.agent.md` を使い分ける。
-- UI や Material Design 3 の検討を伴う場合は `agents/ui-designer.agent.md` を併用し、情報設計とアクセシビリティを早めに固める。
-- 実装後は `agents/reviewer.agent.md` と `agents/tester.agent.md` を品質ゲートとして使う。
-- CI/CD 設定や配布パイプラインは `agents/devops.agent.md` を使う。
+- When working with multiple agents, use `agents/orchestrator.agent.md` as the starting point.
+- Use `agents/product-manager.agent.md` for requirements clarification, `agents/architect.agent.md` for technical design, and `agents/developer.agent.md` for implementation.
+- For UI work involving Material Design 3 considerations, use `agents/ui-designer.agent.md` in conjunction to finalize information architecture and accessibility early.
+- After implementation, use `agents/reviewer.agent.md` and `agents/tester.agent.md` as quality gates.
+- Use `agents/devops.agent.md` for CI/CD configuration and distribution pipelines.
 
-## UI ガイドライン
+## UI Guidelines
 
-Android の UI 設計・実装（Material Design 3、Jetpack Compose、ナビゲーション、Large Screen 対応等）については以下のスキルを参照すること。
+For UI design and implementation on Android (Material Design 3, Jetpack Compose, navigation, Large Screen support, etc.), refer to the following skills:
 
-- `skills/android-ui-guidelines/SKILL.md` — Android UI ガイドライン（Material Design 3 / Jetpack Compose）
-- `skills/ui-accessibility/SKILL.md` — アクセシビリティ共通原則
-- `skills/ui-review-checklist/SKILL.md` — UI レビュー時のチェックリスト
+- `skills/android-ui-guidelines/SKILL.md` — Android UI Guidelines (Material Design 3 / Jetpack Compose)
+- `skills/ui-accessibility/SKILL.md` — Common accessibility principles
+- `skills/ui-review-checklist/SKILL.md` — Checklist for UI review
 
-## コーディング規約
+## Coding Standards
 
-Kotlin のコーディング規約については `skills/kotlin-coding-standards/SKILL.md` を参照すること。
+For Kotlin coding standards, refer to `skills/kotlin-coding-standards/SKILL.md`.
 
-## アーキテクチャ方針
+## Architecture Policy
 
-### レイヤー構成（Clean Architecture）
+### Layer Structure (Clean Architecture)
 
 ```
-presentation/   — ViewModel・UI State・Compose Screen
-domain/         — UseCase・Repository Interface・Entity
-data/           — Repository 実装・DataSource・API Client
+presentation/   — ViewModel · UI State · Compose Screen
+domain/         — UseCase · Repository Interface · Entity
+data/           — Repository Implementation · DataSource · API Client
 ```
 
-### 状態管理
+### State Management
 
-- `ViewModel` に UI State を集約し、`StateFlow` で Compose に流す
-- 副作用（ナビゲーション・スナックバー等）は `SharedFlow` または `Channel` で通知する
-- `MutableStateFlow` は private とし、外部には読み取り専用の `StateFlow` のみ公開する
+- Aggregate UI State in `ViewModel` and push to Compose via `StateFlow`
+- Notify side effects (navigation, snackbars, etc.) via `SharedFlow` or `Channel`
+- Keep `MutableStateFlow` private; expose only read-only `StateFlow` externally
 
-### 依存関係
+### Dependencies
 
-- DI には必ず Hilt を使用する
-- `@Singleton` は本当に共有すべきスコープにのみ付与する
-- `@HiltViewModel` で ViewModel に依存注入する
+- Always use Hilt for DI
+- Apply `@Singleton` only to scopes that truly need to be shared
+- Inject dependencies into ViewModels via `@HiltViewModel`
 
-## テスト方針
+## Testing Policy
 
-- ViewModel・UseCase は **JUnit 5 + MockK** で単体テスト
-- Compose UI は **Compose Testing** で結合テスト
-- E2E は **Espresso** または **UI Automator** を用いる
-- テスト可能性のために、ViewModel・UseCase はインターフェースを介して依存を持つ
+- Unit test ViewModels and UseCases with **JUnit 5 + MockK**
+- Integration test Compose UI with **Compose Testing**
+- Use **Espresso** or **UI Automator** for E2E tests
+- ViewModels and UseCases should depend on interfaces for testability
 
-## Large Screen / フォルダブル対応
+## Large Screen / Foldable Support
 
-- `WindowSizeClass` を使ってレイアウトを切り替える
-- コンパクト：シングルパネル、ミディアム以上：ツーパネル構成を基本とする
-- フォルダブル端末では `FoldingFeature` を考慮したレイアウト分岐を行う
-- `Modifier.fillMaxSize()` を安易に使わず、Adaptive レイアウトを優先する
+- Use `WindowSizeClass` to switch layouts
+- Compact: single panel; Medium and above: two-panel layout as baseline
+- Apply layout branching considering `FoldingFeature` for foldable devices
+- Avoid overusing `Modifier.fillMaxSize()`; prefer adaptive layouts
 
-## セキュリティ
+## Security
 
-- 機密データは `EncryptedSharedPreferences` または `DataStore` + AES 暗号化で保存する
-- API キー・シークレットは `local.properties` で管理し、リポジトリにコミットしない
-- ネットワーク通信は HTTPS のみ許可し、証明書ピンニングを検討する
-- `ProGuard / R8` の難読化ルールを設定する
+- Store sensitive data with `EncryptedSharedPreferences` or `DataStore` + AES encryption
+- Manage API keys and secrets in `local.properties`; do not commit to repository
+- Allow HTTPS only for network traffic; consider certificate pinning
+- Configure obfuscation rules for `ProGuard / R8`
 
-詳細は `skills/security-practices/SKILL.md` を参照すること。
+For details, refer to `skills/security-practices/SKILL.md`.
 
-## 国際化（i18n）
+## Internationalization (i18n)
 
-- テキストは必ず `strings.xml` で管理し、コード中にハードコードしない
-- RTL 言語対応のため、`start/end` を `left/right` より優先して使用する
-- 複数形は `plurals` を使う
+- Always manage text via `strings.xml`; do not hardcode in code
+- Prefer `start/end` over `left/right` for RTL language support
+- Use `plurals` for plural forms
 
-詳細は `skills/i18n-localization/SKILL.md` を参照すること。
+For details, refer to `skills/i18n-localization/SKILL.md`.
 
-## パフォーマンス
+## Performance
 
-- `remember` / `derivedStateOf` / `key` を適切に使い、不要な Recomposition を避ける
-- 画像の読み込みには **Coil** を使い、`AsyncImage` でキャッシュを活用する
-- リストには `LazyColumn` / `LazyRow` を使用し、`items(key = ...)` を指定する
-- ANR 防止のため、ブロッキング処理は必ず `Dispatchers.IO` または `Dispatchers.Default` で実行する
+- Use `remember` / `derivedStateOf` / `key` appropriately to avoid unnecessary recomposition
+- Use **Coil** for image loading and leverage caching with `AsyncImage`
+- Use `LazyColumn` / `LazyRow` for lists and specify `items(key = ...)`
+- Always run blocking operations on `Dispatchers.IO` or `Dispatchers.Default` to prevent ANR
 
-詳細は `skills/performance-optimization/SKILL.md` を参照すること。
+For details, refer to `skills/performance-optimization/SKILL.md`.

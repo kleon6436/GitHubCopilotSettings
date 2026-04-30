@@ -1,29 +1,29 @@
 ---
 name: kotlin-coding-standards
-description: 'Kotlinのコーディング規約を参照・適用する。Kotlin コーディング規約、命名規則、スタイルガイド、null安全性、データクラス、sealed class、拡張関数、コルーチン、Flow、エラーハンドリング、KDocコメントを確認・適用したいときに使用。Use when: applying Kotlin style guide, reviewing Kotlin code conventions, null safety, data class, sealed class, extension functions, coroutines, Flow, error handling, KDoc.'
-argument-hint: '確認・適用したいコーディング規約の項目（省略可）'
+description: 'Reference and apply Kotlin coding standards. Use when: applying Kotlin style guide, reviewing Kotlin code conventions, null safety, data class, sealed class, extension functions, coroutines, Flow, error handling, KDoc.'
+argument-hint: 'Coding standard item to check or apply (optional)'
 ---
 
-# Kotlin コーディング規約
+# Kotlin Coding Standards
 
-## 概要
+## Overview
 
-このスキルは Kotlin コードのコーディング規約を定義します。
-基本的に [Kotlin コーディング規約](https://kotlinlang.org/docs/coding-conventions.html) に準拠しつつ、プロジェクト固有のルールを追記しています。
-コードレビュー・新規実装の際はこの規約に従ってください。
+This skill defines coding standards for Kotlin code.
+It is based on the [Kotlin Coding Conventions](https://kotlinlang.org/docs/coding-conventions.html) with project-specific rules added.
+Follow these conventions during code review and new implementation.
 
 ---
 
-## 1. 命名規則
+## 1. Naming Conventions
 
-| 種別 | 規則 | 例 |
+| Type | Convention | Example |
 |------|------|----|
-| クラス / インターフェース / オブジェクト / 列挙型 | `UpperCamelCase` | `UserProfile`, `UserRepository` |
-| 関数 / メソッド / 変数 / 引数 | `lowerCamelCase` | `fetchUser()`, `userName` |
-| 定数（`companion object` / `top-level`） | `UPPER_SNAKE_CASE` | `MAX_RETRY_COUNT` |
-| プロパティ（バッキングフィールド） | 先頭 `_` + `lowerCamelCase` | `_uiState` |
-| ファイル名 | `UpperCamelCase.kt`（クラスと一致） | `UserProfile.kt` |
-| 拡張関数ファイル | `対象型Extensions.kt` | `StringExtensions.kt` |
+| Class / Interface / Object / Enum | `UpperCamelCase` | `UserProfile`, `UserRepository` |
+| Function / Method / Variable / Parameter | `lowerCamelCase` | `fetchUser()`, `userName` |
+| Constant (`companion object` / `top-level`) | `UPPER_SNAKE_CASE` | `MAX_RETRY_COUNT` |
+| Property (backing field) | Leading `_` + `lowerCamelCase` | `_uiState` |
+| File name | `UpperCamelCase.kt` (matches class name) | `UserProfile.kt` |
+| Extension function file | `TargetTypeExtensions.kt` | `StringExtensions.kt` |
 
 ```kotlin
 // ✅ Good
@@ -45,19 +45,19 @@ fun FetchUser(UserId: String): User { TODO() }
 
 ---
 
-## 2. コードフォーマット
+## 2. Code Formatting
 
-<!-- プロジェクトに応じて値を変更してください -->
+<!-- Change values as needed for your project -->
 
-| 項目 | 設定値 |
+| Item | Setting |
 |------|--------|
-| インデント | スペース {4} 個（タブ不可） |
-| 1行の最大文字数 | {120} 文字 |
-| 末尾カンマ | 複数行の場合は末尾カンマを付ける |
-| フォーマッター | {例: ktfmt / ktlint} |
+| Indent | {4} spaces (no tabs) |
+| Max line length | {120} characters |
+| Trailing comma | Add trailing comma for multi-line |
+| Formatter | {e.g., ktfmt / ktlint} |
 
 ```kotlin
-// ✅ Good（複数行の末尾カンマ）
+// ✅ Good (trailing comma for multi-line)
 val supportedFormats = listOf(
     "json",
     "csv",
@@ -71,12 +71,12 @@ val supportedFormats = listOf("json", "csv",
 
 ---
 
-## 3. null 安全性
+## 3. Null Safety
 
-- `!!`（非 null アサーション）は原則禁止。
-- `?.`（safe call）と `?:`（Elvis 演算子）を積極的に使用する。
-- `lateinit var` はライフサイクルが保証されている場合のみ使用し、アクセス前に `::prop.isInitialized` でチェックする。
-- 関数の戻り値が存在しない場合は `null` ではなく `sealed class` / `Result` で表現することを検討する。
+- `!!` (non-null assertion) is generally prohibited.
+- Use `?.` (safe call) and `?:` (Elvis operator) proactively.
+- Use `lateinit var` only when the lifecycle is guaranteed, and check with `::prop.isInitialized` before access.
+- When a function may not return a value, consider using `sealed class` / `Result` instead of `null`.
 
 ```kotlin
 // ✅ Good
@@ -84,16 +84,16 @@ val displayName = user?.profile?.displayName ?: "Anonymous"
 val length = items?.size ?: 0
 
 // ❌ Bad
-val displayName = user!!.profile!!.displayName  // !! による強制アンラップ
+val displayName = user!!.profile!!.displayName  // Force unwrap with !!
 ```
 
 ---
 
-## 4. データクラス・sealed class
+## 4. Data Classes and Sealed Classes
 
-- 不変のデータ転送オブジェクト（DTO）には `data class` を使用する。
-- 状態（UI State、Result 等）の表現には `sealed class` / `sealed interface` を使用する。
-- `data class` の `copy()` を活用して状態更新を行う。
+- Use `data class` for immutable data transfer objects (DTOs).
+- Use `sealed class` / `sealed interface` to represent states (UI State, Result, etc.).
+- Use `data class`'s `copy()` to perform state updates.
 
 ```kotlin
 // ✅ Good
@@ -109,7 +109,7 @@ sealed interface UiState {
     data class Error(val message: String) : UiState
 }
 
-// when 式で網羅的に処理
+// Handle exhaustively with when expression
 when (uiState) {
     is UiState.Loading -> showSkeleton()
     is UiState.Success -> showUser(uiState.user)
@@ -117,39 +117,39 @@ when (uiState) {
 }
 
 // ❌ Bad
-class User(var id: String, var name: String)  // 可変・data class でない
+class User(var id: String, var name: String)  // Mutable, not a data class
 ```
 
 ---
 
-## 5. 拡張関数・拡張プロパティ
+## 5. Extension Functions and Extension Properties
 
-- 拡張関数はファイル単位でまとめる（`XxxExtensions.kt`）。
-- 拡張先の型の責務に関係する処理のみを拡張として定義する。
-- `this` の省略が可読性を下げる場合は省略しない。
+- Group extension functions in a dedicated file (`XxxExtensions.kt`).
+- Only define extensions that are relevant to the responsibility of the extended type.
+- Do not omit `this` if omitting it reduces readability.
 
 ```kotlin
-// ✅ Good（StringExtensions.kt）
+// ✅ Good (StringExtensions.kt)
 fun String.toTitleCase(): String =
     split(" ").joinToString(" ") { word ->
         word.replaceFirstChar { it.uppercaseChar() }
     }
 
-// ❌ Bad（ビジネスロジックを拡張関数に詰め込む）
+// ❌ Bad (cramming business logic into extension functions)
 fun User.sendPasswordResetEmail(service: EmailService) {
-    service.send(this.email, "パスワードリセット")
+    service.send(this.email, "Password Reset")
 }
 ```
 
 ---
 
-## 6. コルーチン（Coroutines / Flow）
+## 6. Coroutines and Flow
 
-- `suspend` 関数はメインセーフになるよう設計する。
-- `withContext(Dispatchers.IO)` で I/O 処理をディスパッチする。
-- UI の状態は `StateFlow` で管理し、`LiveData` よりも優先する。
-- `viewModelScope` / `lifecycleScope` でコルーチンのライフサイクルを管理する。
-- `GlobalScope` は使用しない。
+- Design `suspend` functions to be main-safe.
+- Dispatch I/O operations with `withContext(Dispatchers.IO)`.
+- Manage UI state with `StateFlow`, preferring it over `LiveData`.
+- Manage coroutine lifecycle with `viewModelScope` / `lifecycleScope`.
+- Do not use `GlobalScope`.
 
 ```kotlin
 // ✅ Good
@@ -168,16 +168,16 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
 }
 
 // ❌ Bad
-GlobalScope.launch { /* ... */ }  // GlobalScope の使用
+GlobalScope.launch { /* ... */ }  // Using GlobalScope
 ```
 
 ---
 
-## 7. エラーハンドリング
+## 7. Error Handling
 
-- `try / catch` より `runCatching` を積極的に使用する。
-- 例外は `Exception` を継承したカスタムクラスで分類する。
-- `catch` ブロックで例外を握りつぶさない。
+- Prefer `runCatching` over `try / catch`.
+- Classify exceptions with custom classes that extend `Exception`.
+- Do not swallow exceptions in `catch` blocks.
 
 ```kotlin
 // ✅ Good
@@ -197,37 +197,37 @@ result
 try {
     repository.fetchUser(userId)
 } catch (e: Exception) {
-    // 握りつぶし
+    // Swallowed exception
 }
 ```
 
 ---
 
-## 8. コメント規約
+## 8. Comment Conventions
 
-- コードのロジックが自明でない箇所にのみコメントを付ける。
-- 公開 API には **KDoc** 形式のドキュメントコメントを付ける。
-- TODO / FIXME は `// TODO: 説明` の形式で記述し、チケット番号を添える。
+- Add comments only where the code logic is not self-evident.
+- Add **KDoc** documentation comments to public APIs.
+- Write TODO / FIXME comments in the format `// TODO: description` and include a ticket number.
 
 ```kotlin
 /**
- * 指定した ID のユーザーを取得します。
+ * Retrieves the user with the specified ID.
  *
- * @param userId ユーザー識別子
- * @return ユーザーオブジェクト
- * @throws ApiException HTTP リクエストが失敗した場合
+ * @param userId User identifier
+ * @return User object
+ * @throws ApiException When the HTTP request fails
  */
 suspend fun fetchUser(userId: String): User {
     // ...
 }
 
-// TODO: #654 オフラインキャッシュを実装する
+// TODO: #654 Implement offline cache
 ```
 
 ---
 
-## 9. プロジェクト固有のルール
+## 9. Project-Specific Rules
 
-<!-- プロジェクトに応じて追記してください -->
+<!-- Add project-specific rules here -->
 
-- {プロジェクト固有のルールをここに記載}
+- {Add project-specific rules here}

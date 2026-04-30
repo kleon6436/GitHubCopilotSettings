@@ -1,30 +1,31 @@
 ---
 name: csharp-coding-standards
-description: 'C#のコーディング規約を参照・適用する。C# コーディング規約、命名規則、スタイルガイド、アクセス修飾子、null処理、LINQ、非同期処理、エラーハンドリング、XML Docコメントを確認・適用したいときに使用。Use when: applying C# style guide, reviewing C# code conventions, naming rules, access modifiers, null handling, LINQ, async/await, exception handling, XML documentation comments.'
-argument-hint: '確認・適用したいコーディング規約の項目（省略可）'
+description: 'Reference and apply C# coding standards. Use when: applying C# style guide, reviewing C# code conventions, naming rules, access modifiers, null handling, LINQ, async/await, exception handling, XML documentation comments.'
+argument-hint: 'Coding standard item to check or apply (optional)'
 ---
 
-# C# コーディング規約
+# C# Coding Standards
 
-## 概要
+## Overview
 
-このスキルは C# コードのコーディング規約を定義します。
-基本的に [Microsoft C# コーディング規則](https://learn.microsoft.com/ja-jp/dotnet/csharp/fundamentals/coding-style/coding-conventions) に準拠しつつ、プロジェクト固有のルールを追記しています。
-コードレビュー・新規実装の際はこの規約に従ってください。
+This skill defines the coding standards for C# code.
+It follows the [Microsoft C# Coding Conventions](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions) as a baseline, with project-specific rules added.
+Follow these standards during code reviews and new implementations.
 
 ---
 
-## 1. 命名規則
+## 1. Naming Conventions
 
-| 種別 | 規則 | 例 |
-|------|------|----|
-| クラス / 構造体 / インターフェース / 列挙型 | `UpperCamelCase` | `UserProfile`, `IRepository` |
-| メソッド / プロパティ / イベント / 定数 | `UpperCamelCase` | `FetchUserAsync()`, `MaxRetryCount` |
-| ローカル変数 / 引数 | `lowerCamelCase` | `userName`, `retryCount` |
-| プライベートフィールド | 先頭 `_` + `lowerCamelCase` | `_cache`, `_logger` |
-| インターフェース | 先頭 `I` + `UpperCamelCase` | `IUserRepository` |
-| 型パラメータ | `T` プレフィックス | `TEntity`, `TKey` |
-| 非同期メソッド | 末尾 `Async` | `FetchUserAsync()` |
+| Category | Rule | Example |
+|----------|------|---------|
+
+| Class / Struct / Interface / Enum | `UpperCamelCase` | `UserProfile`, `IRepository` |
+| Method / Property / Event / Constant | `UpperCamelCase` | `FetchUserAsync()`, `MaxRetryCount` |
+| Local variable / Parameter | `lowerCamelCase` | `userName`, `retryCount` |
+| Private field | Leading `_` + `lowerCamelCase` | `_cache`, `_logger` |
+| Interface | Leading `I` + `UpperCamelCase` | `IUserRepository` |
+| Type parameter | `T` prefix | `TEntity`, `TKey` |
+| Async method | Trailing `Async` | `FetchUserAsync()` |
 
 ```csharp
 // ✅ Good
@@ -43,25 +44,25 @@ public class UserService
 
 // ❌ Bad
 public class userService { }
-public async Task<UserProfile?> fetchUser(string userId) { }  // Async サフィックスなし
+public async Task<UserProfile?> fetchUser(string userId) { }  // missing Async suffix
 ```
 
 ---
 
-## 2. コードフォーマット
+## 2. Code Formatting
 
-<!-- プロジェクトに応じて値を変更してください -->
+<!-- Change values as needed for your project -->
 
-| 項目 | 設定値 |
-|------|--------|
-| インデント | スペース {4} 個（タブ不可） |
-| 1行の最大文字数 | {120} 文字 |
-| 中括弧 `{` の位置 | 次の行（Allman スタイル） |
-| `using` 宣言 | ファイル先頭にまとめる・不要な using は削除 |
-| フォーマッター | {例: EditorConfig / dotnet-format} |
+| Item | Value |
+|------|-------|
+| Indentation | {4} spaces (no tabs) |
+| Max line length | {120} characters |
+| Brace `{` position | Next line (Allman style) |
+| `using` declarations | Group at file top; remove unused usings |
+| Formatter | {e.g., EditorConfig / dotnet-format} |
 
 ```csharp
-// ✅ Good（Allman スタイル）
+// ✅ Good (Allman style)
 public void ProcessOrder(Order order)
 {
     if (order.IsValid)
@@ -70,7 +71,7 @@ public void ProcessOrder(Order order)
     }
 }
 
-// ❌ Bad（K&R スタイル）
+// ❌ Bad (K&R style)
 public void ProcessOrder(Order order) {
     if (order.IsValid) {
         Submit(order);
@@ -80,11 +81,11 @@ public void ProcessOrder(Order order) {
 
 ---
 
-## 3. アクセス修飾子
+## 3. Access Modifiers
 
-- 最小限のアクセス修飾子を使用する（デフォルト非公開の原則）。
-- アクセス修飾子は必ず明示する（デフォルト `private` でも省略しない）。
-- `internal` はアセンブリ内の共有に使用し、`public` は意図的な外部公開にのみ使用する。
+- Use the most restrictive access modifier possible (principle of least privilege).
+- Always declare access modifiers explicitly (do not omit even if the default is `private`).
+- Use `internal` for intra-assembly sharing; use `public` only for intentional public APIs.
 
 ```csharp
 // ✅ Good
@@ -93,17 +94,17 @@ private void Validate(Order order) { }
 public Task<Order> CreateOrderAsync(OrderRequest request) { }
 
 // ❌ Bad
-int _retryCount;          // アクセス修飾子省略
+int _retryCount;          // access modifier omitted
 void Validate(Order o) { }
 ```
 
 ---
 
-## 4. null 処理
+## 4. Null Handling
 
-- nullable reference types（`#nullable enable`）を有効にする。
-- `null` 合体演算子（`??`）と null 条件演算子（`?.`）を活用する。
-- `ArgumentNullException.ThrowIfNull` でメソッド引数を検証する。
+- Enable nullable reference types (`#nullable enable`).
+- Use the null-coalescing operator (`??`) and null-conditional operator (`?.`).
+- Validate method arguments with `ArgumentNullException.ThrowIfNull`.
 
 ```csharp
 // ✅ Good
@@ -133,10 +134,10 @@ public string GetDisplayName(User user)
 
 ## 5. LINQ
 
-- LINQ メソッドチェーンを積極的に使用する。
-- クエリ構文よりメソッド構文を優先する。
-- 複数回使用するクエリ結果は `.ToList()` / `.ToArray()` で実体化する。
-- `First()` より `FirstOrDefault()` を使用し、例外より null チェックで処理する。
+- Actively use LINQ method chaining.
+- Prefer method syntax over query syntax.
+- Materialize query results used multiple times with `.ToList()` / `.ToArray()`.
+- Prefer `FirstOrDefault()` over `First()` and handle via null check instead of catching exceptions.
 
 ```csharp
 // ✅ Good
@@ -153,19 +154,19 @@ if (firstAdmin is null) return;
 var activeUsers = from u in users
                   where u.IsActive
                   orderby u.Name
-                  select new { u.Id, u.Name };  // 実体化されていない
+                  select new { u.Id, u.Name };  // not materialized
 
-var firstAdmin = users.First(u => u.Role == Role.Admin);  // 見つからない場合に例外
+var firstAdmin = users.First(u => u.Role == Role.Admin);  // throws if not found
 ```
 
 ---
 
-## 6. 非同期処理（async / await）
+## 6. Asynchronous Processing (async / await)
 
-- I/O バウンドの処理はすべて `async / await` を使用する。
-- `async void` は使用しない（イベントハンドラを除く）。
-- `Task.Result` / `.Wait()` は使用しない（デッドロックの原因）。
-- `CancellationToken` を受け取って伝播させる。
+- Use `async / await` for all I/O-bound operations.
+- Do not use `async void` (except for event handlers).
+- Do not use `Task.Result` / `.Wait()` (causes deadlocks).
+- Accept and propagate `CancellationToken`.
 
 ```csharp
 // ✅ Good
@@ -179,7 +180,7 @@ public async Task<User?> FetchUserAsync(string id, CancellationToken ct = defaul
 // ❌ Bad
 public User? FetchUser(string id)
 {
-    return _httpClient.GetAsync($"/users/{id}").Result;  // ブロッキング呼び出し
+    return _httpClient.GetAsync($"/users/{id}").Result;  // blocking call
 }
 
 public async void FetchUserAsync(string id) { }  // async void
@@ -187,11 +188,11 @@ public async void FetchUserAsync(string id) { }  // async void
 
 ---
 
-## 7. エラーハンドリング
+## 7. Error Handling
 
-- `Exception` を直接スローせず、目的に合ったカスタム例外クラスを使用する。
-- `catch (Exception e) { }` のような握りつぶしは禁止。
-- `finally` / `using` でリソースを確実に解放する。
+- Do not throw `Exception` directly; use a purpose-specific custom exception class.
+- Do not swallow exceptions with empty `catch` blocks like `catch (Exception e) { }`.
+- Release resources reliably with `finally` / `using`.
 
 ```csharp
 // ✅ Good
@@ -218,39 +219,39 @@ catch (Exception ex)
 
 // ❌ Bad
 try { }
-catch { }  // 握りつぶし
+catch { }  // swallowed exception
 
-throw new Exception("User not found");  // 汎用 Exception
+throw new Exception("User not found");  // generic Exception
 ```
 
 ---
 
-## 8. コメント規約
+## 8. Comment Conventions
 
-- コードのロジックが自明でない箇所にのみコメントを付ける。
-- 公開 API には **XML Doc** コメント（`///`）を付ける。
-- TODO / FIXME は `// TODO: 説明` の形式で記述し、チケット番号を添える。
+- Add comments only where the code logic is not self-evident.
+- Add **XML Doc** comments (`///`) to all public APIs.
+- Write TODO / FIXME in the format `// TODO: description` and include a ticket number.
 
 ```csharp
 /// <summary>
-/// 指定した ID のユーザーを取得します。
+/// Retrieves the user with the specified ID.
 /// </summary>
-/// <param name="id">ユーザー識別子。</param>
-/// <param name="ct">キャンセレーショントークン。</param>
-/// <returns>ユーザーオブジェクト。見つからない場合は <see langword="null"/>。</returns>
-/// <exception cref="HttpRequestException">HTTP リクエストが失敗した場合。</exception>
+/// <param name="id">User identifier.</param>
+/// <param name="ct">Cancellation token.</param>
+/// <returns>The user object, or <see langword="null"/> if not found.</returns>
+/// <exception cref="HttpRequestException">Thrown when the HTTP request fails.</exception>
 public async Task<User?> GetByIdAsync(string id, CancellationToken ct = default)
 {
     // ...
 }
 
-// TODO: #321 レート制限の実装
+// TODO: #321 Implement rate limiting
 ```
 
 ---
 
-## 9. プロジェクト固有のルール
+## 9. Project-Specific Rules
 
-<!-- プロジェクトに応じて追記してください -->
+<!-- Add project-specific rules as needed -->
 
-- {プロジェクト固有のルールをここに記載}
+- {Add project-specific rules here}

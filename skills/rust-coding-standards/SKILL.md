@@ -1,29 +1,29 @@
 ---
 name: rust-coding-standards
-description: 'Rustのコーディング規約を参照・適用する。Rust コーディング規約、命名規則、スタイルガイド、所有権・借用・ライフタイム、エラーハンドリング（Result/Option）、トレイト、非同期処理（async/await）、rustdocコメントを確認・適用したいときに使用。Use when: applying Rust style guide, reviewing Rust code conventions, ownership, borrowing, lifetimes, error handling with Result/Option, traits, async/await, rustdoc.'
-argument-hint: '確認・適用したいコーディング規約の項目（省略可）'
+description: 'Reference and apply Rust coding standards. Use when: applying Rust style guide, reviewing Rust code conventions, ownership, borrowing, lifetimes, error handling with Result/Option, traits, async/await, rustdoc.'
+argument-hint: 'The coding standard item to review or apply (optional)'
 ---
 
-# Rust コーディング規約
+# Rust Coding Standards
 
-## 概要
+## Overview
 
-このスキルは Rust コードのコーディング規約を定義します。
-[Rust API ガイドライン](https://rust-lang.github.io/api-guidelines/) および標準的な Rust イディオムに準拠しています。
-コードレビュー・新規実装の際はこの規約に従ってください。
+This skill defines coding standards for Rust code.
+Follows the [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/) and standard Rust idioms.
+Adhere to these standards during code reviews and new implementations.
 
 ---
 
-## 1. 命名規則
+## 1. Naming Conventions
 
-| 種別 | 規則 | 例 |
+| Kind | Rule | Example |
 |------|------|----|
-| 関数 / メソッド / 変数 / モジュール | `snake_case` | `fetch_user()`, `user_name` |
-| 型（構造体 / 列挙型 / トレイト） | `UpperCamelCase` | `UserProfile`, `ApiError` |
-| 定数 / `static` | `UPPER_SNAKE_CASE` | `MAX_RETRY_COUNT` |
-| 型パラメータ | 単一大文字 or 短い `UpperCamelCase` | `T`, `Key`, `Val` |
-| ライフタイム | 単一小文字 or 短い名前 | `'a`, `'buf` |
-| クレート / パッケージ | `snake_case`（ハイフンも可） | `my_crate` |
+| Functions / Methods / Variables / Modules | `snake_case` | `fetch_user()`, `user_name` |
+| Types (structs / enums / traits) | `UpperCamelCase` | `UserProfile`, `ApiError` |
+| Constants / `static` | `UPPER_SNAKE_CASE` | `MAX_RETRY_COUNT` |
+| Type parameters | Single uppercase or short `UpperCamelCase` | `T`, `Key`, `Val` |
+| Lifetimes | Single lowercase or short name | `'a`, `'buf` |
+| Crates / Packages | `snake_case` (hyphens also allowed) | `my_crate` |
 
 ```rust
 // ✅ Good
@@ -44,16 +44,16 @@ const maxRetries: u32 = 3;
 
 ---
 
-## 2. コードフォーマット
+## 2. Code Formatting
 
-<!-- プロジェクトに応じて値を変更してください -->
+<!-- Adjust values according to your project -->
 
-| 項目 | 設定値 |
+| Item | Setting |
 |------|--------|
-| インデント | スペース 4 個（`rustfmt` デフォルト） |
-| 1行の最大文字数 | {100} 文字（`rustfmt` の `max_width`） |
-| フォーマッター | `rustfmt`（`cargo fmt` で適用） |
-| リンター | `clippy`（`cargo clippy` で適用） |
+| Indentation | 4 spaces (`rustfmt` default) |
+| Max line length | {100} characters (`rustfmt` `max_width`) |
+| Formatter | `rustfmt` (apply with `cargo fmt`) |
+| Linter | `clippy` (apply with `cargo clippy`) |
 
 ```toml
 # rustfmt.toml
@@ -63,12 +63,12 @@ edition = "2021"
 
 ---
 
-## 3. 所有権・借用・ライフタイム
+## 3. Ownership, Borrowing, and Lifetimes
 
-- 所有権の移動（`move`）が必要な場合を除き、参照（`&` / `&mut`）を使用する。
-- 不変参照（`&T`）を優先し、可変参照（`&mut T`）は必要な場合のみ使用する。
-- ライフタイムアノテーションはコンパイラが推論できない場合にのみ明示する。
-- `clone()` は性能上の問題がない範囲で使用し、過度な最適化は避ける。
+- Use references (`&` / `&mut`) unless ownership transfer (`move`) is required.
+- Prefer immutable references (`&T`); use mutable references (`&mut T`) only when necessary.
+- Only annotate lifetimes explicitly when the compiler cannot infer them.
+- Use `clone()` where performance is not an issue; avoid premature optimization.
 
 ```rust
 // ✅ Good
@@ -83,20 +83,20 @@ fn process_users(users: &[User]) {
 }
 
 // ❌ Bad
-fn greet(name: String) -> String {  // 不必要な所有権の移動
+fn greet(name: String) -> String {  // Unnecessary ownership transfer
     format!("Hello, {}!", name)
 }
 ```
 
 ---
 
-## 4. エラーハンドリング（Result / Option）
+## 4. Error Handling (Result / Option)
 
-- エラーが発生し得る処理は `Result<T, E>` を返す。
-- 値が存在しない場合は `Option<T>` を返す（`None` と `Err` を使い分ける）。
-- `unwrap()` / `expect()` は本番コードでは原則禁止。テストコードのみ許可。
-- `?` 演算子を積極的に使用してエラーを伝播させる。
-- `thiserror` クレートでカスタムエラー型を定義する。`anyhow` はアプリケーション層で使用する。
+- Return `Result<T, E>` for operations that can fail.
+- Return `Option<T>` for values that may not exist (distinguish between `None` and `Err`).
+- `unwrap()` / `expect()` are banned in production code. Allowed only in test code.
+- Use the `?` operator actively to propagate errors.
+- Define custom error types with the `thiserror` crate. Use `anyhow` in application layers.
 
 ```rust
 // ✅ Good
@@ -128,18 +128,18 @@ async fn fetch_user(id: &str) -> User {
         .unwrap()
         .json::<User>()
         .await
-        .unwrap()  // unwrap の連鎖
+        .unwrap()  // Chained unwraps
 }
 ```
 
 ---
 
-## 5. トレイト
+## 5. Traits
 
-- 共通の振る舞いはトレイトで抽象化する。
-- `Display` / `Debug` / `Clone` / `PartialEq` 等の標準トレイトは `#[derive]` で自動実装する。
-- トレイトオブジェクト（`dyn Trait`）よりジェネリクス（`impl Trait`）を優先する。
-- トレイトの `default` 実装を活用する。
+- Abstract common behavior using traits.
+- Auto-implement standard traits like `Display` / `Debug` / `Clone` / `PartialEq` with `#[derive]`.
+- Prefer generics (`impl Trait`) over trait objects (`dyn Trait`).
+- Leverage `default` implementations in traits.
 
 ```rust
 // ✅ Good
@@ -149,21 +149,21 @@ pub struct User {
     pub name: String,
 }
 
-// impl Trait を優先
+// Prefer impl Trait
 fn process(item: impl Displayable) { }
 
 // ❌ Bad
-fn process(item: &dyn Displayable) { }  // 動的ディスパッチが不要な場合
+fn process(item: &dyn Displayable) { }  // When dynamic dispatch is unnecessary
 ```
 
 ---
 
-## 6. 非同期処理（async / await）
+## 6. Async Processing (async / await)
 
-- 非同期ランタイムは {例: Tokio} を使用する（プロジェクトに応じて変更）。
-- `async fn` を使用し、`.await` で非同期処理を待機する。
-- `tokio::spawn` でタスクを並列実行し、`JoinHandle` でライフサイクルを管理する。
-- `tokio::try_join!` / `tokio::join!` で並列実行を行う。
+- Use {e.g., Tokio} as the async runtime (adjust per project).
+- Use `async fn` and `.await` to wait for async operations.
+- Use `tokio::spawn` for parallel task execution; manage lifecycle with `JoinHandle`.
+- Use `tokio::try_join!` / `tokio::join!` for parallel execution.
 
 ```rust
 // ✅ Good
@@ -177,7 +177,7 @@ async fn load_dashboard(user_id: &str) -> Result<Dashboard, ApiError> {
 
 // ❌ Bad
 async fn load_dashboard(user_id: &str) -> Result<Dashboard, ApiError> {
-    let user  = fetch_user(user_id).await?;   // 直列実行（並列にすべき）
+    let user  = fetch_user(user_id).await?;   // Sequential (should be parallel)
     let posts = fetch_posts(user_id).await?;
     Ok(Dashboard { user, posts })
 }
@@ -185,22 +185,22 @@ async fn load_dashboard(user_id: &str) -> Result<Dashboard, ApiError> {
 
 ---
 
-## 7. コメント規約
+## 7. Comment Conventions
 
-- コードのロジックが自明でない箇所にのみコメントを付ける。
-- 公開アイテムには **rustdoc** 形式のドキュメントコメント（`///`）を付ける。
-- モジュールレベルのドキュメントには `//!` を使用する。
-- TODO / FIXME は `// TODO: 説明` の形式で記述し、チケット番号を添える。
+- Add comments only where the code logic is not self-evident.
+- Add **rustdoc** format documentation comments (`///`) to public items.
+- Use `//!` for module-level documentation.
+- Write TODO / FIXME as `// TODO: description` and include a ticket number.
 
 ```rust
-/// 指定した ID のユーザーを取得します。
+/// Retrieves the user with the specified ID.
 ///
 /// # Arguments
-/// * `id` - ユーザー識別子
+/// * `id` - User identifier
 ///
 /// # Errors
-/// * [`ApiError::Http`] - HTTP リクエストが失敗した場合
-/// * [`ApiError::NotFound`] - ユーザーが存在しない場合
+/// * [`ApiError::Http`] - If the HTTP request fails
+/// * [`ApiError::NotFound`] - If the user does not exist
 ///
 /// # Examples
 /// ```
@@ -211,13 +211,13 @@ pub async fn fetch_user(id: &str) -> Result<User, ApiError> {
     // ...
 }
 
-// TODO: #202 レート制限の実装
+// TODO: #202 Implement rate limiting
 ```
 
 ---
 
-## 8. プロジェクト固有のルール
+## 8. Project-Specific Rules
 
-<!-- プロジェクトに応じて追記してください -->
+<!-- Add project-specific rules here -->
 
-- {プロジェクト固有のルールをここに記載}
+- {Add project-specific rules here}

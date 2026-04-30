@@ -1,30 +1,30 @@
 ---
-description: "複数プラットフォームを横断するクロスプラットフォームプロジェクトの開発ガイドライン"
+description: "Development guidelines for cross-platform projects spanning multiple platforms"
 applyTo: []
 ---
 
-# プロジェクトガイドライン（クロスプラットフォーム開発用）
+# Project Guidelines (Cross-Platform Development)
 
-## 前提
+## Assumptions
 
-このガイドラインは iOS / iPadOS・macOS・Android・Web・Windows の複数プラットフォームを並行して開発するプロジェクトに適用する。
-各プラットフォーム固有のガイドラインと併用し、このファイルは**共通方針**を定義する。
+These guidelines apply to projects developing concurrently across multiple platforms: iOS / iPadOS, macOS, Android, Web, and Windows.
+Use in conjunction with platform-specific guidelines; this file defines **common policies**.
 
-## プロジェクト概要
+## Project Overview
 
-<!-- プロジェクトに応じて以下を記入してください -->
+<!-- Fill in the following according to your project -->
 
-- **プロジェクト名**: {プロジェクト名}
-- **概要**: {プロジェクトの目的・概要を簡潔に記述}
-- **対象プラットフォーム**: {iOS / iPadOS / macOS / Android / Web / Windows}（該当するものをすべて列挙）
-- **共有コード戦略**: {Kotlin Multiplatform / Shared Business Logic Only / API Contract Sharing}（選択）
-- **リポジトリ構成**: {シングルレポ / モノレポ（プラットフォーム別ディレクトリ）}
+- **Project Name**: {Project Name}
+- **Overview**: {Brief description of the project's purpose and overview}
+- **Target Platforms**: {iOS / iPadOS / macOS / Android / Web / Windows} (list all applicable)
+- **Shared Code Strategy**: {Kotlin Multiplatform / Shared Business Logic Only / API Contract Sharing} (select)
+- **Repository Structure**: {Single repo / Monorepo (per-platform directories)}
 
-## プラットフォーム別ガイドライン参照先
+## Platform-Specific Guideline References
 
-各プラットフォームの詳細は以下の指示ファイルに従うこと。
+For details on each platform, follow the instruction files below:
 
-| プラットフォーム | 指示ファイル |
+| Platform | Instruction File |
 |--------------|-------------|
 | iOS / iPadOS | `instrctions/ios.instructions.md` |
 | macOS | `instrctions/macos.instructions.md` |
@@ -32,108 +32,108 @@ applyTo: []
 | Web | `instrctions/web.instructions.md` |
 | Windows | `instrctions/windows.instructions.md` |
 
-## 推奨 Copilot agent 構成
+## Recommended Copilot Agent Configuration
 
-クロスプラットフォームプロジェクトでは agent 間の連携が特に重要になる。
+Agent coordination is especially important in cross-platform projects.
 
 ```
 Orchestrator
-  ├── Product Manager（要件・優先順位・プラットフォーム差分定義）
-  ├── Architect（共通 API・データ仕様・共有ロジック設計）
-  ├── Developer（プラットフォーム別実装）
-  ├── UI Designer（各プラットフォームの HIG・ガイドライン準拠確認）
-  ├── Reviewer（共通ロジックとプラットフォーム実装の整合性確認）
-  ├── Tester（クロスプラットフォームでの動作一貫性テスト）
-  ├── DevOps（マルチプラットフォームの CI/CD パイプライン）
-  └── Security Reviewer（全プラットフォームのセキュリティポリシー統一）
+  ├── Product Manager (requirements, priorities, platform diff definitions)
+  ├── Architect (common API, data specs, shared logic design)
+  ├── Developer (platform-specific implementation)
+  ├── UI Designer (HIG and guideline compliance for each platform)
+  ├── Reviewer (consistency checks between common logic and platform implementations)
+  ├── Tester (cross-platform behavioral consistency testing)
+  ├── DevOps (multi-platform CI/CD pipelines)
+  └── Security Reviewer (unified security policy across all platforms)
 ```
 
-- **プラットフォーム間の差分定義**は `agents/product-manager.agent.md` で行う
-- **共通 API 仕様**は `agents/architect.agent.md` で設計し、全プラットフォームで参照する
-- **UI はプラットフォームネイティブ**を原則とし、機能を共通化しても UI を統一しない
+- **Platform difference definitions** are handled by `agents/product-manager.agent.md`
+- **Common API specifications** are designed by `agents/architect.agent.md` and referenced by all platforms
+- **UI is platform-native** by principle; even when functionality is shared, UI is not unified
 
-## 共通アーキテクチャ方針
+## Common Architecture Policy
 
-### 共有すべきもの
+### What to Share
 
-| 種別 | 説明 |
+| Type | Description |
 |------|------|
-| **API 仕様** | OpenAPI / GraphQL スキーマ・エンドポイント定義 |
-| **ドメインモデル** | エンティティ・ビジネスルール（言語間でロジックを一致させる） |
-| **エラーコード** | サーバーから返却されるエラーコード定義 |
-| **機能フラグ** | フィーチャートグルの ON/OFF 条件 |
-| **分析イベント** | トラッキングイベント名・パラメータ仕様 |
+| **API Specifications** | OpenAPI / GraphQL schemas · endpoint definitions |
+| **Domain Models** | Entities · business rules (align logic across languages) |
+| **Error Codes** | Error code definitions returned from the server |
+| **Feature Flags** | ON/OFF conditions for feature toggles |
+| **Analytics Events** | Tracking event names · parameter specifications |
 
-### 共有しないもの（プラットフォーム固有）
+### What NOT to Share (Platform-Specific)
 
-| 種別 | 理由 |
+| Type | Reason |
 |------|------|
-| **UI コンポーネント** | HIG・Material Design・Fluent Design を各々遵守するため |
-| **ナビゲーション** | プラットフォームのナビゲーション慣習が異なるため |
-| **ストレージ API** | KeyChain / SharedPreferences / localStorage 等の仕様が異なるため |
-| **プッシュ通知** | APNs / FCM 等の実装が異なるため |
+| **UI Components** | Must comply with HIG, Material Design, Fluent Design respectively |
+| **Navigation** | Platform navigation conventions differ |
+| **Storage APIs** | KeyChain / SharedPreferences / localStorage specs differ |
+| **Push Notifications** | APNs / FCM implementations differ |
 
-## API 設計方針
+## API Design Policy
 
-### バックエンド API
+### Backend API
 
-- **REST** または **GraphQL** を使用し、全プラットフォームから利用可能な設計にする
-- OpenAPI 3.x または GraphQL スキーマを Single Source of Truth として管理する
-- 各プラットフォームのクライアントコードは **スキーマから自動生成** することを優先する
-- API バージョニングは URL パス（`/v1/`）または HTTP ヘッダで行う
+- Use **REST** or **GraphQL** with a design accessible from all platforms
+- Manage OpenAPI 3.x or GraphQL schema as Single Source of Truth
+- Prefer **auto-generating** client code for each platform from the schema
+- API versioning via URL path (`/v1/`) or HTTP headers
 
-### プラットフォーム差分対応
+### Handling Platform Differences
 
-- プラットフォーム固有の機能（In-App Purchase、プッシュ通知等）はバックエンドで抽象化する
-- フィーチャーフラグにプラットフォーム判定を含め、段階リリースを可能にする
+- Abstract platform-specific features (In-App Purchase, push notifications, etc.) in the backend
+- Include platform conditions in feature flags to enable staged rollouts
 
-## 機能パリティ管理
+## Feature Parity Management
 
-### パリティマトリクス（例）
+### Parity Matrix (example)
 
-| 機能 | iOS | Android | Web | Windows | macOS |
+| Feature | iOS | Android | Web | Windows | macOS |
 |------|-----|---------|-----|---------|-------|
-| 認証 | ✅ | ✅ | ✅ | {計画} | {計画} |
-| オフライン対応 | ✅ | ✅ | {計画} | — | — |
-| プッシュ通知 | ✅ | ✅ | ✅（Web Push） | {計画} | — |
+| Authentication | ✅ | ✅ | ✅ | {planned} | {planned} |
+| Offline Support | ✅ | ✅ | {planned} | — | — |
+| Push Notifications | ✅ | ✅ | ✅ (Web Push) | {planned} | — |
 
-- `✅` = 実装済み、`{計画}` = 実装予定、`—` = 非対応・スコープ外
+- `✅` = implemented, `{planned}` = planned, `—` = not supported / out of scope
 
-### 差分管理の原則
+### Principles for Difference Management
 
-- プラットフォームごとの機能差分は Product Manager が管理する
-- 差分がある場合は UI 上でプラットフォームに適した代替体験を提供する
-- 機能の優先順位はユーザー数・収益貢献度を基に決定する
+- Product Manager manages feature differences per platform
+- Where differences exist, provide platform-appropriate alternative experiences in the UI
+- Feature priorities are determined based on user count and revenue contribution
 
-## デザインシステムとブランド統一
+## Design System and Brand Consistency
 
-- カラーパレット・タイポグラフィ・アイコンセット等のブランド要素は共通化する
-- ただし、各プラットフォームのデザイン言語に合わせて**表現方法は適応**する
-- デザイントークンは `skills/design-system/SKILL.md` を参照すること
+- Unify brand elements such as color palettes, typography, and icon sets
+- However, **adapt the expression** to match each platform's design language
+- For design tokens, refer to `skills/design-system/SKILL.md`
 
-## テスト方針
+## Testing Policy
 
-### 共通ロジックのテスト
+### Shared Logic Testing
 
-- ビジネスロジックは言語・プラットフォームに依存しない形で単体テストを書く
-- API スキーマのバリデーションテストを全プラットフォームで共通化する
+- Write unit tests for business logic in a form independent of language and platform
+- Share API schema validation tests across all platforms
 
-### E2E テスト
+### E2E Tests
 
-- 各プラットフォームで主要ユーザーフローを E2E テストでカバーする
-- テストシナリオは共通定義し、プラットフォーム固有の実装で実行する
+- Cover primary user flows with E2E tests on each platform
+- Define test scenarios commonly and execute with platform-specific implementations
 
 ## CI/CD
 
-- プラットフォームごとに独立したパイプラインを持ちつつ、共通の品質ゲートを設ける
-- 詳細は `skills/cicd-deployment/SKILL.md` および `agents/devops.agent.md` を参照すること
+- Each platform has an independent pipeline while sharing common quality gates
+- For details, refer to `skills/cicd-deployment/SKILL.md` and `agents/devops.agent.md`
 
-## セキュリティ
+## Security
 
-- 認証・認可のポリシーは全プラットフォームで統一する
-- 詳細は `skills/security-practices/SKILL.md` および `agents/security-reviewer.agent.md` を参照すること
+- Unify authentication and authorization policies across all platforms
+- For details, refer to `skills/security-practices/SKILL.md` and `agents/security-reviewer.agent.md`
 
-## 国際化（i18n）
+## Internationalization (i18n)
 
-- 翻訳文字列のソース管理を一元化し、プラットフォーム別フォーマットに変換する
-- 詳細は `skills/i18n-localization/SKILL.md` を参照すること
+- Centralize translation string source management and convert to per-platform formats
+- For details, refer to `skills/i18n-localization/SKILL.md`

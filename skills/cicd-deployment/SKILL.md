@@ -1,53 +1,53 @@
 ---
 name: cicd-deployment
-description: 'CI/CD パイプラインとデプロイメント戦略のガイドラインを参照・適用する。GitHub Actions・ビルド自動化・テスト自動化・ステージング環境・カナリアリリース・ロールバック・プラットフォーム別配布を確認・適用したいときに使用。Use when: setting up CI/CD pipelines, automated testing, deployment strategies, release management, rollback procedures.'
-argument-hint: '確認・適用したい CI/CD / デプロイメントの項目（省略可）'
+description: 'Reference and apply CI/CD pipeline and deployment strategy guidelines. Use when: setting up CI/CD pipelines, automated testing, deployment strategies, release management, rollback procedures.'
+argument-hint: 'CI/CD or deployment item to review or apply (optional)'
 ---
 
-# CI/CD・デプロイメント ガイドライン
+# CI/CD & Deployment Guidelines
 
-## 概要
+## Overview
 
-このスキルは CI/CD パイプラインとデプロイメント戦略の規約を定義します。
-自動化・品質ゲート・安全なリリースを実現するための実践的なガイドラインを提供します。
-
----
-
-## 1. ブランチ戦略
-
-### 推奨: GitHub Flow（シンプル）
-
-```
-main           — 本番環境に直結。常にデプロイ可能な状態を保つ
-feature/*      — 機能開発ブランチ。main からフォークし、PR でマージ
-hotfix/*       — 本番障害対応。main から直接フォーク
-```
-
-### 大規模プロジェクト: Git Flow
-
-```
-main           — 本番リリース済みのコード
-develop        — 次リリースの統合ブランチ
-feature/*      — 機能開発（develop からフォーク）
-release/*      — リリース準備（develop からフォーク → main にマージ）
-hotfix/*       — 本番障害対応（main からフォーク）
-```
-
-### ブランチ保護ルール（main）
-
-- **直接プッシュを禁止** する
-- **PR + レビュー承認**（最低 1 名）を必須にする
-- **CI 通過を必須**にする
-- **マージ前に最新化**（Require branches to be up to date）
+This skill defines conventions for CI/CD pipelines and deployment strategies.
+It provides practical guidelines for achieving automation, quality gates, and safe releases.
 
 ---
 
-## 2. CI パイプライン構成
+## 1. Branch Strategy
 
-### 基本ステージ
+### Recommended: GitHub Flow (Simple)
+
+```
+main           — Directly tied to production. Always kept in a deployable state
+feature/*      — Feature development branches. Fork from main and merge via PR
+hotfix/*       — Production incident response. Fork directly from main
+```
+
+### Large-Scale Projects: Git Flow
+
+```
+main           — Code already released to production
+develop        — Integration branch for the next release
+feature/*      — Feature development (fork from develop)
+release/*      — Release preparation (fork from develop → merge to main)
+hotfix/*       — Production incident response (fork from main)
+```
+
+### Branch Protection Rules (main)
+
+- **Prohibit direct pushes**
+- **Require PR + review approval** (at least 1 reviewer)
+- **Require CI to pass**
+- **Require up-to-date branches before merge** (Require branches to be up to date)
+
+---
+
+## 2. CI Pipeline Configuration
+
+### Basic Stages
 
 ```yaml
-# .github/workflows/ci.yml（例）
+# .github/workflows/ci.yml (example)
 name: CI
 
 on:
@@ -73,33 +73,33 @@ jobs:
         run: pnpm build
 ```
 
-### 品質ゲート（必須）
+### Quality Gates (Required)
 
-| チェック | 説明 |
+| Check | Description |
 |---------|------|
-| **Lint** | コードスタイル・静的解析 |
-| **型チェック** | コンパイルエラーがないこと |
-| **単体テスト** | カバレッジ閾値を下回らないこと |
-| **ビルド** | エラーなくビルドが完了すること |
-| **セキュリティスキャン** | 依存ライブラリの既知脆弱性チェック |
+| **Lint** | Code style and static analysis |
+| **Type check** | No compilation errors |
+| **Unit tests** | Coverage must not fall below threshold |
+| **Build** | Build completes without errors |
+| **Security scan** | Check known vulnerabilities in dependencies |
 
-### テストカバレッジ目標
+### Test Coverage Goals
 
-| 種別 | 目標 |
+| Type | Goal |
 |------|------|
-| Statements | 80% 以上 |
-| Branches | 70% 以上 |
-| Functions | 80% 以上 |
-| Lines | 80% 以上 |
+| Statements | 80% or above |
+| Branches | 70% or above |
+| Functions | 80% or above |
+| Lines | 80% or above |
 
 ---
 
-## 3. プラットフォーム別 CI/CD
+## 3. Platform-Specific CI/CD
 
-### iOS / macOS（Xcode Cloud または GitHub Actions）
+### iOS / macOS (Xcode Cloud or GitHub Actions)
 
 ```yaml
-# GitHub Actions の例
+# GitHub Actions example
 jobs:
   ios-build:
     runs-on: macos-latest
@@ -117,12 +117,12 @@ jobs:
           APP_STORE_CONNECT_API_KEY: ${{ secrets.ASC_API_KEY }}
 ```
 
-**Fastlane 推奨レーン:**
-- `test` — 単体テスト・UI テスト実行
-- `beta` — TestFlight へアップロード
-- `release` — App Store へ提出
+**Recommended Fastlane lanes:**
+- `test` — Run unit tests and UI tests
+- `beta` — Upload to TestFlight
+- `release` — Submit to App Store
 
-### Android（GitHub Actions）
+### Android (GitHub Actions)
 
 ```yaml
 jobs:
@@ -145,7 +145,7 @@ jobs:
         uses: r0adkll/upload-google-play@v1
 ```
 
-### Web（Vercel / Cloudflare Pages / AWS）
+### Web (Vercel / Cloudflare Pages / AWS)
 
 ```yaml
 jobs:
@@ -165,103 +165,103 @@ jobs:
 
 ---
 
-## 4. 環境管理
+## 4. Environment Management
 
-### 環境の定義
+### Environment Definitions
 
-| 環境 | 用途 | ブランチ | 自動デプロイ |
+| Environment | Purpose | Branch | Auto Deploy |
 |------|------|---------|------------|
-| **development** | ローカル開発 | feature/* | — |
-| **staging** | 品質確認・レビュー | develop / PR | ✅ |
-| **production** | 本番 | main | ✅（承認後） |
+| **development** | Local development | feature/* | — |
+| **staging** | Quality verification / review | develop / PR | ✅ |
+| **production** | Production | main | ✅ (after approval) |
 
-### 環境変数の管理
+### Environment Variable Management
 
-- シークレットは GitHub Actions Secrets または専用の Secrets Manager（AWS Secrets Manager / GCP Secret Manager）で管理する
-- 環境ごとに異なる値は `Environment` を使って管理する
-- `.env.example` をリポジトリに含め、必要な変数を文書化する
-
----
-
-## 5. デプロイメント戦略
-
-### カナリアリリース（Web）
-
-新機能を全ユーザーに一気に展開せず、段階的に展開する。
-
-```
-5% のユーザーにリリース → メトリクス確認 → 25% → 50% → 100%
-問題が発生したら即座にロールバック
-```
-
-### フィーチャーフラグ
-
-- 機能の ON/OFF を**コードではなく設定**で制御する
-- 段階的ロールアウト・A/B テスト・緊急停止に活用する
-- ツール例: LaunchDarkly / Unleash / 自前実装
-
-### ブルーグリーンデプロイ
-
-```
-現在の本番（Blue）を維持しながら新バージョン（Green）をデプロイ
-↓
-Green が正常なことを確認
-↓
-トラフィックを Green に切り替え
-↓
-問題があれば Blue に即座に戻す
-```
+- Manage secrets using GitHub Actions Secrets or a dedicated Secrets Manager (AWS Secrets Manager / GCP Secret Manager)
+- Manage values that differ per environment using `Environment`
+- Include `.env.example` in the repository and document all required variables
 
 ---
 
-## 6. ロールバック手順
+## 5. Deployment Strategies
 
-### 準備
+### Canary Release (Web)
 
-- **タグを必ず打つ** — `v1.2.3` 形式で本番リリースごとにタグを付ける
-- **データベースマイグレーション** は前方互換にする（古いコードでも動作するようにする）
+Roll out new features gradually rather than deploying to all users at once.
 
-### ロールバック実行
+```
+Release to 5% of users → Check metrics → 25% → 50% → 100%
+Roll back immediately if issues arise
+```
+
+### Feature Flags
+
+- Control feature ON/OFF via **configuration, not code**
+- Use for gradual rollout, A/B testing, and emergency shutoff
+- Tool examples: LaunchDarkly / Unleash / custom implementation
+
+### Blue-Green Deployment
+
+```
+Deploy new version (Green) while keeping current production (Blue) live
+↓
+Confirm Green is healthy
+↓
+Switch traffic to Green
+↓
+Roll back to Blue immediately if issues arise
+```
+
+---
+
+## 6. Rollback Procedures
+
+### Preparation
+
+- **Always tag releases** — Tag every production release in `v1.2.3` format
+- **Database migrations** must be forward-compatible (must work with old code)
+
+### Executing a Rollback
 
 ```bash
-# Git でタグに戻す
+# Revert to a tag with Git
 git checkout v1.2.2
 
-# または GitHub Releases から前バージョンのアーティファクトを再デプロイ
+# Or re-deploy a previous version's artifact from GitHub Releases
 ```
 
 ### iOS / Android
 
-- TestFlight / Firebase App Distribution から前バージョンを再配布
-- App Store / Google Play のロールアウトを停止または戻す
+- Redistribute a previous version from TestFlight / Firebase App Distribution
+- Stop or revert the rollout on App Store / Google Play
 
 ---
 
-## 7. モニタリングとアラート
+## 7. Monitoring and Alerts
 
-### 必須メトリクス
+### Required Metrics
 
-| メトリクス | ツール例 |
+| Metric | Tool Examples |
 |---------|---------|
-| エラー率・クラッシュレート | Sentry / Crashlytics / Firebase Crashlytics |
-| レスポンスタイム / レイテンシ | Datadog / New Relic / CloudWatch |
+| Error rate / Crash rate | Sentry / Crashlytics / Firebase Crashlytics |
+| Response time / Latency | Datadog / New Relic / CloudWatch |
 | Core Web Vitals | Google Search Console / Vercel Analytics |
-| アプリ評価・レビュー | App Store Connect / Google Play Console |
+| App ratings / Reviews | App Store Connect / Google Play Console |
 
-### アラート設定
+### Alert Configuration
 
-- エラー率が平常の **2 倍以上**になったらアラートを発火する
-- P95 レイテンシが閾値を超えたらアラートを発火する
-- クリティカルなアラートは **Slack / PagerDuty** に通知する
+- Fire an alert when the error rate exceeds **2× the normal baseline**
+- Fire an alert when P95 latency exceeds the threshold
+- Notify critical alerts to **Slack / PagerDuty**
 
 ---
 
-## 8. セキュリティスキャン
+## 8. Security Scanning
 
-### 依存ライブラリの脆弱性チェック
+### Dependency Vulnerability Check
 
 ```yaml
-# GitHub Dependabot を有効にする（.github/dependabot.yml）
+# Enable GitHub Dependabot (.github/dependabot.yml)
 version: 2
 updates:
   - package-ecosystem: "npm"
@@ -272,20 +272,20 @@ updates:
       - "security-team"
 ```
 
-### シークレットスキャン
+### Secret Scanning
 
-- **GitHub Secret Scanning** を有効にする（無料）
-- CI で `truffleHog` または `gitleaks` を実行する
+- Enable **GitHub Secret Scanning** (free)
+- Run `truffleHog` or `gitleaks` in CI
 
 ---
 
-## 9. チェックリスト
+## 9. Checklist
 
-- [ ] main ブランチに直接プッシュ禁止のルールが設定されている
-- [ ] PR には CI パス + レビュー承認が必須になっている
-- [ ] 本番デプロイには承認フロー（manual approval）が設定されている
-- [ ] シークレットは Secrets Manager で管理されており、コードにない
-- [ ] テストカバレッジの閾値が設定されている
-- [ ] ロールバック手順が文書化されている
-- [ ] Dependabot（または同等ツール）が有効になっている
-- [ ] エラー監視・アラートが設定されている
+- [ ] Direct push protection rule is configured on the main branch
+- [ ] PRs require CI pass + review approval
+- [ ] Production deployments require an approval flow (manual approval)
+- [ ] Secrets are managed in Secrets Manager and not present in code
+- [ ] Test coverage thresholds are configured
+- [ ] Rollback procedures are documented
+- [ ] Dependabot (or equivalent tool) is enabled
+- [ ] Error monitoring and alerts are configured

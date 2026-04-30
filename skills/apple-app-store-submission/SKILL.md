@@ -1,196 +1,196 @@
 ---
 name: apple-app-store-submission
-description: 'Apple App Store（iOS / macOS）へのアプリ提出・審査・公開プロセスのガイドライン。App Store Connect 設定、メタデータ・スクリーンショット準備、App Review Guidelines 対応、プライバシー・Export Compliance、TestFlight ベータテスト、バージョン管理・リリース戦略を確認・適用したいときに使用。Use when: submitting apps to the Apple App Store, preparing App Store metadata and screenshots, responding to App Review rejections, configuring App Store Connect, managing TestFlight beta testing, handling privacy compliance and export regulations.'
-argument-hint: '確認・適用したい提出プロセスの項目（省略可）'
+description: 'Guidelines for the submission, review, and publication process for apps on the Apple App Store (iOS / macOS). Use when submitting apps to the Apple App Store, preparing App Store metadata and screenshots, responding to App Review rejections, configuring App Store Connect, managing TestFlight beta testing, handling privacy compliance and export regulations.'
+argument-hint: 'The submission process item to review or apply (optional)'
 ---
 
-# Apple App Store 提出ガイドライン（iOS / macOS）
+# Apple App Store Submission Guidelines (iOS / macOS)
 
-## 概要
+## Overview
 
-このスキルは iOS / macOS アプリを Apple App Store に公開するための提出・審査・公開プロセスの規約を定義します。
-App Store Connect の設定からメタデータ準備、App Review Guidelines への対応、リリース管理までの実践的なガイドラインを提供します。
+This skill defines the conventions for the submission, review, and publication process for iOS / macOS apps on the Apple App Store.
+It provides practical guidelines covering everything from App Store Connect configuration and metadata preparation to responding to App Review Guidelines and managing releases.
 
-> **CI/CD との棲み分け**: ビルド自動化・Fastlane・Xcode Cloud によるパイプライン構築は `cicd-deployment` スキルを参照してください。本スキルは提出準備・審査対応・公開管理に特化します。
+> **Scope vs. CI/CD**: For build automation, Fastlane, and Xcode Cloud pipeline setup, refer to the `cicd-deployment` skill. This skill focuses on submission preparation, review response, and publication management.
 
 ---
 
-## 1. 提出前準備
+## 1. Pre-Submission Preparation
 
-### 1.1 App Store Connect アカウント
+### 1.1 App Store Connect Account
 
-| 項目 | 要件 |
+| Item | Requirement |
 |------|------|
-| Apple Developer Program | 年間 $99（個人 / 組織） |
-| 役割 | App Manager 以上の権限が必要 |
-| チーム設定 | 組織アカウントの場合、D-U-N-S ナンバーが必要 |
-| 契約 | 有料アプリ契約・税務情報・銀行口座情報の登録（有料アプリ / IAP がある場合） |
+| Apple Developer Program | $99/year (Individual / Organization) |
+| Role | App Manager role or higher required |
+| Team setup | D-U-N-S number required for organization accounts |
+| Agreements | Paid Apps agreement, tax information, and banking details required (if offering paid apps / IAP) |
 
-### 1.2 Bundle ID・App ID
+### 1.2 Bundle ID & App ID
 
-- Bundle ID は逆ドメイン形式を使用: `com.example.appname`
-- Apple Developer Portal で App ID を登録
-- Explicit App ID を使用（Wildcard は App Store 提出に使用不可）
-- 一度 App Store に提出した Bundle ID は変更不可
+- Use reverse-domain format for Bundle ID: `com.example.appname`
+- Register an App ID in the Apple Developer Portal
+- Use an Explicit App ID (Wildcard cannot be used for App Store submission)
+- Once submitted to the App Store, a Bundle ID cannot be changed
 
-### 1.3 証明書・Provisioning Profile
+### 1.3 Certificates & Provisioning Profiles
 
-| 種類 | 用途 |
+| Type | Purpose |
 |------|------|
-| Apple Distribution 証明書 | App Store / TestFlight 用のコード署名 |
-| Provisioning Profile (App Store) | App Store 配布用プロファイル |
+| Apple Distribution Certificate | Code signing for App Store / TestFlight |
+| Provisioning Profile (App Store) | Profile for App Store distribution |
 
-- 証明書の有効期限を定期的に確認する
-- 自動署名（Xcode Automatically manage signing）の使用を推奨
-- CI/CD 環境では手動署名 + Keychain 管理が必要（詳細は `cicd-deployment` スキル参照）
+- Regularly check certificate expiration dates
+- Recommended to use automatic signing (Xcode Automatically manage signing)
+- Manual signing + Keychain management required in CI/CD environments (see `cicd-deployment` skill for details)
 
-### 1.4 Capabilities・Entitlements
+### 1.4 Capabilities & Entitlements
 
-- 使用する Capability を Apple Developer Portal と Xcode の両方で有効化
-- 未使用の Capability を含めない（審査でリジェクトの原因になる）
-- 主要な Capabilities:
+- Enable required Capabilities in both the Apple Developer Portal and Xcode
+- Do not include unused Capabilities (can cause rejection during review)
+- Key Capabilities:
 
-| Capability | 注意事項 |
+| Capability | Notes |
 |-----------|---------|
-| Push Notifications | APNs 証明書 or Key の設定が必要 |
-| Sign in with Apple | サードパーティログインがある場合は必須 |
-| App Groups | アプリ間データ共有・ウィジェット連携時 |
-| Associated Domains | Universal Links・Handoff 利用時 |
-| HealthKit | 健康データアクセスには追加の審査基準あり |
-| BackgroundModes | 使用するモードの正当性を説明できること |
+| Push Notifications | APNs certificate or Key configuration required |
+| Sign in with Apple | Required when third-party login is present |
+| App Groups | For data sharing between apps or widget integration |
+| Associated Domains | For Universal Links and Handoff |
+| HealthKit | Additional review criteria apply for health data access |
+| BackgroundModes | Must be able to justify the use of each mode |
 
 ---
 
-## 2. App Store Connect 設定
+## 2. App Store Connect Configuration
 
-### 2.1 アプリ基本情報
+### 2.1 App Basic Information
 
-| 項目 | ガイドライン |
+| Item | Guideline |
 |------|------------|
-| アプリ名 | 最大 30 文字。商標侵害・汎用的すぎる名前を避ける |
-| サブタイトル | 最大 30 文字。アプリの簡潔な説明 |
-| プライマリカテゴリ | アプリの主要な機能に最も合致するカテゴリを選択 |
-| セカンダリカテゴリ | 任意。補助的なカテゴリ |
-| コンテンツレーティング | App Rating の質問に正確に回答する |
+| App name | Maximum 30 characters. Avoid trademark infringement and overly generic names |
+| Subtitle | Maximum 30 characters. A concise description of the app |
+| Primary category | Choose the category that best matches the app's main functionality |
+| Secondary category | Optional. A supplementary category |
+| Content rating | Answer the App Rating questions accurately |
 
-### 2.2 価格・配信
+### 2.2 Pricing & Availability
 
-- 価格帯（Price Tier）を設定。無料アプリでも設定が必要
-- 配信する国・地域を選択（デフォルトは全地域）
-- 先行予約（Pre-Order）を利用する場合は最大 180 日前から設定可能
-- Universal Purchase を有効にすると iOS / macOS で 1 回の購入で両方利用可能
+- Set a price tier. Required even for free apps
+- Select countries/regions for distribution (defaults to all regions)
+- Pre-Order can be set up to 180 days in advance
+- Enabling Universal Purchase allows a single purchase to unlock the app on both iOS and macOS
 
-### 2.3 アプリ内課金（IAP）・サブスクリプション
+### 2.3 In-App Purchases (IAP) & Subscriptions
 
-| 種類 | 説明 |
+| Type | Description |
 |------|------|
-| Consumable | 消費型（例: ゲーム内通貨） |
-| Non-Consumable | 非消費型（例: 追加機能の永久解除） |
-| Auto-Renewable Subscription | 自動更新サブスクリプション |
-| Non-Renewing Subscription | 非自動更新サブスクリプション |
+| Consumable | Consumed on use (e.g., in-game currency) |
+| Non-Consumable | Permanent unlock (e.g., unlocking additional features) |
+| Auto-Renewable Subscription | Auto-renewing subscription |
+| Non-Renewing Subscription | Non-auto-renewing subscription |
 
-- IAP を使用する場合、App Store Connect で商品を事前登録
-- サブスクリプションの場合、サブスクリプショングループを適切に設定
-- Restore Purchases 機能の実装は必須（Guideline 3.1.1）
-- StoreKit 2 の使用を推奨
+- Pre-register products in App Store Connect when using IAP
+- For subscriptions, configure subscription groups appropriately
+- Implementing Restore Purchases is required (Guideline 3.1.1)
+- Recommended to use StoreKit 2
 
-### 2.4 追加ターゲット
+### 2.4 Additional Targets
 
-| ターゲット | 設定のポイント |
+| Target | Configuration Points |
 |-----------|--------------|
-| App Clip | App Clip カードのメタデータを App Store Connect で設定 |
-| ウィジェット | メインアプリに含めて提出。個別の提出は不要 |
-| iMessage Extension | メインアプリに含めて提出 |
-| watchOS App | メインアプリのコンパニオンまたは独立アプリとして提出 |
+| App Clip | Configure App Clip card metadata in App Store Connect |
+| Widget | Submit as part of the main app. No separate submission required |
+| iMessage Extension | Submit as part of the main app |
+| watchOS App | Submit as a companion to the main app or as a standalone app |
 
 ---
 
-## 3. メタデータ・アセット準備
+## 3. Metadata & Asset Preparation
 
-### 3.1 説明文・キーワード
+### 3.1 Description & Keywords
 
-| 項目 | 要件 | ガイドライン |
+| Item | Requirement | Guideline |
 |------|------|------------|
-| 説明文 | 最大 4,000 文字 | 最初の 1〜3 行が最重要（折りたたみ前に表示）。主要機能を冒頭に記載 |
-| キーワード | 最大 100 文字（カンマ区切り） | 競合名・無関係な語を含めない。単数形のみ使用しスペースを節約 |
-| What's New | 最大 4,000 文字 | バージョンごとの主要な変更点を簡潔に記載 |
-| プロモーションテキスト | 最大 170 文字 | 審査不要で随時更新可能。キャンペーン告知等に活用 |
-| サポート URL | 必須 | 有効なサポートページの URL |
-| マーケティング URL | 任意 | アプリの公式サイト |
+| Description | Max 4,000 characters | The first 1–3 lines are most important (shown before truncation). Place key features at the top |
+| Keywords | Max 100 characters (comma-separated) | Do not include competitor names or irrelevant terms. Use singular forms only to save space |
+| What's New | Max 4,000 characters | Briefly describe the major changes in each version |
+| Promotional Text | Max 170 characters | Can be updated at any time without review. Useful for campaign announcements |
+| Support URL | Required | URL of a valid support page |
+| Marketing URL | Optional | Official website for the app |
 
-### 3.2 スクリーンショット要件
+### 3.2 Screenshot Requirements
 
-#### 【iOS】
+#### [iOS]
 
-| デバイス | サイズ（px） | 必須 |
+| Device | Size (px) | Required |
 |---------|------------|------|
 | iPhone 6.9" (Pro Max) | 1320 × 2868 | ✅ |
 | iPhone 6.7" | 1290 × 2796 | ✅ |
-| iPhone 6.5" | 1284 × 2778 または 1242 × 2688 | ✅ |
+| iPhone 6.5" | 1284 × 2778 or 1242 × 2688 | ✅ |
 | iPhone 5.5" | 1242 × 2208 | ✅ |
-| iPad Pro 13" (M4) | 2064 × 2752 | iPad 対応アプリの場合 ✅ |
-| iPad Pro 12.9" (6th gen) | 2048 × 2732 | iPad 対応アプリの場合 ✅ |
+| iPad Pro 13" (M4) | 2064 × 2752 | ✅ if iPad-supported |
+| iPad Pro 12.9" (6th gen) | 2048 × 2732 | ✅ if iPad-supported |
 
-#### 【macOS】
+#### [macOS]
 
-| サイズ（px） | 備考 |
+| Size (px) | Notes |
 |------------|------|
-| 1280 × 800 以上（最大 2560 × 1600） | 最低 1 枚、最大 10 枚 |
+| 1280 × 800 or larger (max 2560 × 1600) | Minimum 1, maximum 10 |
 
-#### 共通ルール
+#### Common Rules
 
-- 各デバイスサイズにつき最低 1 枚、最大 10 枚
-- PNG または JPEG 形式（透過なし）
-- ステータスバーに個人情報を含めない
-- ローカライズ対象の言語ごとにスクリーンショットを用意することを推奨
+- Minimum 1, maximum 10 per device size
+- PNG or JPEG format (no transparency)
+- Do not include personal information in the status bar
+- Recommended to provide screenshots for each localized language
 
-### 3.3 App プレビュー動画
+### 3.3 App Preview Videos
 
-| 項目 | 要件 |
+| Item | Requirement |
 |------|------|
-| 長さ | 15〜30 秒 |
-| 形式 | H.264 / HEVC、MOV |
-| 解像度 | 各デバイスのスクリーンショットサイズに合わせる |
-| 音声 | 任意（デフォルトはミュート再生） |
-| 枚数 | 各デバイスサイズにつき最大 3 本 |
+| Length | 15–30 seconds |
+| Format | H.264 / HEVC, MOV |
+| Resolution | Match the screenshot size for each device |
+| Audio | Optional (plays muted by default) |
+| Count | Maximum 3 per device size |
 
-### 3.4 アプリアイコン
+### 3.4 App Icon
 
-| 項目 | 要件 |
+| Item | Requirement |
 |------|------|
-| サイズ | 1024 × 1024 px |
-| 形式 | PNG（透過なし、角丸なし） |
-| 注意 | iOS はシステムが角丸マスクを適用するため、正方形のまま提出 |
+| Size | 1024 × 1024 px |
+| Format | PNG (no transparency, no rounded corners) |
+| Note | Submit as a square; iOS applies the rounded corner mask automatically |
 
 ---
 
-## 4. プライバシー・コンプライアンス
+## 4. Privacy & Compliance
 
-### 4.1 App Privacy Details（プライバシーラベル）
+### 4.1 App Privacy Details (Privacy Labels)
 
-App Store Connect で以下を申告:
+Declare the following in App Store Connect:
 
-1. **収集するデータの種類**: 連絡先情報、位置情報、識別子、使用状況データ等
-2. **データの使用目的**: アプリ機能、分析、サードパーティ広告等
-3. **データのリンク**: ユーザーの身元に紐づくかどうか
-4. **トラッキング**: App Tracking Transparency (ATT) が必要かどうか
+1. **Types of data collected**: Contact info, location, identifiers, usage data, etc.
+2. **Purpose of data use**: App functionality, analytics, third-party advertising, etc.
+3. **Data linking**: Whether data is linked to the user's identity
+4. **Tracking**: Whether App Tracking Transparency (ATT) is required
 
-- サードパーティ SDK のデータ収集も含めて申告が必要
-- 申告内容とアプリの実際の動作が一致していないとリジェクトされる
+- Data collection by third-party SDKs must also be declared
+- If declared information does not match actual app behavior, the app will be rejected
 
-### 4.2 プライバシーポリシー
+### 4.2 Privacy Policy
 
-- **すべてのアプリで必須**
-- 有効な URL を App Store Connect に登録
-- アプリが収集するデータとその使用方法を明記
-- 対象地域の法律に準拠（GDPR、CCPA 等）
+- **Required for all apps**
+- Register a valid URL in App Store Connect
+- Clearly state what data the app collects and how it is used
+- Comply with applicable laws (GDPR, CCPA, etc.)
 
-### 4.3 Privacy Manifest（PrivacyInfo.xcprivacy）
+### 4.3 Privacy Manifest (PrivacyInfo.xcprivacy)
 
-Xcode プロジェクトに `PrivacyInfo.xcprivacy` ファイルを追加:
+Add a `PrivacyInfo.xcprivacy` file to the Xcode project:
 
 ```xml
-<!-- PrivacyInfo.xcprivacy の構成例 -->
+<!-- Example PrivacyInfo.xcprivacy configuration -->
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
   "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -202,322 +202,322 @@ Xcode プロジェクトに `PrivacyInfo.xcprivacy` ファイルを追加:
     <array/>
     <key>NSPrivacyCollectedDataTypes</key>
     <array>
-        <!-- 収集するデータ型ごとにエントリを追加 -->
+        <!-- Add an entry for each type of data collected -->
     </array>
     <key>NSPrivacyAccessedAPITypes</key>
     <array>
-        <!-- Required Reason API ごとにエントリを追加 -->
+        <!-- Add an entry for each Required Reason API -->
     </array>
 </dict>
 </plist>
 ```
 
-### 4.4 Required Reason API
+### 4.4 Required Reason APIs
 
-以下の API を使用する場合、正当な理由の申告が必要:
+When using the following APIs, a valid reason must be declared:
 
-| API カテゴリ | 例 |
+| API Category | Examples |
 |-------------|-----|
 | File timestamp APIs | `NSFileCreationDate`, `NSFileModificationDate` |
 | System boot time APIs | `systemUptime`, `ProcessInfo` |
 | Disk space APIs | `volumeAvailableCapacity` |
-| User defaults APIs | `UserDefaults`（サードパーティ SDK 経由含む） |
+| User defaults APIs | `UserDefaults` (including via third-party SDKs) |
 | Active keyboard APIs | `UITextInputMode` |
 
-- サードパーティ SDK が使用する Required Reason API も把握すること
-- Xcode の Privacy Report で使用状況を確認可能
+- Be aware of Required Reason APIs used by third-party SDKs
+- Use Xcode's Privacy Report to review usage
 
-### 4.5 Export Compliance（暗号化の使用申告）
+### 4.5 Export Compliance (Encryption Usage Declaration)
 
-`Info.plist` に以下を設定:
+Set the following in `Info.plist`:
 
 ```xml
 <key>ITSAppUsesNonExemptEncryption</key>
 <false/>
 ```
 
-| 状況 | 設定値 |
+| Situation | Value |
 |------|-------|
-| HTTPS のみ使用（ATS 標準） | `false` |
-| 独自の暗号化アルゴリズムを実装 | `true`（暗号化文書の提出が必要） |
-| 標準的な暗号化ライブラリのみ使用 | 多くの場合 `false`（免除対象） |
+| HTTPS only (ATS standard) | `false` |
+| Custom encryption algorithm implemented | `true` (encryption documentation submission required) |
+| Standard encryption libraries only | In most cases `false` (exempt) |
 
-- `true` の場合、フランスの暗号化規制対応書類が必要な場合あり
-- 不明な場合は法務・コンプライアンスチームに確認
+- If `true`, French encryption regulation documentation may be required
+- Consult legal / compliance team if uncertain
 
-### 4.6 年齢制限・COPPA 対応
+### 4.6 Age Restrictions & COPPA Compliance
 
-- 子供向けアプリ（Kids カテゴリ）は追加の審査基準あり
-- サードパーティの分析・広告 SDK の使用に制限
-- COPPA（Children's Online Privacy Protection Act）準拠が必要
-- App Store Connect のコンテンツレーティングを正確に設定
+- Apps for children (Kids category) are subject to additional review criteria
+- Restrictions on use of third-party analytics and advertising SDKs
+- COPPA (Children's Online Privacy Protection Act) compliance required
+- Set the Content Rating in App Store Connect accurately
 
 ---
 
-## 5. App Review Guidelines 対応
+## 5. App Review Guidelines Compliance
 
-### 5.1 よくあるリジェクト理由と回避策
+### 5.1 Common Rejection Reasons & How to Avoid Them
 
-| Guideline | 理由 | 回避策 |
+| Guideline | Reason | How to Avoid |
 |-----------|------|--------|
-| **2.1** パフォーマンス | クラッシュ・バグが多い | 十分なテストを実施。TestFlight で事前検証 |
-| **2.1** 不完全なアプリ | プレースホルダーコンテンツ・未実装機能がある | すべての機能が動作する状態で提出 |
-| **2.3.7** メタデータの正確性 | スクリーンショットが実際のアプリと異なる | 最新のビルドからスクリーンショットを取得 |
-| **2.3.10** アプリ内広告 | テスト広告が表示される | 本番用広告 ID に切り替え |
-| **3.1.1** IAP の要件 | デジタルコンテンツの購入に外部決済を使用 | デジタルコンテンツは IAP を使用。物理的商品は外部決済可 |
-| **3.1.2** サブスクリプション | Restore Purchases がない | Restore 機能を必ず実装 |
-| **4.0** デザイン | HIG に準拠していない | `apple-ui-guidelines` スキルを参照 |
-| **4.2** 最低限の機能 | Web サイトのラッパーにすぎない | ネイティブ機能を活用し付加価値を提供 |
-| **5.1.1** データ収集 | 不要なデータを収集している | 必要最小限のデータのみ収集。理由を明示 |
-| **5.1.2** データの使用と共有 | プライバシーラベルと実装が不一致 | Privacy Manifest と App Privacy Details を正確に記入 |
-| **5.2.1** 法的要件 | プライバシーポリシーが不備 | 有効なプライバシーポリシー URL を設定 |
+| **2.1** Performance | Too many crashes or bugs | Conduct thorough testing. Pre-validate with TestFlight |
+| **2.1** Incomplete app | Placeholder content or unimplemented features | Submit only when all features are functional |
+| **2.3.7** Metadata accuracy | Screenshots do not match the actual app | Take screenshots from the latest build |
+| **2.3.10** In-app advertising | Test ads are shown | Switch to production ad IDs |
+| **3.1.1** IAP requirements | External payment used for digital content purchases | Use IAP for digital content. External payment is allowed for physical goods |
+| **3.1.2** Subscriptions | Restore Purchases is missing | Always implement the Restore feature |
+| **4.0** Design | Does not comply with HIG | Refer to the `apple-ui-guidelines` skill |
+| **4.2** Minimum functionality | App is merely a website wrapper | Leverage native features to provide added value |
+| **5.1.1** Data collection | Collecting unnecessary data | Collect only the minimum required data. State the reason clearly |
+| **5.1.2** Data use and sharing | Privacy labels do not match implementation | Fill in Privacy Manifest and App Privacy Details accurately |
+| **5.2.1** Legal requirements | Privacy policy is insufficient | Set a valid privacy policy URL |
 
-### 5.2 審査メモ・デモアカウント
+### 5.2 App Review Notes & Demo Accounts
 
-- **審査メモ（App Review Notes）**: 審査員への補足説明を記載
-  - ログインが必要なアプリではデモアカウントの認証情報を提供
-  - 特殊なハードウェアが必要な機能の説明
-  - サーバーサイドの設定が必要な場合の手順
+- **App Review Notes**: Include supplementary notes for the reviewer
+  - Provide demo account credentials for apps that require login
+  - Explain features that require special hardware
+  - Provide setup instructions if server-side configuration is needed
 
 ```
-✅ Good: 審査メモの例
+✅ Good: Example App Review Notes
 ---
-デモアカウント:
-  メールアドレス: demo@example.com
-  パスワード: Review2026!
+Demo Account:
+  Email: demo@example.com
+  Password: Review2026!
 
-Bluetooth 機能について:
-  本アプリの Bluetooth 機能はデモモードで動作確認可能です。
-  設定 > デモモードを ON にしてください。
+Regarding Bluetooth functionality:
+  The Bluetooth feature of this app can be verified using Demo Mode.
+  Go to Settings > Demo Mode and turn it ON.
 ```
 
-### 5.3 異議申し立て（Appeal）
+### 5.3 Appeal
 
-1. App Store Connect の「Resolution Center」で審査チームとコミュニケーション
-2. リジェクト理由に対する具体的な反論・修正内容を記載
-3. 解決しない場合は App Review Board に正式な異議申し立てが可能
-4. 丁寧かつ事実ベースで対応する
+1. Communicate with the review team through the "Resolution Center" in App Store Connect
+2. Provide specific counterarguments and details of fixes for each rejection reason
+3. If unresolved, a formal appeal to the App Review Board is possible
+4. Respond politely and stick to the facts
 
 ---
 
-## 6. バージョン管理・リリース戦略
+## 6. Versioning & Release Strategy
 
-### 6.1 バージョニング規約
+### 6.1 Versioning Conventions
 
-| キー | 説明 | 例 |
+| Key | Description | Example |
 |------|------|-----|
-| `CFBundleShortVersionString` | ユーザーに表示されるバージョン番号 | `2.1.0` |
-| `CFBundleVersion` | ビルド番号（同一バージョン内で一意） | `2024041801` |
+| `CFBundleShortVersionString` | Version number displayed to users | `2.1.0` |
+| `CFBundleVersion` | Build number (unique within the same version) | `2024041801` |
 
-- バージョン番号はセマンティックバージョニング（`MAJOR.MINOR.PATCH`）を推奨
-- ビルド番号は単調増加であること（App Store Connect が拒否する）
-- ビルド番号の形式例: `YYYYMMDDNN` または連番
+- Recommended to use Semantic Versioning (`MAJOR.MINOR.PATCH`) for version numbers
+- Build numbers must be monotonically increasing (App Store Connect will reject otherwise)
+- Example build number format: `YYYYMMDDNN` or sequential integers
 
-### 6.2 リリースオプション
+### 6.2 Release Options
 
-| オプション | 説明 | 推奨ケース |
+| Option | Description | Recommended Use Case |
 |-----------|------|-----------|
-| 自動リリース | 審査通過後すぐに公開 | 通常のアップデート |
-| 手動リリース | 審査通過後、手動で公開 | マーケティングと連動するリリース |
-| 段階的リリース（Phased Release） | 7 日間で段階的に配信 | リスクを抑えたいメジャーアップデート |
-| 特定日リリース | 指定した日時に公開 | イベント・キャンペーン連動 |
+| Automatic release | Publish immediately after review approval | Regular updates |
+| Manual release | Publish manually after review approval | Releases coordinated with marketing |
+| Phased Release | Roll out gradually over 7 days | Major updates where you want to reduce risk |
+| Scheduled release | Publish at a specified date and time | Event or campaign-tied releases |
 
-### 6.3 段階的リリース（Phased Release）
+### 6.3 Phased Release
 
-| 日 | 配信割合 |
+| Day | Distribution % |
 |----|---------|
-| 1 日目 | 1% |
-| 2 日目 | 2% |
-| 3 日目 | 5% |
-| 4 日目 | 10% |
-| 5 日目 | 20% |
-| 6 日目 | 50% |
-| 7 日目 | 100% |
+| Day 1 | 1% |
+| Day 2 | 2% |
+| Day 3 | 5% |
+| Day 4 | 10% |
+| Day 5 | 20% |
+| Day 6 | 50% |
+| Day 7 | 100% |
 
-- 段階的リリース中でも、ユーザーが手動でアップデートすれば取得可能
-- 問題が見つかった場合、段階的リリースを一時停止可能
-- 深刻な問題の場合はリリースを取り消してホットフィックスを提出
+- Even during phased release, users can get the update immediately by manually updating
+- Phased release can be paused if issues are found
+- For critical issues, the release can be pulled and a hotfix submitted
 
-### 6.4 複数プラットフォーム同時リリース
+### 6.4 Multi-Platform Simultaneous Release
 
-- **Universal Purchase**: iOS と macOS で同じ購入権を共有
-  - 同一の Bundle ID グループに属させる
-  - App Store Connect でリンクを設定
-- iOS と macOS のバージョン番号を揃えることを推奨
-- 片方のプラットフォームだけ先にリリースする場合は、リリースノートで告知
+- **Universal Purchase**: Share the same purchase entitlement across iOS and macOS
+  - Assign the same Bundle ID group
+  - Configure the link in App Store Connect
+- Recommended to align version numbers between iOS and macOS
+- If releasing on one platform first, announce in the release notes
 
 ---
 
-## 7. TestFlight ベータテスト
+## 7. TestFlight Beta Testing
 
-### 7.1 内部テスト vs 外部テスト
+### 7.1 Internal vs External Testing
 
-| 項目 | 内部テスト | 外部テスト |
+| Item | Internal Testing | External Testing |
 |------|-----------|-----------|
-| テスター数 | 最大 100 人 | 最大 10,000 人 |
-| 対象者 | チームメンバー（App Store Connect ユーザー） | メールアドレスまたは公開リンクで招待 |
-| Beta App Review | 不要 | 初回および大幅な変更時に必要 |
-| ビルド反映 | 即座に利用可能 | Beta App Review 後に利用可能 |
+| Number of testers | Up to 100 | Up to 10,000 |
+| Who | Team members (App Store Connect users) | Invited via email address or public link |
+| Beta App Review | Not required | Required for first build and significant changes |
+| Build availability | Available immediately | Available after Beta App Review |
 
-### 7.2 テストグループ管理
+### 7.2 Test Group Management
 
-- 目的別にグループを作成（例: 社内 QA、外部ベータ、VIP ユーザー）
-- グループごとに異なるビルドを配信可能
-- テスターへのリリースノート（What to Test）を記載
+- Create groups for specific purposes (e.g., internal QA, external beta, VIP users)
+- Different builds can be distributed to each group
+- Include release notes (What to Test) for testers
 
-### 7.3 Beta App Review の注意事項
+### 7.3 Beta App Review Notes
 
-- 初回の外部テストビルドは審査が必要（通常 24〜48 時間）
-- 大幅な変更がない後続ビルドは自動承認されることが多い
-- 本番 App Review と同様のガイドラインが適用される
-- テスト用のデモアカウント情報を審査メモに記載
+- The first external test build requires review (typically 24–48 hours)
+- Subsequent builds with no significant changes are often auto-approved
+- The same guidelines as production App Review apply
+- Include demo account information for the review in the review notes
 
-### 7.4 テスト期間
+### 7.4 Testing Period
 
-- TestFlight ビルドの有効期限は **90 日間**
-- 期限切れ前に新しいビルドをアップロード
-- テスターにフィードバック送信を促す（TestFlight アプリ内のスクリーンショット付きフィードバック機能）
+- TestFlight builds expire after **90 days**
+- Upload a new build before expiration
+- Encourage testers to submit feedback (screenshot feedback feature in the TestFlight app)
 
 ---
 
-## 8. macOS 固有の考慮事項【macOS】
+## 8. macOS-Specific Considerations [macOS]
 
-### 8.1 Mac Catalyst vs ネイティブ macOS
+### 8.1 Mac Catalyst vs Native macOS
 
-| 項目 | Mac Catalyst | ネイティブ macOS |
+| Item | Mac Catalyst | Native macOS |
 |------|-------------|----------------|
-| 提出方法 | iOS アプリの「Mac (Designed for iPad)」または Catalyst 対応 | 独立した macOS アプリとして提出 |
-| Bundle ID | iOS アプリと同一の場合あり（`maccatalyst.*`） | 独自の Bundle ID |
-| 審査 | iOS とは別に macOS 向けの審査が行われる | macOS 独自の審査基準 |
+| Submission method | iOS app's "Mac (Designed for iPad)" or Catalyst-enabled | Submit as a standalone macOS app |
+| Bundle ID | May be the same as the iOS app (`maccatalyst.*`) | Unique Bundle ID |
+| Review | Reviewed separately for macOS | macOS-specific review criteria |
 
-### 8.2 Sandbox 要件
+### 8.2 Sandbox Requirements
 
-- **Mac App Store で配布するアプリは App Sandbox が必須**
-- Entitlements ファイルで必要な権限を宣言:
+- **App Sandbox is required for apps distributed through the Mac App Store**
+- Declare required permissions in the Entitlements file:
 
-| Entitlement | 用途 |
+| Entitlement | Purpose |
 |------------|------|
-| `com.apple.security.network.client` | ネットワーク接続（アウトバウンド） |
-| `com.apple.security.network.server` | ネットワーク接続（インバウンド） |
-| `com.apple.security.files.user-selected.read-write` | ユーザーが選択したファイルへのアクセス |
-| `com.apple.security.files.bookmarks.app-scope` | セキュリティスコープブックマーク |
+| `com.apple.security.network.client` | Network connections (outbound) |
+| `com.apple.security.network.server` | Network connections (inbound) |
+| `com.apple.security.files.user-selected.read-write` | Access to user-selected files |
+| `com.apple.security.files.bookmarks.app-scope` | Security-scoped bookmarks |
 
-- Sandbox 制限により一部の機能が制約される場合がある
-- Temporary Exception Entitlements は審査で厳しくチェックされる
+- Some features may be restricted by Sandbox limitations
+- Temporary Exception Entitlements are scrutinized heavily during review
 
-### 8.3 Hardened Runtime・Notarization
+### 8.3 Hardened Runtime & Notarization
 
-| 項目 | 要件 |
+| Item | Requirement |
 |------|------|
-| Hardened Runtime | Mac App Store 提出に必須。コード署名時に有効化 |
-| Notarization | Mac App Store 外で配布する場合に必須。App Store 提出の場合は Apple が自動処理 |
+| Hardened Runtime | Required for Mac App Store submission. Enable when code signing |
+| Notarization | Required for distribution outside the Mac App Store. Apple handles it automatically for App Store submissions |
 
-- Hardened Runtime の例外は最小限に抑える:
-  - `com.apple.security.cs.disable-library-validation` — 外部ライブラリ読み込み時のみ
-  - `com.apple.security.cs.allow-jit` — JIT コンパイルが必要な場合のみ
+- Minimize Hardened Runtime exceptions:
+  - `com.apple.security.cs.disable-library-validation` — Only when loading external libraries
+  - `com.apple.security.cs.allow-jit` — Only when JIT compilation is required
 
-### 8.4 ヘルパーツール・拡張機能の署名
+### 8.4 Helper Tools & Extension Signing
 
-- ヘルパーツール（LaunchAgent / LaunchDaemon）も署名が必要
-- System Extension は別途の審査要件あり（Endpoint Security 等）
-- Finder Sync Extension、Share Extension 等はメインアプリに含めて提出
+- Helper tools (LaunchAgent / LaunchDaemon) also require signing
+- System Extensions have separate review requirements (Endpoint Security, etc.)
+- Finder Sync Extension, Share Extension, etc. are submitted as part of the main app
 
 ---
 
-## 9. 提出後の運用
+## 9. Post-Submission Operations
 
 ### 9.1 App Analytics
 
-| 指標 | 活用方法 |
+| Metric | How to Use |
 |------|---------|
-| インプレッション数 | App Store ページの表示回数。メタデータ最適化の効果測定 |
-| コンバージョン率 | 閲覧 → ダウンロード率。スクリーンショット・説明文の改善指標 |
-| リテンション率 | 継続利用率。アプリの品質指標 |
-| クラッシュ率 | 安定性の指標。優先度の高い修正対象の特定 |
+| Impressions | Number of App Store page views. Measure the impact of metadata optimization |
+| Conversion rate | View → Download rate. Indicator for improving screenshots and descriptions |
+| Retention rate | Continued usage rate. App quality indicator |
+| Crash rate | Stability indicator. Helps identify high-priority fixes |
 
-### 9.2 カスタマーレビュー対応
+### 9.2 Customer Review Management
 
-- App Store Connect でレビューに返信可能
-- ネガティブなレビューには丁寧に対応し、改善予定を伝える
-- `SKStoreReviewController.requestReview()` で適切なタイミングでレビューを依頼
-  - ユーザーがポジティブな体験をした直後が効果的
-  - 過度な表示はユーザー体験を損なう（システムが表示頻度を制御）
+- App Store Connect allows replying to reviews
+- Respond politely to negative reviews and communicate planned improvements
+- Use `SKStoreReviewController.requestReview()` to prompt reviews at the right moment
+  - Most effective immediately after a positive user experience
+  - Excessive prompts degrade user experience (the system controls display frequency)
 
-### 9.3 クラッシュレポート監視
+### 9.3 Crash Report Monitoring
 
-| ツール | 特徴 |
+| Tool | Features |
 |--------|------|
-| Xcode Organizer | Xcode 内蔵。クラッシュログ・エネルギーレポート・ディスク書き込みレポート |
-| App Store Connect | Web ベース。Metrics タブでクラッシュ率の推移を確認 |
-| MetricKit | アプリ内でパフォーマンスデータを収集する API |
+| Xcode Organizer | Built into Xcode. Crash logs, energy reports, and disk write reports |
+| App Store Connect | Web-based. Monitor crash rate trends in the Metrics tab |
+| MetricKit | In-app API for collecting performance data |
 
-- クラッシュ率が高い場合は速やかにホットフィックスを提出
-- Expedited Review（迅速審査）をリクエスト可能（重大なバグ修正時）
+- Submit a hotfix promptly if the crash rate is high
+- Expedited Review can be requested (for critical bug fixes)
 
-### 9.4 アプリの削除・非公開
+### 9.4 App Removal & Unpublishing
 
-| 操作 | 説明 |
+| Action | Description |
 |------|------|
-| 販売停止 | アプリを App Store から非表示にする（既存ユーザーは再ダウンロード可能） |
-| アプリの削除 | App Store Connect からアプリを完全に削除（180 日間は復元可能） |
-| 特定地域での非公開 | 配信地域から除外 |
+| Remove from sale | Hide the app from the App Store (existing users can still re-download) |
+| Delete app | Permanently remove the app from App Store Connect (restorable within 180 days) |
+| Unpublish in specific regions | Exclude from the distribution region list |
 
-- 販売停止後も既存ユーザーのアプリは引き続き動作する
-- アプリ名と Bundle ID は削除後も一定期間は再利用不可
+- The app continues to work for existing users after removal from sale
+- The app name and Bundle ID cannot be reused for a certain period after deletion
 
 ---
 
-## 10. 提出チェックリスト
+## 10. Submission Checklist
 
-### 初回提出
+### Initial Submission
 
-- [ ] Apple Developer Program に登録済み
-- [ ] App Store Connect でアプリを作成済み
-- [ ] Bundle ID が正しく設定されている
-- [ ] Distribution 証明書と Provisioning Profile が有効
-- [ ] 必要な Capabilities / Entitlements が設定されている
+- [ ] Enrolled in the Apple Developer Program
+- [ ] App created in App Store Connect
+- [ ] Bundle ID is correctly configured
+- [ ] Distribution certificate and Provisioning Profile are valid
+- [ ] Required Capabilities / Entitlements are configured
 
-### メタデータ
+### Metadata
 
-- [ ] アプリ名・サブタイトルが設定されている
-- [ ] 説明文・キーワードが適切に記載されている
-- [ ] すべての必須デバイスサイズのスクリーンショットがアップロードされている
-- [ ] アプリアイコン（1024 × 1024 px）がアップロードされている
-- [ ] サポート URL が有効
-- [ ] カテゴリ・コンテンツレーティングが設定されている
+- [ ] App name and subtitle are set
+- [ ] Description and keywords are properly filled in
+- [ ] Screenshots for all required device sizes are uploaded
+- [ ] App icon (1024 × 1024 px) is uploaded
+- [ ] Support URL is valid
+- [ ] Category and content rating are set
 
-### プライバシー・コンプライアンス
+### Privacy & Compliance
 
-- [ ] プライバシーポリシー URL が登録されている
-- [ ] App Privacy Details（プライバシーラベル）が正確に記入されている
-- [ ] Privacy Manifest（PrivacyInfo.xcprivacy）がプロジェクトに含まれている
-- [ ] Required Reason API の使用理由が申告されている
-- [ ] Export Compliance（`ITSAppUsesNonExemptEncryption`）が設定されている
-- [ ] 子供向けアプリの場合、COPPA 準拠を確認
+- [ ] Privacy policy URL is registered
+- [ ] App Privacy Details (privacy labels) are accurately filled in
+- [ ] Privacy Manifest (PrivacyInfo.xcprivacy) is included in the project
+- [ ] Required Reason API usage reasons are declared
+- [ ] Export Compliance (`ITSAppUsesNonExemptEncryption`) is set
+- [ ] COPPA compliance verified for children's apps
 
-### ビルド・署名
+### Build & Signing
 
-- [ ] Release ビルドで Archive を作成
-- [ ] テスト広告・デバッグフラグが無効化されている
-- [ ] クラッシュ・重大なバグがないことを TestFlight で確認済み
-- [ ] dSYM ファイルがアップロードされている（クラッシュレポート用）
+- [ ] Archive created with a Release build
+- [ ] Test ads and debug flags are disabled
+- [ ] Confirmed no crashes or critical bugs via TestFlight
+- [ ] dSYM files are uploaded (for crash reports)
 
-### App Review 対応
+### App Review Preparation
 
-- [ ] デモアカウント情報を審査メモに記載（ログインが必要な場合）
-- [ ] 特殊な機能の使い方を審査メモに記載
-- [ ] スクリーンショットが実際のアプリと一致している
-- [ ] すべてのリンク・ボタンが正常に動作する
+- [ ] Demo account credentials included in App Review Notes (if login is required)
+- [ ] Instructions for special features included in App Review Notes
+- [ ] Screenshots match the actual app
+- [ ] All links and buttons work correctly
 
-### macOS 固有 【macOS】
+### macOS-Specific [macOS]
 
-- [ ] App Sandbox が有効化されている
-- [ ] Hardened Runtime が有効化されている
-- [ ] ヘルパーツール・拡張機能が署名されている
-- [ ] Temporary Exception Entitlements は必要最小限
+- [ ] App Sandbox is enabled
+- [ ] Hardened Runtime is enabled
+- [ ] Helper tools and extensions are signed
+- [ ] Temporary Exception Entitlements are kept to the minimum necessary
 
-### リリース設定
+### Release Settings
 
-- [ ] リリースオプション（自動 / 手動 / 段階的）を選択済み
-- [ ] バージョン番号・ビルド番号が正しい（単調増加）
-- [ ] What's New（リリースノート）を記載済み
+- [ ] Release option selected (automatic / manual / phased)
+- [ ] Version number and build number are correct (monotonically increasing)
+- [ ] What's New (release notes) are filled in

@@ -1,69 +1,69 @@
 ---
-description: "Apple iOS, iPadOSアプリの開発ガイドライン"
+description: "Development guidelines for Apple iOS and iPadOS apps"
 applyTo: []
 ---
 
-# プロジェクトガイドライン（iOS / iPadOS アプリ開発用）
+# Project Guidelines (iOS / iPadOS App Development)
 
-## 前提
+## Assumptions
 
-- 各セクションに **【iPhone のみ】**・**【iPad のみ】**・**【ユニバーサルのみ】** のタグが付いた指示は、「対応デバイス」の設定に応じて以下のとおり扱うこと。
-  - **「iPhone のみ」** の場合: 【iPad のみ】【ユニバーサルのみ】タグの指示は無視する
-  - **「iPad のみ」** の場合: 【iPhone のみ】【ユニバーサルのみ】タグの指示は無視する
-  - **「ユニバーサル」** の場合: タグに関わらずすべての指示を適用する
+- Instructions tagged with **[iPhone only]**, **[iPad only]**, or **[Universal only]** in each section should be handled according to the "Supported Devices" setting as follows:
+  - **"iPhone only"**: Ignore instructions tagged [iPad only] and [Universal only]
+  - **"iPad only"**: Ignore instructions tagged [iPhone only] and [Universal only]
+  - **"Universal"**: Apply all instructions regardless of tags
 
-## プロジェクト概要
+## Project Overview
 
-<!-- プロジェクトに応じて以下を記入してください -->
+<!-- Fill in the following according to your project -->
 
-- **プロジェクト名**: {プロジェクト名}
-- **概要**: {プロジェクトの目的・概要を簡潔に記述}
-- **対象プラットフォーム**: {iOS 26.0+ / iPadOS 26.0+ / iOS・iPadOS 26.0+（ユニバーサル）}（該当するものを選択）
-- **対応デバイス**: {iPhone のみ / iPad のみ / iPhone + iPad（ユニバーサル）}（該当するものを選択）
-- **最低 Deployment Target**: {iOS 26.0 / iPadOS 26.0}
-- **リポジトリ構成**: {シングルレポ / モノレポ、主なディレクトリ構成の説明}
+- **Project Name**: {Project Name}
+- **Overview**: {Brief description of the project's purpose and overview}
+- **Target Platform**: {iOS 26.0+ / iPadOS 26.0+ / iOS & iPadOS 26.0+ (Universal)} (select as applicable)
+- **Supported Devices**: {iPhone only / iPad only / iPhone + iPad (Universal)} (select as applicable)
+- **Minimum Deployment Target**: {iOS 26.0 / iPadOS 26.0}
+- **Repository Structure**: {Single repo / Monorepo, description of main directory structure}
 
-## 技術スタック
+## Tech Stack
 
-### 推奨
+### Recommended
 
-| カテゴリ | 技術 / ツール | バージョン | 備考 |
+| Category | Technology / Tool | Version | Notes |
 |---------|-------------|-----------|------|
-| 言語 | Swift | 6 | |
+| Language | Swift | 6 | |
 | IDE | Xcode | 26 | |
-| プロジェクト管理 | XcodeGen | 最新 | project.yml で管理 |
-| パッケージマネージャ | Swift Package Manager | | |
-| UI フレームワーク | SwiftUI | iOS 26 SDK | UIKit との混在は最小限に |
-| UI フレームワーク（補助） | UIKit | | SwiftUI で対応不可な場合のみ |
-| アーキテクチャ | MVC | | |
-| テスト | XCTest / Swift Testing | | 両フレームワーク併用可 |
-| リンター / フォーマッター | SwiftLint | 最新 | .swiftlint.yml で設定 |
-| アイコン作成 | Icon Composer | Xcode 26 内蔵 | レイヤー構造のアイコンを作成 |
-| CI/CD | {例: GitHub Actions} | | |
+| Project Management | XcodeGen | Latest | Managed via project.yml |
+| Package Manager | Swift Package Manager | | |
+| UI Framework | SwiftUI | iOS 26 SDK | Minimize mixing with UIKit |
+| UI Framework (Supplementary) | UIKit | | Only when SwiftUI is insufficient |
+| Architecture | MVC | | |
+| Testing | XCTest / Swift Testing | | Both frameworks can be used together |
+| Linter / Formatter | SwiftLint | Latest | Configured via .swiftlint.yml |
+| Icon Creation | Icon Composer | Built into Xcode 26 | Create layered icons |
+| CI/CD | {e.g., GitHub Actions} | | |
 
-### 今後追加予定
+### Planned Additions
 
-| カテゴリ | 技術 / ツール | バージョン | 備考 |
+| Category | Technology / Tool | Version | Notes |
 |---------|-------------|-----------|------|
-| ウィジェット | WidgetKit | | ホーム画面・ロック画面ウィジェット |
-| システム連携 | App Intents | | Siri / Shortcuts 対応 |
+| Widgets | WidgetKit | | Home screen / lock screen widgets |
+| System Integration | App Intents | | Siri / Shortcuts support |
 
-## 推奨 Copilot agent 構成
+## Recommended Copilot Agent Configuration
 
-- 複数 agent で進める場合は `agents/orchestrator.agent.md` を中心に運用する。
-- 仕様整理は `agents/product-manager.agent.md`、技術設計は `agents/architect.agent.md`、実装は `agents/developer.agent.md` を基本とする。
-- UI 変更や Liquid Glass 対応を含む場合は `agents/ui-designer.agent.md` を併用し、画面状態・視覚階層・アクセシビリティを先に詰める。
-- 仕上げは `agents/reviewer.agent.md` と `agents/tester.agent.md` で品質ゲートを通す。
+- When working with multiple agents, use `agents/orchestrator.agent.md` as the central coordinator.
+- Use `agents/product-manager.agent.md` for requirements clarification, `agents/architect.agent.md` for technical design, and `agents/developer.agent.md` for implementation.
+- For UI changes including Liquid Glass support, use `agents/ui-designer.agent.md` in conjunction to finalize screen states, visual hierarchy, and accessibility first.
+- Run final quality gates through `agents/reviewer.agent.md` and `agents/tester.agent.md`.
 
-## UI ガイドライン
+## UI Guidelines
 
-iOS / iPadOS の UI 設計・実装（HIG、Liquid Glass、ナビゲーション、サイズクラス、Dynamic Type、アイコン等）については以下のスキルを参照すること。
+For UI design and implementation on iOS / iPadOS (HIG, Liquid Glass, navigation, size classes, Dynamic Type, icons, etc.), refer to the following skills:
 
-- `skills/apple-ui-guidelines/SKILL.md` — Apple プラットフォーム UI ガイドライン（iOS / iPadOS / macOS 共通）
-- `skills/ui-accessibility/SKILL.md` — アクセシビリティ共通原則
-- `skills/ui-review-checklist/SKILL.md` — UI レビュー時のチェックリスト
+- `skills/apple-ui-guidelines/SKILL.md` — Apple Platform UI Guidelines (iOS / iPadOS / macOS common)
+- `skills/ui-accessibility/SKILL.md` — Common accessibility principles
+- `skills/ui-review-checklist/SKILL.md` — Checklist for UI review
 
 
-## コーディング規約
+## Coding Standards
 
-Swift のコーディング規約については `skills/swift-coding-standards/SKILL.md` を参照すること。
+For Swift coding standards, refer to `skills/swift-coding-standards/SKILL.md`.

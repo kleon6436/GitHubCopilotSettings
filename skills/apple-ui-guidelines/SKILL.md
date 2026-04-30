@@ -1,62 +1,62 @@
 ---
 name: apple-ui-guidelines
-description: 'Apple プラットフォーム（iOS / iPadOS / macOS）向け UI ガイドライン。Human Interface Guidelines (HIG)、Liquid Glass、SwiftUI レイアウト、Dynamic Type、SF Symbols、VoiceOver、サイズクラス、ナビゲーション構造、ツールバー、シート、アイコンを確認・適用したいときに使用。Use when: designing or implementing UI for iOS, iPadOS, or macOS apps with SwiftUI; applying Apple HIG; adopting Liquid Glass; reviewing Apple platform UI code.'
-argument-hint: '対象プラットフォーム（iOS / iPadOS / macOS）と確認したい項目（省略可）'
+description: 'UI guidelines for Apple platforms (iOS / iPadOS / macOS). Use when reviewing or applying Human Interface Guidelines (HIG), Liquid Glass, SwiftUI layout, Dynamic Type, SF Symbols, VoiceOver, size classes, navigation structure, toolbars, sheets, and icons. Use when: designing or implementing UI for iOS, iPadOS, or macOS apps with SwiftUI; applying Apple HIG; adopting Liquid Glass; reviewing Apple platform UI code.'
+argument-hint: 'Target platform (iOS / iPadOS / macOS) and the item to review (optional)'
 ---
 
-# Apple UI ガイドライン（iOS / iPadOS / macOS）
+# Apple UI Guidelines (iOS / iPadOS / macOS)
 
-## 概要
+## Overview
 
-このスキルは Apple プラットフォーム（iOS 26 / iPadOS 26 / macOS 26 Tahoe 以降）向け UI の設計・実装規約を定義します。
-Human Interface Guidelines (HIG) に準拠し、Liquid Glass マテリアルを正しく扱うためのルールをまとめています。
+This skill defines the UI design and implementation conventions for Apple platforms (iOS 26 / iPadOS 26 / macOS 26 Tahoe and later).
+It summarizes the rules for complying with the Human Interface Guidelines (HIG) and correctly handling Liquid Glass materials.
 
-参考:
+References:
 - [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/)
 - [Adopting Liquid Glass](https://developer.apple.com/documentation/TechnologyOverviews/adopting-liquid-glass)
 
 ---
 
-## プラットフォームタグ
+## Platform Tags
 
-各セクションの指示には以下のタグが付くことがあります。対象プラットフォームに応じて取捨選択してください。
+Instructions in each section may carry the following tags. Select applicable ones based on the target platform.
 
-- **【iOS】** iPhone（iOS）向け
-- **【iPadOS】** iPad 向け
-- **【macOS】** Mac 向け
-- **【共通】** 全プラットフォーム適用
-- タグなし = 共通
-
----
-
-## 1. HIG 準拠ルール（共通）
-
-- **SF Symbols を優先使用する。** テキストラベルよりもアイコンを活用し、インターフェースをクリーンに保つ。タブバー・ツールバーでは filled バリアントを使用する。
-- **システムカラー・アクセントカラーを使用する。** ハードコードされた色の代わりに `Color.accentColor` や `ShapeStyle` のセマンティックカラーを使用する。
-- **ライト / ダークモード両対応を必須とする。** カスタムカラーは Light・Dark・増加コントラスト（Increased Contrast）の各バリアントを定義する。
-- **コントロールを密集・重複させない。** Liquid Glass 要素をレイヤーとして重ねない。
-- **標準スペーシングメトリクスを使用する。** システムのデフォルトスペーシングを上書きしない。
-- **VoiceOver / Voice Control に対応する。** すべてのカスタム UI に適切な `accessibilityLabel` / `accessibilityHint` を設定する。
-- **Dynamic Type に対応する。** フォントには必ずシステムフォント（`.body`・`.headline` 等）または `Font.custom(_:size:relativeTo:)` を使用し、固定サイズを避ける。
-- **【iOS / iPadOS】Safe Area を尊重する。** ノッチ・Dynamic Island・ホームインジケーター領域にインタラクティブな要素を配置しない。
+- **[iOS]** For iPhone (iOS)
+- **[iPadOS]** For iPad
+- **[macOS]** For Mac
+- **[Common]** Applies to all platforms
+- No tag = Common
 
 ---
 
-## 2. Liquid Glass 基本方針（共通）
+## 1. HIG Compliance Rules (Common)
 
-- **標準コンポーネントを最大活用する。** `NavigationStack` / `NavigationSplitView` / `TabView` / ツールバー / シート / ポップオーバーは Liquid Glass を自動適用する。
-- **ナビゲーション要素へのカスタム背景適用を禁止する。** タブバー・ナビゲーションバー・ツールバー・サイドバー・シートに独自の `background` / `visualEffect` を設定しない。
-  - **【macOS 例外】** 没入型コンテンツアプリ（写真・地図など）では `.toolbarBackground(.hidden, for: .windowToolbar)` が許容される（HIG: "Consider temporarily hiding toolbars for a distraction-free experience"）。
-- **`glassEffect` の過剰使用を禁止する。** `glassEffect(_:in:)` はカスタムコントロールなど最も重要な機能要素に限定する。
-- **アクセシビリティ設定でテストする。** 「透明度を下げる」「視差効果を減らす」を有効にしてもカスタムエフェクトが適切に動作することを確認する。
+- **Prioritize SF Symbols.** Use icons over text labels to keep interfaces clean. Use the filled variant in tab bars and toolbars.
+- **Use system colors and accent colors.** Use semantic colors such as `Color.accentColor` or `ShapeStyle` instead of hardcoded colors.
+- **Support both Light and Dark mode.** Custom colors must define variants for Light, Dark, and Increased Contrast.
+- **Do not crowd or overlap controls.** Do not layer Liquid Glass elements on top of each other.
+- **Use standard spacing metrics.** Do not override system default spacing.
+- **Support VoiceOver / Voice Control.** Set appropriate `accessibilityLabel` / `accessibilityHint` on all custom UI.
+- **Support Dynamic Type.** Always use system fonts (`.body`, `.headline`, etc.) or `Font.custom(_:size:relativeTo:)` for fonts; avoid fixed sizes.
+- **[iOS / iPadOS] Respect the Safe Area.** Do not place interactive elements in the notch, Dynamic Island, or home indicator areas.
 
 ---
 
-## 3. ナビゲーション構造
+## 2. Liquid Glass Core Policy (Common)
 
-### 【iOS】iPhone
+- **Maximize use of standard components.** `NavigationStack` / `NavigationSplitView` / `TabView` / toolbars / sheets / popovers automatically apply Liquid Glass.
+- **Do not apply custom backgrounds to navigation elements.** Do not set custom `background` / `visualEffect` on tab bars, navigation bars, toolbars, sidebars, or sheets.
+  - **[macOS Exception]** For immersive content apps (Photos, Maps, etc.), `.toolbarBackground(.hidden, for: .windowToolbar)` is acceptable (HIG: "Consider temporarily hiding toolbars for a distraction-free experience").
+- **Do not overuse `glassEffect`.** Limit `glassEffect(_:in:)` to the most important functional elements such as custom controls.
+- **Test with accessibility settings.** Verify that custom effects work properly with both "Reduce Transparency" and "Reduce Motion" enabled.
 
-- **`NavigationStack`** を基本とする。
+---
+
+## 3. Navigation Structure
+
+### [iOS] iPhone
+
+- Use **`NavigationStack`** as the foundation.
 
 ```swift
 NavigationStack(path: $path) {
@@ -67,9 +67,9 @@ NavigationStack(path: $path) {
 }
 ```
 
-### 【iPadOS / macOS】
+### [iPadOS / macOS]
 
-- **`NavigationSplitView`** でサイドバーレイアウトを実現する。
+- Use **`NavigationSplitView`** to achieve a sidebar layout.
 
 ```swift
 NavigationSplitView {
@@ -79,8 +79,8 @@ NavigationSplitView {
 }
 ```
 
-- インスペクターパネルは **`inspector(isPresented:content:)`** を使用する。
-- サイドバー・インスペクター隣のコンテンツには **`backgroundExtensionEffect()`** を適用してエッジトゥエッジ表現を実現する。
+- Use **`inspector(isPresented:content:)`** for inspector panels.
+- Apply **`backgroundExtensionEffect()`** to content adjacent to the sidebar or inspector to achieve an edge-to-edge appearance.
 
 ```swift
 Image("hero")
@@ -91,71 +91,71 @@ Image("hero")
 
 ---
 
-## 4. タブバー
+## 4. Tab Bar
 
-### 【iOS / iPadOS】
+### [iOS / iPadOS]
 
-| 項目 | iOS | iPadOS |
+| Item | iOS | iPadOS |
 |------|-----|--------|
-| 表示位置 | 画面下部（フローティング） | 画面上部 |
-| サイドバー変換 | 非対応 | `.sidebarAdaptable` で変換可 |
-| カスタマイズ | — | `TabViewCustomization` で項目追加・削除可 |
+| Position | Bottom of screen (floating) | Top of screen |
+| Sidebar conversion | Not supported | Convertible with `.sidebarAdaptable` |
+| Customization | — | Items can be added/removed with `TabViewCustomization` |
 
 ```swift
 TabView {
-    Tab("ホーム", systemImage: "house.fill") { HomeView() }
-    Tab("ライブラリ", systemImage: "books.vertical.fill") { LibraryView() }
+    Tab("Home", systemImage: "house.fill") { HomeView() }
+    Tab("Library", systemImage: "books.vertical.fill") { LibraryView() }
     Tab(role: .search) { SearchView() }
 }
-.tabViewStyle(.sidebarAdaptable) // 【iPadOS】
+.tabViewStyle(.sidebarAdaptable) // [iPadOS]
 ```
 
-- **【iOS】** スクロール時にタブバーを縮小する: `.tabBarMinimizeBehavior(.onScrollDown)`
-- **【iPadOS】** `TabViewCustomization` でユーザーがタブ項目を追加・削除できるようにする。
-- タブバーを無効化・非表示にしない。コンテンツが空でも理由を説明しつつタブを表示し続ける。
-- タブラベルは単語単位で簡潔に。
-- タブアイコンは SF Symbols の filled バリアントを優先。
+- **[iOS]** Minimize the tab bar on scroll: `.tabBarMinimizeBehavior(.onScrollDown)`
+- **[iPadOS]** Use `TabViewCustomization` to allow users to add or remove tab items.
+- Do not disable or hide the tab bar. Keep tabs visible even when content is empty, with an explanation.
+- Tab labels should be concise — one word when possible.
+- Prefer filled SF Symbols variants for tab icons.
 
-### 【macOS】
+### [macOS]
 
-- タブビューには **`.tabViewStyle(.sidebarAdaptable)`** を採用し、サイドバーへ自動変換させる。
+- Adopt **`.tabViewStyle(.sidebarAdaptable)`** for tab views to automatically convert to a sidebar.
 
 ---
 
-## 5. ツールバー
+## 5. Toolbar
 
-- ツールバーアイテムは機能ごとにグループ化し、`ToolbarSpacer` で区切る。
+- Group toolbar items by function and separate them with `ToolbarSpacer`.
 
 ```swift
 .toolbar {
-    ToolbarItemGroup(placement: .bottomBar) { // 【iOS】
-        Button("編集", systemImage: "pencil") { }
-        Button("削除", systemImage: "trash") { }
+    ToolbarItemGroup(placement: .bottomBar) { // [iOS]
+        Button("Edit", systemImage: "pencil") { }
+        Button("Delete", systemImage: "trash") { }
     }
     ToolbarSpacer(.fixed)
     ToolbarItemGroup(placement: .bottomBar) {
-        Button("共有", systemImage: "square.and.arrow.up") { }
+        Button("Share", systemImage: "square.and.arrow.up") { }
     }
 }
 ```
 
-- アイコンのみのアイテムには必ず `accessibilityLabel` を設定。
-- 非表示は `.hidden()` ではなく **`ToolbarContent/hidden(_:)`** を使用。
-- スクロール時の可読性確保に **`scrollEdgeEffectStyle`** を設定。
+- Always set `accessibilityLabel` on icon-only items.
+- Use **`ToolbarContent/hidden(_:)`** instead of `.hidden()` to hide items.
+- Set **`scrollEdgeEffectStyle`** to ensure readability when scrolling.
 
 ---
 
-## 6. コントロール
+## 6. Controls
 
-- グラス効果のボタンは **`.buttonStyle(.glass)`** / **`.buttonStyle(.glassProminent)`** を使用。
+- Use **`.buttonStyle(.glass)`** / **`.buttonStyle(.glassProminent)`** for glass-effect buttons.
 
 ```swift
-Button("追加") { }.buttonStyle(.glass)
-Button("確認") { }.buttonStyle(.glassProminent)
+Button("Add") { }.buttonStyle(.glass)
+Button("Confirm") { }.buttonStyle(.glassProminent)
 ```
 
-- カスタムコントロールの角丸は **`ConcentricRectangle`** または **`rect(corners:isUniform:)`** で周囲要素と同心円的に揃える。
-- 複数のカスタム Liquid Glass エフェクトは **`GlassEffectContainer`** + **`glassEffectID(_:in:)`** でまとめる。
+- For corner radii on custom controls, use **`ConcentricRectangle`** or **`rect(corners:isUniform:)`** to align concentrically with surrounding elements.
+- Combine multiple custom Liquid Glass effects with **`GlassEffectContainer`** + **`glassEffectID(_:in:)`**.
 
 ```swift
 GlassEffectContainer {
@@ -169,10 +169,10 @@ GlassEffectContainer {
 
 ---
 
-## 7. シート・モーダル
+## 7. Sheets & Modals
 
-- **【iOS / iPadOS】** iOS 26 のシートは角丸が増加し、ハーフシートは画面端からインセット表示される。コンテンツが角丸付近に重ならないよう余白を確保。
-- **`presentationDetents`** で適切なサイズ制御。
+- **[iOS / iPadOS]** iOS 26 sheets have increased corner radii, and half-sheets are inset from the screen edges. Ensure sufficient padding so that content does not overlap near the rounded corners.
+- Use **`presentationDetents`** for appropriate size control.
 
 ```swift
 .sheet(isPresented: $showSheet) {
@@ -182,82 +182,82 @@ GlassEffectContainer {
 }
 ```
 
-- シート・ポップオーバーのカスタム背景ビュー（`visualEffectView` 等）は削除し、システムの Liquid Glass 背景に委ねる。
-- アクションシートは **`confirmationDialog`** を使用し、`presenting` パラメーターで起点データを指定。
+- Remove custom background views (`visualEffectView`, etc.) from sheets and popovers, and defer to the system's Liquid Glass background.
+- Use **`confirmationDialog`** for action sheets, and specify the source data with the `presenting` parameter.
 
 ```swift
 .confirmationDialog(
-    "操作を選択",
+    "Select an action",
     isPresented: $showDialog,
     titleVisibility: .visible,
     presenting: selectedItem
 ) { item in
-    Button("削除", role: .destructive) { delete(item) }
-    Button("共有") { share(item) }
+    Button("Delete", role: .destructive) { delete(item) }
+    Button("Share") { share(item) }
 }
 ```
 
 ---
 
-## 8. リスト・フォーム
+## 8. Lists & Forms
 
-- フォームには **`.formStyle(.grouped)`** を使用。
+- Use **`.formStyle(.grouped)`** for forms.
 
 ```swift
 Form {
-    Section("設定") {
-        Toggle("通知", isOn: $notificationsEnabled)
+    Section("Settings") {
+        Toggle("Notifications", isOn: $notificationsEnabled)
         Slider(value: $volume, in: 0...1)
     }
 }
 .formStyle(.grouped)
 ```
 
-- `Section` ヘッダーは **Title Case**（ALL CAPS は使わない）。
-- **【iOS / iPadOS】** コンテキストメニュー先頭アクションとスワイプアクション先頭を一致させる。
+- `Section` headers should use **Title Case** (do not use ALL CAPS).
+- **[iOS / iPadOS]** The leading action of context menus and the leading swipe action should match.
 
 ```swift
 .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-    Button("削除", role: .destructive) { delete(item) }
+    Button("Delete", role: .destructive) { delete(item) }
 }
 .contextMenu {
-    Button("削除", role: .destructive) { delete(item) }
-    Button("共有") { share(item) }
+    Button("Delete", role: .destructive) { delete(item) }
+    Button("Share") { share(item) }
 }
 ```
 
 ---
 
-## 9. 検索
+## 9. Search
 
-- 検索タブは **`Tab(role: .search)`** で定義。システムがトレーリング端に自動配置する。
-- **【iOS】** 検索フィールドはボトムツールバー内に配置。
-- **【iPadOS】** 画面上部トレーリング端に自動配置。
+- Define the search tab with **`Tab(role: .search)`**. The system automatically places it at the trailing end.
+- **[iOS]** Place the search field inside the bottom toolbar.
+- **[iPadOS]** Automatically placed at the top trailing edge.
 
 ---
 
-## 10. タイポグラフィ
+## 10. Typography
 
-- Dynamic Type スケール（`.largeTitle` / `.title` / `.headline` / `.body` / `.callout` / `.subheadline` / `.footnote` / `.caption`）を使用。
-- カスタムフォントは `Font.custom(_:size:relativeTo:)` で Dynamic Type に追従させる。
-- 同一画面内でフォントウェイトは 2〜3 種類に絞る。
-- `tracking` / `lineSpacing` の独自設定は最小限。
+- Use Dynamic Type scale (`.largeTitle` / `.title` / `.headline` / `.body` / `.callout` / `.subheadline` / `.footnote` / `.caption`).
+- Use `Font.custom(_:size:relativeTo:)` for custom fonts to follow Dynamic Type scaling.
+- Limit font weights to 2–3 variants on a single screen.
+- Minimize custom `tracking` / `lineSpacing` settings.
 
 ```swift
-Text("タイトル")
+Text("Title")
     .font(.title2)
     .fontWeight(.semibold)
-Text("説明文")
+Text("Description")
     .font(.body)
     .foregroundStyle(.secondary)
 ```
 
 ---
 
-## 11. スペーシング・グリッド
+## 11. Spacing & Grid
 
-- **8pt グリッド** を基準。`8, 16, 24, 32` の倍数を使用。
-- マジックナンバー禁止。スペーシング定数を定義。
+- Use an **8pt grid** as the base. Use multiples of `8, 16, 24, 32`.
+- Prohibit magic numbers. Define spacing constants.
 
 ```swift
 enum Spacing {
@@ -268,25 +268,25 @@ enum Spacing {
 }
 ```
 
-- 近い要素は近く、異なるグループは広い余白で区切る。
+- Keep related elements close together; separate distinct groups with wider spacing.
 
 ---
 
-## 12. コンテンツファーストレイアウト
+## 12. Content-First Layout
 
-- Liquid Glass 上のナビゲーション要素背後にコンテンツを透過させる。フルブリード配置を意識。
-- **【iOS / iPadOS】** ヒーローイメージには **`ignoresSafeArea(.container, edges: .top)`**。
-- **【macOS / iPadOS】** サイドバー隣には **`backgroundExtensionEffect()`**。
-- `contentMargins` / `safeAreaPadding` / `scrollEdgeEffectStyle` を適切に設定。
+- Allow content to show through behind navigation elements on Liquid Glass. Aim for full-bleed placement.
+- **[iOS / iPadOS]** Use **`ignoresSafeArea(.container, edges: .top)`** for hero images.
+- **[macOS / iPadOS]** Apply **`backgroundExtensionEffect()`** to content adjacent to the sidebar.
+- Set `contentMargins` / `safeAreaPadding` / `scrollEdgeEffectStyle` appropriately.
 
 ---
 
-## 13. アニメーション・トランジション
+## 13. Animation & Transitions
 
-- 基本アニメーションは **`.animation(.spring(duration: 0.3), value:)`**。`.linear` は特別な理由なく使わない。
-- 要素の変容には **`matchedGeometryEffect`**。
-- Liquid Glass のモーフィングには **`glassEffectID(_:in:)` + `withAnimation`**。
-- Reduce Motion 対応:
+- Use **`.animation(.spring(duration: 0.3), value:)`** for basic animations. Do not use `.linear` without a specific reason.
+- Use **`matchedGeometryEffect`** for element morphing.
+- Use **`glassEffectID(_:in:)` + `withAnimation`** for Liquid Glass morphing.
+- Support Reduce Motion:
 
 ```swift
 @Environment(\.accessibilityReduceMotion) var reduceMotion
@@ -296,24 +296,24 @@ enum Spacing {
 
 ---
 
-## 14. カラー設計
+## 14. Color Design
 
-- セマンティックカラーを階層的に:
-  - 最重要: `.primary`
-  - 補助: `.secondary`
-  - より補助的: `.tertiary`
-  - 無効: `.quaternary`
-- アクセントカラーは `Color.accentColor`。ハードコード RGB を避ける。
-- Liquid Glass 上のテキストは `.shadow(radius:)` や `.foregroundStyle(.primary)` で視認性確保。
-- カスタムカラーは Assets.xcassets に Light / Dark / Increased Contrast の 3 バリアントを定義。
+- Use semantic colors hierarchically:
+  - Most important: `.primary`
+  - Supporting: `.secondary`
+  - More supplemental: `.tertiary`
+  - Disabled: `.quaternary`
+- Use `Color.accentColor` for accent color. Avoid hardcoded RGB values.
+- For text on Liquid Glass, ensure readability with `.shadow(radius:)` or `.foregroundStyle(.primary)`.
+- Define custom colors in Assets.xcassets with 3 variants: Light / Dark / Increased Contrast.
 
 ---
 
-## 15. サイズクラス対応【iOS / iPadOS】
+## 15. Size Class Support [iOS / iPadOS]
 
-- `@Environment(\.horizontalSizeClass)` でレイアウト幅クラスを判定:
-  - **Compact 幅**: iPhone（縦横とも）、iPad 縦向きの狭いウィンドウ
-  - **Regular 幅**: iPad 横向き・広いウィンドウ、**iPhone Pro Max / Plus の横向き**
+- Use `@Environment(\.horizontalSizeClass)` to determine layout width class:
+  - **Compact width**: iPhone (both orientations), narrow iPad windows in portrait
+  - **Regular width**: iPad landscape / wide windows, **iPhone Pro Max / Plus in landscape**
 
 ```swift
 @Environment(\.horizontalSizeClass) var horizontalSizeClass
@@ -328,41 +328,41 @@ var body: some View {
 ```
 
 - `@Environment(\.verticalSizeClass)`:
-  - 縦向き: `regular`
-  - 横向き（全 iPhone 共通）: `compact`
+  - Portrait: `regular`
+  - Landscape (all iPhones): `compact`
 
 ---
 
-## 16. ハプティクス【iOS】
+## 16. Haptics [iOS]
 
-- **`.sensoryFeedback(_:trigger:)`** を使用。`UIImpactFeedbackGenerator` は SwiftUI 非対応時のみ。
+- Use **`.sensoryFeedback(_:trigger:)`**. Use `UIImpactFeedbackGenerator` only when SwiftUI is not supported.
 
 ```swift
-Button("削除") { delete() }
+Button("Delete") { delete() }
     .sensoryFeedback(.warning, trigger: isDeleted)
-Toggle("通知", isOn: $enabled)
+Toggle("Notifications", isOn: $enabled)
     .sensoryFeedback(.selection, trigger: enabled)
 ```
 
-- 対応:
-  - 成功: `.success`
-  - 警告: `.warning`
-  - エラー: `.error`
-  - 選択: `.selection`
-  - 軽いタップ: `.impact(weight: .light)`
+- Supported feedback types:
+  - Success: `.success`
+  - Warning: `.warning`
+  - Error: `.error`
+  - Selection: `.selection`
+  - Light tap: `.impact(weight: .light)`
 
 ---
 
-## 17. 空状態・エラー状態
+## 17. Empty State & Error State
 
-- **`ContentUnavailableView`** を使用する。独自の空画面は作らない。
+- Use **`ContentUnavailableView`**. Do not build custom empty screens.
 
 ```swift
 if items.isEmpty {
     ContentUnavailableView(
-        "アイテムがありません",
+        "No Items",
         systemImage: "tray",
-        description: Text("新しいアイテムを追加してください。")
+        description: Text("Add a new item to get started.")
     )
 }
 
@@ -371,9 +371,9 @@ ContentUnavailableView.search(text: searchText)
 
 ---
 
-## 18. ローディング / スケルトン UI
+## 18. Loading / Skeleton UI
 
-- **`.redacted(reason: .placeholder)`** でスケルトン表示。`ProgressView()` の全画面表示は避ける。
+- Use **`.redacted(reason: .placeholder)`** for skeleton display. Avoid full-screen `ProgressView()`.
 
 ```swift
 ItemRowView(item: placeholderItem)
@@ -382,9 +382,9 @@ ItemRowView(item: placeholderItem)
 
 ---
 
-## 19. アダプティブレイアウト
+## 19. Adaptive Layout
 
-- **`ViewThatFits`** で代替レイアウトを提供。
+- Use **`ViewThatFits`** to provide alternative layouts.
 
 ```swift
 ViewThatFits {
@@ -393,80 +393,80 @@ ViewThatFits {
 }
 ```
 
-- 固定幅 `frame(width:)` を避け、`.frame(maxWidth: .infinity)` / `.fixedSize()` を優先。
-- **【iOS】** **`containerRelativeFrame`** で機種差（幅 375〜440 pt）を吸収。
-- `GeometryReader` の過剰使用を避ける。
+- Avoid fixed-width `frame(width:)`; prefer `.frame(maxWidth: .infinity)` / `.fixedSize()`.
+- **[iOS]** Use **`containerRelativeFrame`** to absorb device width differences (375–440 pt).
+- Avoid overusing `GeometryReader`.
 
 ---
 
-## 20. キーボード・フォーカス管理
+## 20. Keyboard & Focus Management
 
-- **`@FocusState`** でフォーカスを明示的に管理。
+- Use **`@FocusState`** to manage focus explicitly.
 
 ```swift
 @FocusState private var isFieldFocused: Bool
 
-TextField("名前", text: $name)
+TextField("Name", text: $name)
     .focused($isFieldFocused)
 ```
 
-- **【iPadOS / macOS】** 主要アクションに **`KeyboardShortcut`** を割り当てる。
+- **[iPadOS / macOS]** Assign **`KeyboardShortcut`** to primary actions.
 
 ```swift
-Button("新規作成") { createItem() }
+Button("New") { createItem() }
     .keyboardShortcut("n", modifiers: .command)
-Button("保存") { save() }
+Button("Save") { save() }
     .keyboardShortcut("s", modifiers: .command)
 ```
 
-- **【macOS】** macOS はキーボードファースト。標準慣習（⌘N, ⌘S, ⌘W 等）に従う。Tab フォーカス順序を論理的に設計。
+- **[macOS]** macOS is keyboard-first. Follow standard conventions (⌘N, ⌘S, ⌘W, etc.). Design Tab focus order logically.
 
 ---
 
-## 21. ウィンドウ【macOS】
+## 21. Windows [macOS]
 
-- 任意サイズへのリサイズをサポートし、適切な最小サイズを設定。
-- `NavigationSplitView` でリサイズ時のフルードトランジションを自動取得。
-- `safeAreaInsets` / レイアウトガイドを正しく設定し、ウィンドウコントロールとタイトルバーの重なりを防ぐ。
-- `NavigationSplitView` の列幅は固定しない。
+- Support resizing to any size and set an appropriate minimum size.
+- `NavigationSplitView` automatically provides fluid transitions when resizing.
+- Set `safeAreaInsets` / layout guides correctly to prevent overlap with window controls and the title bar.
+- Do not fix the column widths of `NavigationSplitView`.
 
 ---
 
-## 22. アプリアイコン
+## 22. App Icon
 
-**Icon Composer**（Xcode 26 内蔵）でレイヤー構造のアイコンを作成する。
+Create layered icons using **Icon Composer** (built into Xcode 26).
 
-- レイヤー構成: 前景 / 中景 / 背景（システムが反射・屈折・シャドウ・ブラーを自動適用）
-- 不規則形状にはシステムが自動でバックグラウンドを付与
-- 要素はアイコン中央に配置、角丸クリッピングを考慮
+- Layer structure: Foreground / Midground / Background (the system automatically applies reflections, refractions, shadows, and blur)
+- The system automatically adds a background for irregular shapes
+- Center elements within the icon and account for the rounded corner clipping
 
-### 必要なバリアント
+### Required Variants
 
-| プラットフォーム | バリアント |
+| Platform | Variants |
 |---|---|
-| 【iOS / iPadOS】 | Default (Light) / Dark / Clear / Tinted |
-| 【macOS】 | Default (Light) / Dark / Clear (Light) / Clear (Dark) / Tinted (Light) / Tinted (Dark) |
+| [iOS / iPadOS] | Default (Light) / Dark / Clear / Tinted |
+| [macOS] | Default (Light) / Dark / Clear (Light) / Clear (Dark) / Tinted (Light) / Tinted (Dark) |
 
 ---
 
-## 23. 画面サイズ対応テスト【iOS】
+## 23. Screen Size Testing [iOS]
 
-HIG は「最大・最小レイアウトを先にテストせよ」と明言。以下機種で必ず確認:
+The HIG states: "Test the largest and smallest layouts first." Always verify on these devices:
 
-| テスト対象 | 幅 | 高さ | 確認ポイント |
+| Test Target | Width | Height | Verification Points |
 |---|---|---|---|
-| iPhone SE（4.7-inch） | 375 | 667 | 最小クラス。コンテンツ欠損なし |
-| iPhone 17 Pro Max | 440 | 956 | 最大クラス。横向き時 Regular 幅 |
+| iPhone SE (4.7-inch) | 375 | 667 | Smallest class. No content clipping |
+| iPhone 17 Pro Max | 440 | 956 | Largest class. Regular width in landscape |
 
-確認事項:
-- テキスト・コントロールが Safe Area 内に収まる
-- Dynamic Type 最大サイズ（Accessibility XL）で崩れない
-- 横向きで `verticalSizeClass` ベースの切替が正しい
+Verification checklist:
+- Text and controls fit within the Safe Area
+- No layout breakage at the largest Dynamic Type size (Accessibility XL)
+- `verticalSizeClass`-based switching works correctly in landscape
 
 ---
 
-## 関連スキル
+## Related Skills
 
-- アクセシビリティ全般: `skills/ui-accessibility/SKILL.md`
-- UI レビュー: `skills/ui-review-checklist/SKILL.md`
-- Swift コーディング規約: `skills/swift-coding-standards/SKILL.md`
+- Accessibility in general: `skills/ui-accessibility/SKILL.md`
+- UI review: `skills/ui-review-checklist/SKILL.md`
+- Swift coding standards: `skills/swift-coding-standards/SKILL.md`

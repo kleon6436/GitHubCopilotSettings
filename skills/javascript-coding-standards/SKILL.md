@@ -1,27 +1,27 @@
 ---
 name: javascript-coding-standards
-description: 'JavaScriptのコーディング規約を参照・適用する。JavaScript コーディング規約、命名規則、スタイルガイド、変数宣言、関数、モジュール、非同期処理、エラーハンドリング、コメント規約を確認・適用したいときに使用。Use when: applying JavaScript style guide, reviewing JavaScript code conventions, naming rules, variable declarations, async/await, error handling patterns, JSDoc.'
-argument-hint: '確認・適用したいコーディング規約の項目（省略可）'
+description: 'Reference and apply JavaScript coding standards. Use when: applying JavaScript style guide, reviewing JavaScript code conventions, naming rules, variable declarations, async/await, error handling patterns, JSDoc.'
+argument-hint: 'The coding standard item to check or apply (optional)'
 ---
 
-# JavaScript コーディング規約
+# JavaScript Coding Standards
 
-## 概要
+## Overview
 
-このスキルは JavaScript コードのコーディング規約を定義します。
-コードレビュー・新規実装の際はこの規約に従ってください。
+This skill defines coding standards for JavaScript code.
+Follow these conventions during code reviews and new implementations.
 
 ---
 
-## 1. 命名規則
+## 1. Naming Conventions
 
-| 種別 | 規則 | 例 |
-|------|------|----|
-| 変数 / 関数 / メソッド | `lowerCamelCase` | `fetchUserData()` |
-| クラス / コンストラクタ | `UpperCamelCase` | `UserProfile` |
-| 定数（モジュールスコープ） | `UPPER_SNAKE_CASE` | `MAX_RETRY_COUNT` |
-| プライベートメンバ（慣例） | 先頭 `_` | `_cache` |
-| ファイル名 | `kebab-case` | `user-service.js` |
+| Type | Rule | Example |
+|------|------|---------|
+| Variables / Functions / Methods | `lowerCamelCase` | `fetchUserData()` |
+| Classes / Constructors | `UpperCamelCase` | `UserProfile` |
+| Constants (module scope) | `UPPER_SNAKE_CASE` | `MAX_RETRY_COUNT` |
+| Private members (convention) | Leading `_` | `_cache` |
+| File names | `kebab-case` | `user-service.js` |
 
 ```js
 // ✅ Good
@@ -43,22 +43,22 @@ function FetchData() { }
 
 ---
 
-## 2. コードフォーマット
+## 2. Code Formatting
 
-<!-- プロジェクトに応じて値を変更してください -->
+<!-- Adjust values to match your project -->
 
-| 項目 | 設定値 |
+| Item | Setting |
 |------|--------|
-| インデント | スペース {2} 個（タブ不可） |
-| 1行の最大文字数 | {120} 文字 |
-| 文字列クォート | {シングルクォート `'` を優先} |
-| セミコロン | {付ける / 付けない} |
-| 末尾カンマ | 複数行の場合は末尾カンマを付ける |
-| フォーマッター | {例: Prettier} |
-| リンター | {例: ESLint} |
+| Indentation | {2} spaces (no tabs) |
+| Max line length | {120} characters |
+| String quotes | {Prefer single quotes `'`} |
+| Semicolons | {yes / no} |
+| Trailing commas | Add trailing commas for multi-line |
+| Formatter | {e.g. Prettier} |
+| Linter | {e.g. ESLint} |
 
 ```js
-// ✅ Good（複数行の末尾カンマ）
+// ✅ Good (trailing comma in multi-line)
 const SUPPORTED_FORMATS = [
   'json',
   'csv',
@@ -72,10 +72,10 @@ const SUPPORTED_FORMATS = ['json', 'csv',
 
 ---
 
-## 3. 変数宣言
+## 3. Variable Declarations
 
-- `const` を優先する。再代入が必要な場合のみ `let` を使用する。
-- `var` は使用しない。
+- Prefer `const`. Use `let` only when reassignment is needed.
+- Do not use `var`.
 
 ```js
 // ✅ Good
@@ -84,16 +84,16 @@ let retryCount = 0;
 
 // ❌ Bad
 var userId = 'abc123';
-let userId2 = 'abc123'; // 再代入しないのに let
+let userId2 = 'abc123'; // let without reassignment
 ```
 
 ---
 
-## 4. 関数
+## 4. Functions
 
-- **アロー関数**をコールバック・短い関数に使用する。
-- **`function` 宣言**はモジュールトップレベルの名前付き関数に使用する。
-- デフォルト引数を活用する。
+- Use **arrow functions** for callbacks and short functions.
+- Use **`function` declarations** for named functions at the module top level.
+- Make use of default parameters.
 
 ```js
 // ✅ Good
@@ -106,17 +106,17 @@ const doubled = numbers.map((n) => n * 2);
 function createUser(name, role = 'viewer') { }
 
 // ❌ Bad
-const fetchUser = function(id) { /* ... */ };  // トップレベルで無名関数
+const fetchUser = function(id) { /* ... */ };  // anonymous function at top level
 const doubled = numbers.map(function(n) { return n * 2; });
 ```
 
 ---
 
-## 5. モジュール
+## 5. Modules
 
-- ES Modules（`import` / `export`）を使用する。`require` は使わない。
-- `default export` は1ファイルに1つのクラス・関数の場合のみ使用する。
-- 複数エクスポートは **named export** を優先する。
+- Use ES Modules (`import` / `export`). Do not use `require`.
+- Use `default export` only when a file exports a single class or function.
+- Prefer **named exports** for multiple exports.
 
 ```js
 // ✅ Good
@@ -132,11 +132,11 @@ const { fetchUser } = require('./user-service');
 
 ---
 
-## 6. エラーハンドリング
+## 6. Error Handling
 
-- `try / catch` を使用し、エラーを握りつぶさない。
-- エラーは `Error` を継承したカスタムクラスで分類する。
-- `catch` ブロックでは必ず適切なログ出力または再スローを行う。
+- Use `try / catch` and do not swallow errors.
+- Classify errors using custom classes that extend `Error`.
+- Always log appropriately or rethrow in `catch` blocks.
 
 ```js
 // ✅ Good
@@ -162,17 +162,17 @@ try {
 try {
   const data = await fetchData();
 } catch (e) {
-  // 何もしない
+  // Do nothing
 }
 ```
 
 ---
 
-## 7. 非同期処理
+## 7. Async Processing
 
-- `async / await` を優先する。`.then()` チェーンは避ける。
-- `Promise.all` / `Promise.allSettled` を使って並列処理を行う。
-- `await` の使い忘れに注意する（戻り値の型を確認する）。
+- Prefer `async / await`. Avoid `.then()` chains.
+- Use `Promise.all` / `Promise.allSettled` for parallel processing.
+- Be careful not to forget `await` (check the return type).
 
 ```js
 // ✅ Good
@@ -194,30 +194,30 @@ function loadDashboard(userId) {
 
 ---
 
-## 8. コメント規約
+## 8. Comment Conventions
 
-- コードのロジックが自明でない箇所にのみコメントを付ける。
-- 公開 API には **JSDoc** 形式のドキュメントコメントを付ける。
-- TODO / FIXME は `// TODO: 説明` の形式で記述し、チケット番号を添える。
+- Add comments only where code logic is not self-evident.
+- Add **JSDoc** documentation comments to public APIs.
+- Write TODO / FIXME in the format `// TODO: description` and include a ticket number.
 
 ```js
 /**
- * 指定した ID のユーザーを取得します。
- * @param {string} id - ユーザー識別子
- * @returns {Promise<User>} ユーザーオブジェクト
- * @throws {ApiError} ユーザーが存在しない場合
+ * Fetches the user with the specified ID.
+ * @param {string} id - User identifier
+ * @returns {Promise<User>} User object
+ * @throws {ApiError} When the user does not exist
  */
 async function fetchUser(id) {
   // ...
 }
 
-// TODO: #456 キャッシュ戦略を実装する
+// TODO: #456 Implement cache strategy
 ```
 
 ---
 
-## 9. プロジェクト固有のルール
+## 9. Project-Specific Rules
 
-<!-- プロジェクトに応じて追記してください -->
+<!-- Add project-specific items here -->
 
-- {プロジェクト固有のルールをここに記載}
+- {Add project-specific rules here}

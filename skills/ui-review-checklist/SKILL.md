@@ -1,258 +1,258 @@
 ---
 name: ui-review-checklist
-description: 'UI レビュー時の横断チェックリスト。視覚デザイン、インタラクション、レスポンシブ / アダプティブ、アクセシビリティ、i18n、ダークモード、パフォーマンス、状態設計（空・ロード・エラー）、テキスト、コード品質を確認したいときに使用。Use when: reviewing UI pull requests; conducting UI QA; doing self-check before handoff across any platform.'
-argument-hint: '対象プラットフォーム or 重点カテゴリ（省略可）'
+description: 'Cross-platform UI review checklist. Use when: reviewing UI pull requests; conducting UI QA; doing self-check before handoff across any platform.'
+argument-hint: 'Target platform or focus category (optional)'
 ---
 
-# UI レビューチェックリスト
+# UI Review Checklist
 
-## 概要
+## Overview
 
-このスキルはプラットフォーム横断で UI をレビュー・セルフチェックするためのチェックリストを提供します。
-プルリクエスト前・ハンドオフ前・QA 時にこのリストを上から順に確認します。
+This skill provides a checklist for reviewing and self-checking UI across platforms.
+Work through this list from top to bottom before pull requests, handoffs, and QA.
 
-プラットフォーム固有の詳細は以下を参照:
+See the following for platform-specific details:
 - Apple: `skills/apple-ui-guidelines/SKILL.md`
 - Windows: `skills/windows-ui-guidelines/SKILL.md`
 - Web: `skills/web-ui-guidelines/SKILL.md`
 - Android: `skills/android-ui-guidelines/SKILL.md`
-- アクセシビリティ: `skills/ui-accessibility/SKILL.md`
+- Accessibility: `skills/ui-accessibility/SKILL.md`
 
 ---
 
-## 1. 視覚デザイン
+## 1. Visual Design
 
-- [ ] デザインシステム / トークン（色・スペーシング・タイポ）のみ使用し、ハードコード値がない
-- [ ] スペーシングが **8pt / 8dp / 4px** グリッドに準拠
-- [ ] フォントウェイトが 1 画面で 2〜3 種類に絞られている
-- [ ] 視覚的階層が明確（タイトル → 本文 → 補助情報）
-- [ ] 角丸・シャドウ・ボーダーがシステム標準または一貫している
-- [ ] アイコンは公式セット（SF Symbols / Material Symbols / Segoe Fluent Icons 等）を使用
-- [ ] プラットフォーム純正コンポーネントを優先し、独自再実装していない
+- [ ] Only design system / tokens (colors, spacing, typography) used — no hardcoded values
+- [ ] Spacing follows the **8pt / 8dp / 4px** grid
+- [ ] Font weights limited to 2–3 per screen
+- [ ] Visual hierarchy is clear (title → body → supplementary information)
+- [ ] Corner radii, shadows, and borders follow system standards or are consistent
+- [ ] Icons use official sets (SF Symbols / Material Symbols / Segoe Fluent Icons, etc.)
+- [ ] Platform-native components preferred — no custom reimplementations
 
 ---
 
-## 2. レイアウト・レスポンシブ
+## 2. Layout and Responsive
 
-- [ ] 最小幅・最大幅両方で表示確認済み
-  - iOS: SE（375pt）〜 Pro Max（440pt）
-  - iPad: 8.3" 〜 13"、Split View / Stage Manager
+- [ ] Verified at both minimum and maximum widths
+  - iOS: SE (375pt) ~ Pro Max (440pt)
+  - iPad: 8.3" ~ 13", Split View / Stage Manager
   - Android: Compact / Medium / Expanded
   - Web: 320px / 768px / 1024px / 1440px
-  - Windows: 500px〜フルスクリーン、Snap Layouts
-  - macOS: 最小ウィンドウサイズ〜最大化
-- [ ] 縦横両向きで崩れない（モバイル・タブレット）
-- [ ] 折りたたみ（Foldable）で折り目を跨がない
-- [ ] 固定幅 `width: 200px` / `frame(width: 200)` を避けている
-- [ ] Safe Area / Window Insets を尊重
-- [ ] 長いコンテンツでスクロール動作が正しい（慣性・バウンス）
-- [ ] Edge-to-Edge（Android 15+）/ Liquid Glass 背後へのコンテンツ透過が適切
+  - Windows: 500px ~ full screen, Snap Layouts
+  - macOS: minimum window size ~ maximized
+- [ ] No layout breakage in both portrait and landscape (mobile / tablet)
+- [ ] No content crossing the fold crease on foldable devices
+- [ ] Avoiding fixed widths like `width: 200px` / `frame(width: 200)`
+- [ ] Respects Safe Area / Window Insets
+- [ ] Scroll behavior is correct for long content (inertia / bounce)
+- [ ] Edge-to-Edge (Android 15+) / content transparency behind Liquid Glass handled appropriately
 
 ---
 
-## 3. インタラクション
+## 3. Interaction
 
-- [ ] タッチターゲットが推奨サイズ以上（iOS 44pt / Android 48dp / Web 24〜44px）
-- [ ] タップ・ホバー・フォーカス・プレス・無効の 5 状態が定義されている
-- [ ] 破壊的アクション（削除・送信）には確認・取り消し手段
-- [ ] ジェスチャー（スワイプ・ピンチ・ドラッグ）に代替手段がある
-- [ ] 戻る操作（Back / Escape / スワイプ）で予期通り遷移する
-- [ ] Predictive Back（Android 14+）対応
-- [ ] モーダル外タップでキャンセル、Esc で閉じる
-
----
-
-## 4. テキスト・i18n
-
-- [ ] すべてのユーザー向け文字列がローカライズ対象（ハードコードなし）
-- [ ] 長い言語（ドイツ語・フィンランド語）で切れない（1.3 倍伸縮想定）
-- [ ] 短い言語（中国語）でスカスカにならない
-- [ ] 日本語・中国語・韓国語でフォントが適切（CJK フォールバック）
-- [ ] RTL（アラビア語・ヘブライ語）で反転するか、論理プロパティで対応
-- [ ] 日付・数値・通貨がロケールフォーマット
-- [ ] 1 行 45〜75 文字（日本語 30〜40 文字）の可読性
-- [ ] 行間 1.5 倍以上（本文）
-- [ ] テキスト省略（ellipsis）時にフル文字列を参照できる（tooltip / 展開）
+- [ ] Touch targets meet minimum recommended size (iOS 44pt / Android 48dp / Web 24–44px)
+- [ ] All 5 states defined: tap, hover, focus, pressed, and disabled
+- [ ] Destructive actions (delete, submit) have a confirmation and undo mechanism
+- [ ] Gestures (swipe, pinch, drag) have alternative means of interaction
+- [ ] Back navigation (Back / Escape / swipe) transitions as expected
+- [ ] Predictive Back (Android 14+) supported
+- [ ] Tapping outside a modal cancels it; Escape closes it
 
 ---
 
-## 5. 状態設計
+## 4. Text and i18n
 
-すべての画面で以下の状態を網羅:
-
-- [ ] **空状態**（Empty）— コンテンツ 0 件時の案内とアクション（`ContentUnavailableView` 等）
-- [ ] **ロード中**（Loading）— スケルトン / プレースホルダー / プログレス
-- [ ] **エラー**（Error）— 何が起きたか + 再試行手段
-- [ ] **オフライン** — 接続復帰時の挙動
-- [ ] **部分失敗** — 一部データのみ取得できた場合
-- [ ] **ペイウォール / 権限不足** — 認証・権限エラー表示
-- [ ] **成功フィードバック** — Snackbar / Toast / inline success
-
----
-
-## 6. アクセシビリティ
-
-詳細は `skills/ui-accessibility/SKILL.md`。最低限:
-
-- [ ] すべてのインタラクティブ要素にアクセシブルな名前
-- [ ] キーボードのみで全機能操作可能
-- [ ] フォーカスインジケーターが視認可能（3:1）
-- [ ] フォーカス順序が論理的
-- [ ] テキストコントラスト 4.5:1（通常）/ 3:1（大）
-- [ ] 色だけで情報を伝えていない
-- [ ] フォント拡大 200% で崩れない
-- [ ] スクリーンリーダーで正しく読み上げられる
-- [ ] Reduce Motion 対応
-- [ ] 画像に適切な alt、装飾画像は SR から隠す
-- [ ] 動画に字幕
+- [ ] All user-facing strings are localized (no hardcoded strings)
+- [ ] Text does not get cut off in longer languages like German / Finnish (expect 1.3× expansion)
+- [ ] Text does not look sparse in shorter languages like Chinese
+- [ ] Appropriate fonts for Japanese, Chinese, and Korean (CJK fallback)
+- [ ] RTL (Arabic, Hebrew) layout is mirrored or handled with logical properties
+- [ ] Dates, numbers, and currencies formatted per locale
+- [ ] Readable line length: 45–75 characters (Japanese: 30–40 characters)
+- [ ] Line height at least 1.5× for body text
+- [ ] Full string accessible on text truncation (ellipsis) via tooltip / expand
 
 ---
 
-## 7. ダーク / ライトモード
+## 5. State Design
 
-- [ ] 両テーマで全画面が視認可能
-- [ ] ハードコード色がない（セマンティックカラー / テーマリソース使用）
-- [ ] 画像・イラスト・アイコンが両テーマで適切
-- [ ] フルカラーロゴはダーク時に背景・コントラスト調整
-- [ ] 影・ボーダーがダーク時に見える
-- [ ] `color-scheme` / `<meta name="theme-color">`（Web）設定済み
-- [ ] Increased Contrast / High Contrast 対応
+Cover all of the following states for every screen:
 
----
-
-## 8. アニメーション・モーション
-
-- [ ] 持続時間 150〜400ms の範囲
-- [ ] イージングがプラットフォーム推奨（Spring / FastOutSlowIn 等）
-- [ ] `prefers-reduced-motion` / Reduce Motion 有効時に簡略化または無効化
-- [ ] 3 回/秒を超える点滅がない
-- [ ] 自動再生・無限ループには停止手段
-- [ ] 60fps を維持（ジャンクがない）
-- [ ] `transform` / `opacity` 中心で、レイアウトを動かしていない
+- [ ] **Empty state** — Guidance and action when content count is 0 (`ContentUnavailableView`, etc.)
+- [ ] **Loading** — Skeleton / placeholder / progress indicator
+- [ ] **Error** — What went wrong + retry mechanism
+- [ ] **Offline** — Behavior when connection is restored
+- [ ] **Partial failure** — When only some data could be fetched
+- [ ] **Paywall / Insufficient permissions** — Authentication / permission error display
+- [ ] **Success feedback** — Snackbar / Toast / inline success
 
 ---
 
-## 9. パフォーマンス
+## 6. Accessibility
 
-### 全般
-- [ ] 初期表示が 1 秒以内に何か表示される
-- [ ] スクロールが 60fps（ドロップフレームなし）
-- [ ] 長いリストは遅延レンダリング（LazyColumn / RecyclerView / 仮想スクロール）
-- [ ] 画像が解像度に応じて最適化（複数サイズ・WebP / AVIF / HEIC）
+See `skills/ui-accessibility/SKILL.md` for details. Minimum requirements:
+
+- [ ] All interactive elements have accessible names
+- [ ] All features operable with keyboard only
+- [ ] Focus indicator is visible (3:1 contrast)
+- [ ] Focus order is logical
+- [ ] Text contrast ratio 4.5:1 (normal) / 3:1 (large)
+- [ ] Information not conveyed by color alone
+- [ ] Layout does not break at 200% font size
+- [ ] Read correctly by screen readers
+- [ ] Reduce Motion supported
+- [ ] Images have appropriate alt text; decorative images hidden from screen readers
+- [ ] Videos have subtitles
+
+---
+
+## 7. Dark / Light Mode
+
+- [ ] All screens visible in both themes
+- [ ] No hardcoded colors (use semantic colors / theme resources)
+- [ ] Images, illustrations, and icons work correctly in both themes
+- [ ] Full-color logos have adjusted background / contrast in dark mode
+- [ ] Shadows and borders visible in dark mode
+- [ ] `color-scheme` / `<meta name="theme-color">` (Web) configured
+- [ ] Increased Contrast / High Contrast supported
+
+---
+
+## 8. Animation and Motion
+
+- [ ] Duration in the 150–400ms range
+- [ ] Easing follows platform recommendations (Spring / FastOutSlowIn, etc.)
+- [ ] Simplified or disabled when `prefers-reduced-motion` / Reduce Motion is enabled
+- [ ] No flashing more than 3 times per second
+- [ ] Auto-play / infinite loops have a stop mechanism
+- [ ] Maintains 60fps (no jank)
+- [ ] Centered on `transform` / `opacity`, not triggering layout changes
+
+---
+
+## 9. Performance
+
+### General
+- [ ] Something is visible within 1 second on initial load
+- [ ] Scrolling at 60fps (no dropped frames)
+- [ ] Long lists use deferred rendering (LazyColumn / RecyclerView / virtual scrolling)
+- [ ] Images optimized for resolution (multiple sizes · WebP / AVIF / HEIC)
 
 ### Web
 - [ ] **LCP ≤ 2.5s** / **CLS ≤ 0.1** / **INP ≤ 200ms**
-- [ ] 画像に `width` / `height` 指定、`loading="lazy"`
-- [ ] クリティカル CSS インライン、非クリティカルは遅延
-- [ ] JS バンドル監査（不要な依存がない）
+- [ ] Images have `width` / `height` attributes and `loading="lazy"`
+- [ ] Critical CSS inlined; non-critical deferred
+- [ ] JS bundle audited (no unnecessary dependencies)
 
-### ネイティブ
-- [ ] 起動時間測定済み（Baseline Profile 等）
-- [ ] メモリリークがない（プロファイル済み）
-- [ ] 画像キャッシュが適切（Coil / Kingfisher / SDWebImage）
+### Native
+- [ ] Startup time measured (Baseline Profile, etc.)
+- [ ] No memory leaks (profiled)
+- [ ] Image caching appropriate (Coil / Kingfisher / SDWebImage)
 
 ---
 
-## 10. プラットフォーム慣習
+## 10. Platform Conventions
 
 ### iOS / iPadOS
-- [ ] `NavigationStack` / `NavigationSplitView` / `TabView` など標準コンポーネント使用
-- [ ] Liquid Glass を妨げるカスタム背景がない
-- [ ] Dynamic Type 対応
-- [ ] サイズクラス（Compact / Regular）対応
-- [ ] ハプティクス（`.sensoryFeedback`）適切
+- [ ] Standard components used: `NavigationStack` / `NavigationSplitView` / `TabView`, etc.
+- [ ] No custom backgrounds that block Liquid Glass
+- [ ] Dynamic Type supported
+- [ ] Size classes (Compact / Regular) supported
+- [ ] Haptics (`.sensoryFeedback`) used appropriately
 
 ### macOS
-- [ ] キーボードショートカットが標準（⌘N / ⌘S / ⌘W）
-- [ ] メニューバー項目が適切
-- [ ] ウィンドウリサイズに追従
-- [ ] インスペクターパネル使用
+- [ ] Standard keyboard shortcuts (⌘N / ⌘S / ⌘W)
+- [ ] Menu bar items appropriate
+- [ ] Responds to window resize
+- [ ] Inspector panel used
 
 ### Android
-- [ ] Material 3 + Dynamic Color 対応
-- [ ] WindowSizeClass によるアダプティブナビゲーション
+- [ ] Material 3 + Dynamic Color supported
+- [ ] Adaptive navigation with WindowSizeClass
 - [ ] Edge-to-Edge + WindowInsets
 - [ ] Predictive Back
-- [ ] アダプティブアイコン + Monochrome
+- [ ] Adaptive icons + Monochrome
 
 ### Windows
-- [ ] Fluent Design + Mica / Acrylic 適切適用
-- [ ] タイトルバー統合
+- [ ] Fluent Design + Mica / Acrylic applied appropriately
+- [ ] Title bar integration
 - [ ] NavigationView + Segoe Fluent Icons
-- [ ] High Contrast テーマ対応
-- [ ] キーボードアクセラレータ（Ctrl+S / Alt ナビ）
+- [ ] High Contrast theme supported
+- [ ] Keyboard accelerators (Ctrl+S / Alt navigation)
 
 ### Web
-- [ ] セマンティック HTML（`<button>` / `<nav>` / `<main>` 等）
-- [ ] SEO メタタグ / OGP 設定
-- [ ] HTTPS 前提、外部リンクに `rel="noopener"`
-- [ ] Viewport meta tag 正しい
+- [ ] Semantic HTML (`<button>` / `<nav>` / `<main>`, etc.)
+- [ ] SEO meta tags / OGP configured
+- [ ] HTTPS assumed; external links have `rel="noopener"`
+- [ ] Viewport meta tag correct
 
 ---
 
-## 11. コード品質
+## 11. Code Quality
 
-- [ ] コンポーネントが単一責任（1 関心事）
-- [ ] マジックナンバー・マジックストリングなし
-- [ ] 共通コンポーネントへの抽出が適切（過剰抽象化もない）
-- [ ] コードの再コンポジション / 再レンダリング最適化（`remember` / `useMemo` / `@Immutable`）
-- [ ] インラインでの重い計算がない
-- [ ] プレビュー / Storybook でコンポーネントが単独確認可能
-- [ ] 言語別のコーディング規約スキルに準拠（`swift-coding-standards` / `python-coding-standards` 等）
-
----
-
-## 12. セキュリティ・プライバシー（UI 視点）
-
-- [ ] パスワードフィールドが適切（入力マスク・`autocomplete="current-password"` / `new-password"`）
-- [ ] クリップボードにセンシティブ情報を書かない、または期限付き
-- [ ] ログイン状態表示が信頼できる（なりすまし防止）
-- [ ] 外部リンクは目的を明示 + `rel="noopener"`（Web）
-- [ ] ユーザー生成コンテンツ表示時のエスケープ処理
-- [ ] スクリーンショット / タスクスイッチャーでのセンシティブ情報保護（`FLAG_SECURE` / `isIdleTimerDisabled` 等）
+- [ ] Component has a single responsibility (one concern)
+- [ ] No magic numbers or magic strings
+- [ ] Extraction to shared components is appropriate (no over-abstraction either)
+- [ ] Recomposition / re-render optimized (`remember` / `useMemo` / `@Immutable`)
+- [ ] No heavy computations inline
+- [ ] Component can be previewed in isolation with Preview / Storybook
+- [ ] Follows the language-specific coding standards skill (`swift-coding-standards` / `python-coding-standards`, etc.)
 
 ---
 
-## 13. テキスト（UX ライティング）
+## 12. Security and Privacy (UI Perspective)
 
-- [ ] ボタンラベルは **動詞 + 目的語**（「削除する」「変更を保存」）
-- [ ] エラーメッセージが具体的で、修正方法が分かる（「エラー」ではなく「メールアドレスの形式が正しくありません」）
-- [ ] 確認ダイアログは結果を明示（「削除しますか？」→「『レポート 2026』を削除します。取り消せません」）
-- [ ] 敬語・常体が一貫している
-- [ ] 専門用語・略語は必要最小限、定義を提供
-- [ ] 数字・時刻・日付の表記が統一（全角/半角、24時間/12時間、和暦/西暦）
-- [ ] 空状態のマイクロコピーが励ましや次アクションを提示
-
----
-
-## 14. エッジケース
-
-- [ ] 非常に長い名前・文字列（絵文字含む）
-- [ ] 空文字列 / 空白のみ入力
-- [ ] 数字 0 / 負数 / 最大値
-- [ ] 画像読み込み失敗
-- [ ] ネットワーク遅延（3G 相当）
-- [ ] タイムゾーン切替時の日付表示
-- [ ] オフライン → オンライン復帰
-- [ ] バックグラウンド → フォアグラウンド復帰（状態復元）
-- [ ] 端末回転時の入力状態保持
-- [ ] メモリ不足時（プロセスキル → 復元）
+- [ ] Password fields handled correctly (input masking · `autocomplete="current-password"` / `"new-password"`)
+- [ ] Sensitive information not written to clipboard, or written with an expiry
+- [ ] Login state display is trustworthy (anti-spoofing)
+- [ ] External links state their purpose + `rel="noopener"` (Web)
+- [ ] Escape processing applied when displaying user-generated content
+- [ ] Sensitive information protected in screenshots / task switcher (`FLAG_SECURE` / `isIdleTimerDisabled`, etc.)
 
 ---
 
-## 15. ハンドオフ / ドキュメント
+## 13. Text (UX Writing)
 
-- [ ] コンポーネントのプロパティ・スロットが明確
-- [ ] デザイン仕様書（Figma 等）との差分確認済み
-- [ ] プロトタイプ / デモ動画がある（複雑なインタラクションの場合）
-- [ ] リリースノート / 変更履歴に UI 変更が記載
-- [ ] アクセシビリティ確認記録を残す（Voice Over / TalkBack ログ）
+- [ ] Button labels use **verb + object** ("Delete", "Save Changes")
+- [ ] Error messages are specific and tell the user how to fix the issue (not just "Error" but "The email address format is invalid")
+- [ ] Confirmation dialogs state the outcome explicitly ("Are you sure you want to delete?" → "This will permanently delete 'Report 2026'. This cannot be undone.")
+- [ ] Polite / plain form is consistent throughout
+- [ ] Technical terms and abbreviations kept to a minimum, with definitions provided
+- [ ] Numbers, times, and dates are formatted consistently (full-width/half-width, 24-hour/12-hour, calendar era)
+- [ ] Empty state microcopy offers encouragement or a next action
 
 ---
 
-## 使い方
+## 14. Edge Cases
 
-1. PR を開く前にこのリストを上から全項目セルフチェック。
-2. 対象外の項目には「N/A: 理由」を明記。
-3. レビュワーはこのリストに基づいて差分・スクリーンショット・動画を確認。
-4. プラットフォーム固有の詳細確認は各 UI スキルへ。
+- [ ] Very long names / strings (including emoji)
+- [ ] Empty string / whitespace-only input
+- [ ] Number 0 / negative numbers / maximum value
+- [ ] Image load failure
+- [ ] Network delay (equivalent to 3G)
+- [ ] Date display on timezone switch
+- [ ] Offline → online recovery
+- [ ] Background → foreground recovery (state restoration)
+- [ ] Input state preserved on device rotation
+- [ ] Low memory (process kill → restoration)
+
+---
+
+## 15. Handoff / Documentation
+
+- [ ] Component properties and slots are clearly defined
+- [ ] Verified against design spec (Figma, etc.) — no discrepancies
+- [ ] Prototype / demo video available (for complex interactions)
+- [ ] UI changes recorded in release notes / changelog
+- [ ] Accessibility verification records kept (VoiceOver / TalkBack logs)
+
+---
+
+## Usage
+
+1. Self-check every item in this list from top to bottom before opening a PR.
+2. Mark items not applicable with "N/A: reason".
+3. Reviewers verify diffs, screenshots, and videos based on this list.
+4. For platform-specific details, refer to the respective UI skill.

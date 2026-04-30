@@ -1,41 +1,41 @@
 ---
 name: mfc-ui-guidelines
-description: 'MFC アプリケーションの UI 設計・実装ガイドラインを参照・適用する。Document/View アーキテクチャ、メッセージマップ、ダイアログ設計、DDX/DDV、コントロール配置、リボン UI、GDI リソース管理、CMFCVisualManager、高 DPI 対応、アクセシビリティ、UI スレッド管理を確認・適用したいときに使用。Use when: designing MFC application UI, reviewing MFC dialog layout, message handling, Document/View architecture, ribbon UI, GDI resource management, CMFCVisualManager theming, high-DPI support, accessibility in MFC apps.'
-argument-hint: '確認・適用したい MFC UI ガイドラインの項目（省略可）'
+description: 'Reference and apply UI design and implementation guidelines for MFC applications. Use when reviewing or applying: Document/View architecture, message maps, dialog design, DDX/DDV, control layout, ribbon UI, GDI resource management, CMFCVisualManager, high-DPI support, accessibility, UI thread management. Use when: designing MFC application UI, reviewing MFC dialog layout, message handling, Document/View architecture, ribbon UI, GDI resource management, CMFCVisualManager theming, high-DPI support, accessibility in MFC apps.'
+argument-hint: 'MFC UI guideline item to review or apply (optional)'
 ---
 
-# MFC アプリケーション UI ガイドライン
+# MFC Application UI Guidelines
 
-## 概要
+## Overview
 
-このスキルは MFC（Microsoft Foundation Classes）アプリケーションの UI 設計・実装ガイドラインを定義します。
-モダン C++（C++17 以降）を前提とし、MFC 固有の UI パターン・リソース管理・アクセシビリティをカバーします。
-一般的な C++ コーディング規約については `skills/cpp-coding-standards/SKILL.md` を参照してください。
+This skill defines UI design and implementation guidelines for MFC (Microsoft Foundation Classes) applications.
+Assumes modern C++ (C++17 or later) and covers MFC-specific UI patterns, resource management, and accessibility.
+For general C++ coding conventions, refer to `skills/cpp-coding-standards/SKILL.md`.
 
-> **対象**: Visual Studio 2019 以降 / MFC Feature Pack 搭載環境 / Windows 10 以降
+> **Target**: Visual Studio 2019 or later / MFC Feature Pack environment / Windows 10 or later
 
 ---
 
-## 1. アプリケーション構造
+## 1. Application Structure
 
-### 1.1 アプリケーション種別の選択基準
+### 1.1 Application Type Selection Criteria
 
-| 種別 | 適用ケース | 基底クラス |
+| Type | Use Case | Base Class |
 |------|-----------|-----------|
-| SDI（単一ドキュメント） | 単一ファイル編集アプリ | `CFrameWnd` |
-| MDI（複数ドキュメント） | 複数ファイル同時編集アプリ | `CMDIFrameWnd` / `CMDIChildWnd` |
-| ダイアログベース | ユーティリティ・設定ツール | `CDialogEx` |
-| タブ付き MDI | モダンなタブ切り替え UI | `CMDIFrameWndEx` + `CMDITabInfo` |
+| SDI (Single Document) | Single-file editing app | `CFrameWnd` |
+| MDI (Multiple Documents) | Multi-file simultaneous editing app | `CMDIFrameWnd` / `CMDIChildWnd` |
+| Dialog-based | Utility / settings tool | `CDialogEx` |
+| Tabbed MDI | Modern tab-switching UI | `CMDIFrameWndEx` + `CMDITabInfo` |
 
-### 1.2 Document/View アーキテクチャ
+### 1.2 Document/View Architecture
 
-- **CDocument**: データの保持・永続化（シリアライズ）を担当する。UI ロジックを含めない。
-- **CView**: 描画とユーザー操作を担当する。データの直接操作は CDocument を介して行う。
-- Document と View は `UpdateAllViews()` / `OnUpdate()` で同期する。
-- ドキュメントテンプレート（`CSingleDocTemplate` / `CMultiDocTemplate`）で Document・View・Frame を結合する。
+- **CDocument**: Responsible for data storage and persistence (serialization). Do not include UI logic.
+- **CView**: Responsible for rendering and user interaction. Manipulate data through CDocument only.
+- Document and View synchronize via `UpdateAllViews()` / `OnUpdate()`.
+- Use document templates (`CSingleDocTemplate` / `CMultiDocTemplate`) to bind Document, View, and Frame together.
 
 ```cpp
-// ✅ Good — Document はデータ管理のみ
+// ✅ Good — Document handles data management only
 class CMyDocument : public CDocument {
  public:
   const std::vector<Record>& records() const { return records_; }
@@ -56,29 +56,29 @@ class CMyDocument : public CDocument {
   DECLARE_MESSAGE_MAP()
 };
 
-// ❌ Bad — Document 内で直接 UI を操作
+// ❌ Bad — Directly manipulating UI inside Document
 class CMyDocument : public CDocument {
  public:
   void AddRecord(Record record) {
     records_.push_back(record);
-    AfxMessageBox(_T("追加しました"));  // UI ロジックが混入
+    AfxMessageBox(_T("Record added"));  // UI logic mixed in
   }
 };
 ```
 
 ---
 
-## 2. メッセージハンドリング
+## 2. Message Handling
 
-### 2.1 メッセージマップの基本
+### 2.1 Message Map Basics
 
-- メッセージマップマクロ（`BEGIN_MESSAGE_MAP` / `END_MESSAGE_MAP`）を使用する。
-- ハンドラ関数の命名は `On` + 動詞 + 対象（例: `OnClickSave`, `OnPaint`）とする。
-- `ON_COMMAND` のハンドラは `OnCmd` + コマンド名とする。
-- カスタムメッセージは `WM_APP` ベースで定義し、マジックナンバーを避ける。
+- Use message map macros (`BEGIN_MESSAGE_MAP` / `END_MESSAGE_MAP`).
+- Name handler functions as `On` + verb + target (e.g., `OnClickSave`, `OnPaint`).
+- `ON_COMMAND` handlers should be named `OnCmd` + command name.
+- Define custom messages using `WM_APP` as a base; avoid magic numbers.
 
 ```cpp
-// ✅ Good — 明確な命名とカスタムメッセージ定義
+// ✅ Good — Clear naming and custom message definitions
 constexpr UINT WM_PROCESSING_COMPLETE = WM_APP + 1;
 constexpr UINT WM_DATA_UPDATED        = WM_APP + 2;
 
@@ -91,17 +91,17 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
   ON_MESSAGE(WM_PROCESSING_COMPLETE, &CMainFrame::OnProcessingComplete)
 END_MESSAGE_MAP()
 
-// ❌ Bad — マジックナンバー、曖昧な命名
+// ❌ Bad — Magic numbers, ambiguous naming
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
   ON_COMMAND(ID_FILE_SAVE, &CMainFrame::OnFunc1)
-  ON_MESSAGE(WM_APP + 100, &CMainFrame::Handler2)  // 意味不明な定数
+  ON_MESSAGE(WM_APP + 100, &CMainFrame::Handler2)  // Meaningless constant
 END_MESSAGE_MAP()
 ```
 
-### 2.2 コマンド UI 更新
+### 2.2 Command UI Update
 
-- `ON_UPDATE_COMMAND_UI` でメニュー・ツールバーの有効/無効状態を制御する。
-- ハンドラ内で `pCmdUI->Enable()` / `pCmdUI->SetCheck()` のみ呼び出す。重い処理を入れない。
+- Use `ON_UPDATE_COMMAND_UI` to control the enabled/disabled state of menus and toolbars.
+- Only call `pCmdUI->Enable()` / `pCmdUI->SetCheck()` inside the handler. Do not include heavy processing.
 
 ```cpp
 // ✅ Good
@@ -112,23 +112,23 @@ void CMainFrame::OnUpdateCmdEditUndo(CCmdUI* pCmdUI) {
 
 ---
 
-## 3. ダイアログ設計
+## 3. Dialog Design
 
-### 3.1 モーダルとモードレスの選択
+### 3.1 Choosing Between Modal and Modeless
 
-| 種別 | 使い分け | 生成方法 |
-|------|---------|---------|
-| モーダル | ユーザーの入力完了を待つ（設定、確認） | `DoModal()` |
-| モードレス | メイン操作と並行して使う（検索、ツール） | `Create()` + `ShowWindow()` |
+| Type | Usage | Creation Method |
+|------|---------|------|
+| Modal | Wait for user to complete input (settings, confirmation) | `DoModal()` |
+| Modeless | Use in parallel with main operation (search, tools) | `Create()` + `ShowWindow()` |
 
-### 3.2 DDX/DDV（Data Exchange / Validation）
+### 3.2 DDX/DDV (Data Exchange / Validation)
 
-- コントロール値とメンバー変数の同期には DDX マクロを使用する。
-- バリデーションは DDV マクロまたは `OnOK()` で行う。
-- メンバー変数の初期化はコンストラクタで行い、`OnInitDialog()` で UI を補完する。
+- Use DDX macros to synchronize control values with member variables.
+- Perform validation using DDV macros or in `OnOK()`.
+- Initialize member variables in the constructor; supplement UI initialization in `OnInitDialog()`.
 
 ```cpp
-// ✅ Good — DDX/DDV を活用した値の同期と検証
+// ✅ Good — Synchronizing and validating values using DDX/DDV
 class CSettingsDialog : public CDialogEx {
  public:
   explicit CSettingsDialog(CWnd* pParent = nullptr);
@@ -154,57 +154,57 @@ void CSettingsDialog::DoDataExchange(CDataExchange* pDX) {
   DDX_Check(pDX, IDC_CHECK_AUTO_CONNECT, auto_connect_);
 }
 
-// ❌ Bad — DDX を使わず手動でコントロール操作
+// ❌ Bad — Manually manipulating controls without DDX
 void CSettingsDialog::OnOK() {
   CString text;
-  GetDlgItemText(IDC_EDIT_USERNAME, text);  // DDX を使うべき
+  GetDlgItemText(IDC_EDIT_USERNAME, text);  // Should use DDX
   user_name_ = text;
   CDialogEx::OnOK();
 }
 ```
 
-### 3.3 コントロール配置指針
+### 3.3 Control Layout Guidelines
 
-- タブ順序はリソースエディタで論理的な順序に設定する（左→右、上→下）。
-- グループボックスでコントロールをグループ化し、関連する設定をまとめる。
-- OK / キャンセルボタンはダイアログ右下に配置する（Windows 標準配置）。
-- コントロール間のマージンは最低 7 DLU（Dialog Unit）を確保する。
+- Set tab order to a logical sequence in the resource editor (left→right, top→bottom).
+- Group related controls using group boxes.
+- Place OK / Cancel buttons at the bottom-right of the dialog (Windows standard layout).
+- Ensure a minimum margin of 7 DLU (Dialog Units) between controls.
 
 ---
 
-## 4. コントロールとレイアウト
+## 4. Controls and Layout
 
-### 4.1 推奨コントロール選択
+### 4.1 Recommended Control Selection
 
-| 用途 | 推奨コントロール | 備考 |
+| Purpose | Recommended Control | Notes |
 |------|----------------|------|
-| テキスト入力 | `CEdit` / `CMFCMaskedEdit` | マスク入力にはMaskedEdit |
-| 複数行テキスト | `CRichEditCtrl` | 書式付きテキスト向け |
-| 選択（少数） | `CComboBox` | 項目数 10 以下 |
-| 選択（多数） | `CListCtrl`（レポートビュー） | ソート・フィルタが必要な場合 |
-| ツリー表示 | `CTreeCtrl` | 階層データ |
-| プロパティ一覧 | `CMFCPropertyGridCtrl` | 設定画面に最適 |
-| 日時入力 | `CDateTimeCtrl` | |
-| 進捗表示 | `CProgressCtrl` | |
+| Text input | `CEdit` / `CMFCMaskedEdit` | Use MaskedEdit for masked input |
+| Multi-line text | `CRichEditCtrl` | For formatted text |
+| Selection (few items) | `CComboBox` | Up to 10 items |
+| Selection (many items) | `CListCtrl` (report view) | When sorting/filtering is needed |
+| Tree display | `CTreeCtrl` | Hierarchical data |
+| Property list | `CMFCPropertyGridCtrl` | Ideal for settings screens |
+| Date/time input | `CDateTimeCtrl` | |
+| Progress display | `CProgressCtrl` | |
 
-### 4.2 動的レイアウト（高 DPI 対応）
+### 4.2 Dynamic Layout (High-DPI Support)
 
-- `CMFCDynamicLayout` を使用してリサイズ時のコントロール配置を定義する。
-- リソースエディタの動的レイアウト設定、またはコードで `SetMinSize()` / `EnableDynamicLayout()` を使用する。
-- 固定ピクセル値ではなく比率ベースで配置する。
+- Use `CMFCDynamicLayout` to define control placement on resize.
+- Use the resource editor's dynamic layout settings, or use `SetMinSize()` / `EnableDynamicLayout()` in code.
+- Use ratio-based placement rather than fixed pixel values.
 
 ```cpp
-// ✅ Good — 動的レイアウトでリサイズ対応
+// ✅ Good — Resize-ready with dynamic layout
 BOOL CMyDialog::OnInitDialog() {
   CDialogEx::OnInitDialog();
 
   auto* layout = GetDynamicLayout();
   if (layout != nullptr) {
-    // リストコントロール: 移動なし、サイズは親に追従
+    // List control: no movement, size follows parent
     layout->AddItem(IDC_LIST_MAIN,
         CMFCDynamicLayout::MoveNone(),
         CMFCDynamicLayout::SizeHorizontalAndVertical(100, 100));
-    // OK ボタン: 右下に移動、サイズ固定
+    // OK button: move to bottom-right, fixed size
     layout->AddItem(IDOK,
         CMFCDynamicLayout::MoveHorizontalAndVertical(100, 100),
         CMFCDynamicLayout::SizeNone());
@@ -212,68 +212,68 @@ BOOL CMyDialog::OnInitDialog() {
   return TRUE;
 }
 
-// ❌ Bad — OnSize で手動計算（DPI 非対応になりがち）
+// ❌ Bad — Manual calculation in OnSize (tends to break DPI support)
 void CMyDialog::OnSize(UINT nType, int cx, int cy) {
   CDialogEx::OnSize(nType, cx, cy);
   if (auto* pList = GetDlgItem(IDC_LIST_MAIN)) {
-    pList->MoveWindow(10, 10, cx - 20, cy - 50);  // 固定マージン
+    pList->MoveWindow(10, 10, cx - 20, cy - 50);  // Fixed margin
   }
 }
 ```
 
-### 4.3 高 DPI 対応
+### 4.3 High-DPI Support
 
-- アプリケーションマニフェストで `<dpiAwareness>PerMonitorV2</dpiAwareness>` を宣言する。
-- アイコン・ビットマップは複数解像度を用意する（16×16, 32×32, 48×48, 256×256）。
-- フォントサイズはシステムメトリクスから取得し、ハードコードしない。
+- Declare `<dpiAwareness>PerMonitorV2</dpiAwareness>` in the application manifest.
+- Provide icons and bitmaps in multiple resolutions (16×16, 32×32, 48×48, 256×256).
+- Obtain font sizes from system metrics; do not hardcode them.
 
 ---
 
-## 5. リボン / ツールバー / メニュー
+## 5. Ribbon / Toolbar / Menu
 
-### 5.1 リボン UI（MFC Feature Pack）
+### 5.1 Ribbon UI (MFC Feature Pack)
 
-- 新規アプリケーションにはリボン UI（`CMFCRibbonBar`）を推奨する。
-- カテゴリ → パネル → ボタン の階層でコマンドを整理する。
-- よく使うコマンドはクイックアクセスツールバーに登録する。
+- Ribbon UI (`CMFCRibbonBar`) is recommended for new applications.
+- Organize commands in a hierarchy of Category → Panel → Button.
+- Register frequently used commands to the Quick Access Toolbar.
 
 ```cpp
-// ✅ Good — リボンの構築
+// ✅ Good — Building the ribbon
 void CMainFrame::InitializeRibbon() {
   auto* category = ribbon_bar_.AddCategory(
-      _T("ホーム"), IDB_RIBBON_HOME, IDB_RIBBON_HOME_SMALL);
+      _T("Home"), IDB_RIBBON_HOME, IDB_RIBBON_HOME_SMALL);
 
-  auto* panel = category->AddPanel(_T("ファイル"), icon_index);
-  panel->Add(new CMFCRibbonButton(ID_FILE_NEW, _T("新規"), 0, 0));
-  panel->Add(new CMFCRibbonButton(ID_FILE_OPEN, _T("開く"), 1, 1));
-  panel->Add(new CMFCRibbonButton(ID_FILE_SAVE, _T("保存"), 2, 2));
+  auto* panel = category->AddPanel(_T("File"), icon_index);
+  panel->Add(new CMFCRibbonButton(ID_FILE_NEW, _T("New"), 0, 0));
+  panel->Add(new CMFCRibbonButton(ID_FILE_OPEN, _T("Open"), 1, 1));
+  panel->Add(new CMFCRibbonButton(ID_FILE_SAVE, _T("Save"), 2, 2));
 }
 ```
 
-### 5.2 ツールバー
+### 5.2 Toolbar
 
-- ツールバーは `CMFCToolBar` を使用する（`CToolBar` ではなく）。
-- ツールバーボタンにはツールチップを必ず設定する。
-- カスタマイズ可能にする場合は `CMFCToolBar::EnableCustomizeButton()` を使用する。
+- Use `CMFCToolBar` for toolbars (not `CToolBar`).
+- Always set tooltips for toolbar buttons.
+- Use `CMFCToolBar::EnableCustomizeButton()` when customization is needed.
 
-### 5.3 メニュー設計
+### 5.3 Menu Design
 
-- メニュー階層は最大 2 段（サブメニュー 1 段まで）にとどめる。
-- アクセラレータキー（`Ctrl+S` 等）はメニュー項目に明示する。
-- ニーモニック（`&File` → `Alt+F`）をすべてのメニュー項目に設定する。
+- Keep menu hierarchy to a maximum of 2 levels (at most 1 sub-menu level).
+- Explicitly show accelerator keys (e.g., `Ctrl+S`) in menu items.
+- Set mnemonics (e.g., `&File` → `Alt+F`) for all menu items.
 
 ---
 
-## 6. GDI リソース管理
+## 6. GDI Resource Management
 
-### 6.1 RAII ラッパーの活用
+### 6.1 Using RAII Wrappers
 
-- GDI オブジェクト（`CPen`, `CBrush`, `CFont`, `CBitmap`）は RAII で管理する。
-- `SelectObject()` の戻り値（旧オブジェクト）は必ず復元する。
-- GDI オブジェクトの生成失敗を検査する。
+- Manage GDI objects (`CPen`, `CBrush`, `CFont`, `CBitmap`) with RAII.
+- Always restore the return value of `SelectObject()` (the old object).
+- Check for GDI object creation failures.
 
 ```cpp
-// ✅ Good — RAII パターンで GDI オブジェクトを管理
+// ✅ Good — Managing GDI objects with RAII pattern
 class GdiSelector {
  public:
   GdiSelector(CDC& dc, CGdiObject& obj)
@@ -301,87 +301,87 @@ void CMyView::OnDraw(CDC* pDC) {
   pDC->Rectangle(rect);
 }
 
-// ❌ Bad — SelectObject の復元漏れ
+// ❌ Bad — Missing restoration of SelectObject
 void CMyView::OnDraw(CDC* pDC) {
   CPen pen(PS_SOLID, 2, RGB(0, 120, 215));
-  pDC->SelectObject(&pen);  // 旧オブジェクト未保存 → リーク
+  pDC->SelectObject(&pen);  // Old object not saved → leak
   pDC->Rectangle(rect);
-  // pen が破棄されるが DC にまだ選択されている → 未定義動作
+  // pen is destroyed but still selected in DC → undefined behavior
 }
 ```
 
-### 6.2 ダブルバッファリング
+### 6.2 Double Buffering
 
-- ちらつき防止にはダブルバッファリングを使用する。
-- `CMemDC`（MFC Feature Pack）または手動メモリ DC を使用する。
+- Use double buffering to prevent flickering.
+- Use `CMemDC` (MFC Feature Pack) or a manual memory DC.
 
 ```cpp
-// ✅ Good — CMemDC によるダブルバッファリング
+// ✅ Good — Double buffering with CMemDC
 void CMyView::OnDraw(CDC* pDC) {
   CMemDC mem_dc(*pDC, this);
   CDC& dc = mem_dc.GetDC();
 
-  // dc に対して描画操作を行う
+  // Perform drawing operations on dc
   dc.FillSolidRect(&client_rect, ::GetSysColor(COLOR_WINDOW));
   DrawContent(&dc);
 }
 ```
 
-### 6.3 リソースリーク防止チェックリスト
+### 6.3 Resource Leak Prevention Checklist
 
-- [ ] すべての `SelectObject()` に対して旧オブジェクトの復元がある
-- [ ] `CreateCompatibleDC()` / `CreateCompatibleBitmap()` の戻り値を検査している
-- [ ] `LoadImage()` / `LoadBitmap()` で取得したハンドルを `DeleteObject()` で解放している
-- [ ] `GetDC()` に対して `ReleaseDC()` がペアになっている
-- [ ] 描画コード内で GDI オブジェクトをループ生成していない
+- [ ] Every `SelectObject()` call has a corresponding restoration of the old object
+- [ ] Return values of `CreateCompatibleDC()` / `CreateCompatibleBitmap()` are checked
+- [ ] Handles obtained via `LoadImage()` / `LoadBitmap()` are released with `DeleteObject()`
+- [ ] Every `GetDC()` is paired with `ReleaseDC()`
+- [ ] GDI objects are not created in a loop within drawing code
 
 ---
 
-## 7. ビジュアルスタイルとテーマ
+## 7. Visual Styles and Themes
 
 ### 7.1 Visual Manager
 
-- `CMFCVisualManager` でアプリケーション全体のテーマを統一する。
-- プロジェクト要件に応じてプリセットを選択する。
+- Use `CMFCVisualManager` to unify the theme across the entire application.
+- Select a preset based on project requirements.
 
-| Visual Manager | 外観 |
+| Visual Manager | Appearance |
 |---------------|------|
-| `CMFCVisualManagerOffice2007` | Office 2007 風 |
-| `CMFCVisualManagerWindows7` | Windows 7 Aero 風 |
-| `CMFCVisualManagerVS2008` | Visual Studio 2008 風 |
+| `CMFCVisualManagerOffice2007` | Office 2007 style |
+| `CMFCVisualManagerWindows7` | Windows 7 Aero style |
+| `CMFCVisualManagerVS2008` | Visual Studio 2008 style |
 
 ```cpp
-// ✅ Good — アプリケーション初期化で Visual Manager を設定
+// ✅ Good — Setting Visual Manager during application initialization
 BOOL CMyApp::InitInstance() {
   CMFCVisualManager::SetDefaultManager(
       RUNTIME_CLASS(CMFCVisualManagerWindows7));
 
-  // 以降の UI 初期化 ...
+  // Subsequent UI initialization ...
 }
 ```
 
-### 7.2 システムカラーの使用
+### 7.2 Using System Colors
 
-- ハードコードした色ではなく `::GetSysColor()` を使用する。
-- ハイコントラストモードで正しく表示されることを確認する。
+- Use `::GetSysColor()` instead of hardcoded colors.
+- Verify correct display in high contrast mode.
 
 ```cpp
-// ✅ Good — システムカラーを使用
+// ✅ Good — Using system colors
 pDC->SetTextColor(::GetSysColor(COLOR_WINDOWTEXT));
 pDC->SetBkColor(::GetSysColor(COLOR_WINDOW));
 
-// ❌ Bad — 色のハードコード
+// ❌ Bad — Hardcoded colors
 pDC->SetTextColor(RGB(0, 0, 0));
 pDC->SetBkColor(RGB(255, 255, 255));
 ```
 
 ### 7.3 Common Controls v6
 
-- アプリケーションマニフェストで Common Controls v6 を有効にする。
-- これによりモダンな外観（Visual Styles）が適用される。
+- Enable Common Controls v6 in the application manifest.
+- This applies a modern appearance (Visual Styles).
 
 ```xml
-<!-- ✅ Good — マニフェストで Common Controls v6 を有効化 -->
+<!-- ✅ Good — Enabling Common Controls v6 in the manifest -->
 <dependency>
   <dependentAssembly>
     <assemblyIdentity type="win32" name="Microsoft.Windows.Common-Controls"
@@ -393,23 +393,23 @@ pDC->SetBkColor(RGB(255, 255, 255));
 
 ---
 
-## 8. アクセシビリティ
+## 8. Accessibility
 
-### 8.1 基本原則
+### 8.1 Basic Principles
 
-- すべてのコントロールにアクセシブルな名前（ラベル）を設定する。
-- スタティックテキストはラベル対象のコントロールの直前（タブ順序）に配置する。
-- カスタムコントロールは `IAccessible` を実装するか、UI Automation プロバイダーを提供する。
+- Set an accessible name (label) for all controls.
+- Place static text immediately before the labeled control in tab order.
+- Implement `IAccessible` or provide a UI Automation provider for custom controls.
 
-### 8.2 キーボードナビゲーション
+### 8.2 Keyboard Navigation
 
-- すべての操作がキーボードのみで完結できることを保証する。
-- タブ順序はリソースエディタで論理的な順序に設定する。
-- ショートカットキー（アクセラレータ）をよく使う操作に割り当てる。
-- フォーカスの移動が視覚的に確認できることを保証する。
+- Ensure all operations can be completed using keyboard only.
+- Set tab order to a logical sequence in the resource editor.
+- Assign shortcut keys (accelerators) to frequently used operations.
+- Ensure focus movement is visually discernible.
 
 ```cpp
-// ✅ Good — アクセラレータテーブルの活用
+// ✅ Good — Using accelerator tables
 BOOL CMainFrame::PreTranslateMessage(MSG* pMsg) {
   if (accel_table_ != nullptr &&
       ::TranslateAccelerator(m_hWnd, accel_table_, pMsg)) {
@@ -419,117 +419,117 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg) {
 }
 ```
 
-### 8.3 スクリーンリーダー対応
+### 8.3 Screen Reader Support
 
-- `WM_GETOBJECT` メッセージに応答して MSAA / UI Automation 情報を提供する。
-- カスタム描画コントロールには `accName`、`accRole`、`accState` を実装する。
-- 状態変化時に `NotifyWinEvent()` でアクセシビリティイベントを発火する。
+- Respond to the `WM_GETOBJECT` message to provide MSAA / UI Automation information.
+- Implement `accName`, `accRole`, and `accState` for custom-drawn controls.
+- Fire accessibility events using `NotifyWinEvent()` when state changes occur.
 
 ---
 
-## 9. スレッドと非同期処理
+## 9. Threading and Asynchronous Processing
 
-### 9.1 UI スレッドの原則
+### 9.1 UI Thread Principles
 
-- UI の更新は必ずメインスレッド（UI スレッド）で行う。
-- ワーカースレッドから UI を更新する場合は `PostMessage()` を使用する（`SendMessage()` はデッドロックリスク）。
-- 長時間処理はワーカースレッドに委譲し、UI スレッドをブロックしない。
+- Always update the UI on the main thread (UI thread).
+- Use `PostMessage()` when updating the UI from a worker thread (`SendMessage()` risks deadlock).
+- Delegate long-running tasks to worker threads; do not block the UI thread.
 
 ```cpp
-// ✅ Good — ワーカースレッドで処理し、完了を PostMessage で通知
+// ✅ Good — Processing in worker thread, notifying completion via PostMessage
 constexpr UINT WM_TASK_COMPLETE = WM_APP + 10;
 
-// ワーカースレッド関数
+// Worker thread function
 UINT WorkerThreadProc(LPVOID pParam) {
   auto* context = static_cast<TaskContext*>(pParam);
-  // 重い処理を実行 ...
+  // Execute heavy processing ...
   context->frame_wnd->PostMessage(WM_TASK_COMPLETE, 0, 0);
   return 0;
 }
 
-// メインフレームでスレッド起動
+// Launch thread from main frame
 void CMainFrame::OnCmdStartProcessing() {
   AfxBeginThread(WorkerThreadProc, &task_context_);
-  status_bar_.SetPaneText(0, _T("処理中..."));
+  status_bar_.SetPaneText(0, _T("Processing..."));
 }
 
-// 完了通知ハンドラ（UI スレッドで実行される）
+// Completion notification handler (runs on UI thread)
 LRESULT CMainFrame::OnTaskComplete(WPARAM, LPARAM) {
-  status_bar_.SetPaneText(0, _T("完了"));
+  status_bar_.SetPaneText(0, _T("Done"));
   UpdateDataView();
   return 0;
 }
 
-// ❌ Bad — ワーカースレッドから直接 UI を操作
+// ❌ Bad — Directly manipulating UI from worker thread
 UINT WorkerThreadProc(LPVOID pParam) {
   auto* dlg = static_cast<CMyDialog*>(pParam);
-  // 重い処理 ...
-  dlg->SetDlgItemText(IDC_STATUS, _T("完了"));  // 別スレッドから UI 操作 → 未定義動作
+  // Heavy processing ...
+  dlg->SetDlgItemText(IDC_STATUS, _T("Done"));  // UI manipulation from another thread → undefined behavior
   return 0;
 }
 ```
 
-### 9.2 スレッド安全な進捗更新
+### 9.2 Thread-Safe Progress Updates
 
-- `CProgressCtrl` の更新はメインスレッドから `PostMessage` 経由で行う。
-- 進捗値の共有には `std::atomic` を使用する。
+- Update `CProgressCtrl` from the main thread via `PostMessage`.
+- Use `std::atomic` for sharing progress values.
 
 ---
 
-## 10. 文字列と国際化
+## 10. Strings and Internationalization
 
-### 10.1 文字列の基本方針
+### 10.1 Basic String Policy
 
-- プロジェクトは **Unicode ビルド**（`_UNICODE` / `UNICODE`）を前提とする。MBCS は使用しない。
-- UI に表示する文字列はすべてリソース文字列テーブル（`.rc`）で管理する。
-- ソースコード中に UI テキストをハードコードしない。
+- Projects assume **Unicode build** (`_UNICODE` / `UNICODE`). Do not use MBCS.
+- Manage all strings displayed in the UI in the resource string table (`.rc`).
+- Do not hardcode UI text in source code.
 
 ```cpp
-// ✅ Good — リソース文字列を使用
+// ✅ Good — Using resource strings
 CString message;
 message.LoadString(IDS_FILE_SAVE_SUCCESS);
 AfxMessageBox(message);
 
-// ❌ Bad — ハードコードされた UI テキスト
-AfxMessageBox(_T("ファイルを保存しました。"));
+// ❌ Bad — Hardcoded UI text
+AfxMessageBox(_T("File saved successfully."));
 ```
 
-### 10.2 CString の使用指針
+### 10.2 CString Usage Guidelines
 
-- MFC API とのインターフェースには `CString` を使用する。
-- 内部ロジックでは `std::wstring` / `std::wstring_view` も併用可。
-- `CString::Format()` で書式化し、手動の文字列連結を避ける。
+- Use `CString` for interfaces with MFC APIs.
+- `std::wstring` / `std::wstring_view` may also be used in internal logic.
+- Format using `CString::Format()`; avoid manual string concatenation.
 
 ```cpp
 // ✅ Good
 CString status;
-status.Format(IDS_ITEM_COUNT_FORMAT, item_count);  // リソース: "項目数: %d"
+status.Format(IDS_ITEM_COUNT_FORMAT, item_count);  // resource string: "Item count: %d"
 
-// ❌ Bad — 手動連結 + ハードコード
-CString status = _T("項目数: ") + std::to_wstring(item_count).c_str();
+// ❌ Bad — Manual concatenation + hardcode
+CString status = _T("Item count: ") + std::to_wstring(item_count).c_str();
 ```
 
-### 10.3 レイアウトの国際化考慮
+### 10.3 Internationalization Considerations for Layout
 
-- テキストの伸縮を考慮し、コントロールに十分な余白を確保する（英語比 30〜50% 増）。
-- 右から左（RTL）言語をサポートする場合は `WS_EX_LAYOUTRTL` を使用する。
-
----
-
-## 11. プロジェクト固有のルール
-
-<!-- プロジェクトに応じて追記してください -->
-
-- {プロジェクト固有のルールをここに記載}
+- Allow sufficient margin in controls for text expansion (30–50% more than English text).
+- Use `WS_EX_LAYOUTRTL` when supporting right-to-left (RTL) languages.
 
 ---
 
-## 関連スキル
+## 11. Project-Specific Rules
 
-- `skills/cpp-coding-standards/SKILL.md` — C++ コーディング規約（命名・フォーマット・エラーハンドリング）
-- `skills/windows-ui-guidelines/SKILL.md` — Windows UI ガイドライン（WinUI 3 / Fluent Design）
-- `skills/ui-accessibility/SKILL.md` — アクセシビリティ共通原則
-- `skills/ui-review-checklist/SKILL.md` — UI レビューチェックリスト
-- `skills/security-practices/SKILL.md` — セキュリティプラクティス
-- `skills/i18n-localization/SKILL.md` — 国際化・ローカリゼーション
-- `skills/performance-optimization/SKILL.md` — パフォーマンス最適化
+<!-- Add entries specific to your project as needed -->
+
+- {Add project-specific rules here}
+
+---
+
+## Related Skills
+
+- `skills/cpp-coding-standards/SKILL.md` — C++ coding conventions (naming, formatting, error handling)
+- `skills/windows-ui-guidelines/SKILL.md` — Windows UI guidelines (WinUI 3 / Fluent Design)
+- `skills/ui-accessibility/SKILL.md` — Accessibility common principles
+- `skills/ui-review-checklist/SKILL.md` — UI review checklist
+- `skills/security-practices/SKILL.md` — Security practices
+- `skills/i18n-localization/SKILL.md` — Internationalization and localization
+- `skills/performance-optimization/SKILL.md` — Performance optimization

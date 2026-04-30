@@ -1,30 +1,30 @@
 ---
 name: cpp-coding-standards
-description: 'C++のコーディング規約を参照・適用する。C++ コーディング規約、命名規則、スタイルガイド、メモリ管理、スマートポインタ、const/constexpr、ヘッダーファイル規約、モダンC++（C++17/20）、エラーハンドリングを確認・適用したいときに使用。Use when: applying C++ style guide, reviewing C++ code conventions, smart pointers, RAII, const correctness, header file conventions, modern C++ features, exception handling, Doxygen.'
-argument-hint: '確認・適用したいコーディング規約の項目（省略可）'
+description: 'Reference and apply C++ coding standards. Use when: applying C++ style guide, reviewing C++ code conventions, smart pointers, RAII, const correctness, header file conventions, modern C++ features, exception handling, Doxygen.'
+argument-hint: 'Coding standard item to review or apply (optional)'
 ---
 
-# C++ コーディング規約
+# C++ Coding Standards
 
-## 概要
+## Overview
 
-このスキルは C++ コードのコーディング規約を定義します。
-モダン C++（C++17 以降）を前提としています。
-コードレビュー・新規実装の際はこの規約に従ってください。
+This skill defines coding standards for C++ code.
+Assumes modern C++ (C++17 or later).
+Follow these conventions during code reviews and new implementations.
 
 ---
 
-## 1. 命名規則
+## 1. Naming Conventions
 
-| 種別 | 規則 | 例 |
-|------|------|----|
-| クラス / 構造体 / 列挙型 | `UpperCamelCase` | `UserProfile`, `NetworkManager` |
-| 関数 / メソッド | `lowerCamelCase` | `fetchUser()`, `parseResponse()` |
-| 変数（ローカル / 引数） | `snake_case` | `user_name`, `retry_count` |
-| メンバー変数（プライベート） | 末尾 `_` | `cache_`, `logger_` |
-| 定数 / `constexpr` | `kUpperCamelCase` | `kMaxRetryCount` |
-| マクロ（最小限） | `UPPER_SNAKE_CASE` | `NDEBUG` |
-| 名前空間 | `snake_case`（短く） | `network`, `app::core` |
+| Type | Convention | Example |
+|------|------|-----|
+| Class / Struct / Enum | `UpperCamelCase` | `UserProfile`, `NetworkManager` |
+| Function / Method | `lowerCamelCase` | `fetchUser()`, `parseResponse()` |
+| Variable (local / parameter) | `snake_case` | `user_name`, `retry_count` |
+| Member variable (private) | trailing `_` | `cache_`, `logger_` |
+| Constant / `constexpr` | `kUpperCamelCase` | `kMaxRetryCount` |
+| Macro (minimal use) | `UPPER_SNAKE_CASE` | `NDEBUG` |
+| Namespace | `snake_case` (short) | `network`, `app::core` |
 
 ```cpp
 // ✅ Good
@@ -45,26 +45,26 @@ class NetworkManager {
 class networkmanager {
  public:
   void FetchUser(std::string UserId);
-  std::unique_ptr<HttpClient> Client;  // パブリックメンバー
+  std::unique_ptr<HttpClient> Client;  // public member
 };
 ```
 
 ---
 
-## 2. コードフォーマット
+## 2. Code Formatting
 
-<!-- プロジェクトに応じて値を変更してください -->
+<!-- Adjust values as needed for your project -->
 
-| 項目 | 設定値 |
-|------|--------|
-| インデント | スペース {2} 個（タブ不可） |
-| 1行の最大文字数 | {100} 文字 |
-| 中括弧 `{` の位置 | {例: K&R スタイル（行末）/ Allman（次行）} |
-| フォーマッター | {例: clang-format} |
-| リンター | {例: clang-tidy} |
+| Item | Value |
+|------|-----|
+| Indent | {2} spaces (no tabs) |
+| Max line length | {100} characters |
+| Brace `{` placement | {e.g. K&R style (end of line) / Allman (next line)} |
+| Formatter | {e.g. clang-format} |
+| Linter | {e.g. clang-tidy} |
 
 ```cpp
-// ✅ Good（K&R スタイルの例）
+// ✅ Good (K&R style example)
 void NetworkManager::fetchUser(std::string_view user_id) {
   if (user_id.empty()) {
     throw std::invalid_argument("user_id must not be empty");
@@ -75,12 +75,12 @@ void NetworkManager::fetchUser(std::string_view user_id) {
 
 ---
 
-## 3. メモリ管理（RAII・スマートポインタ）
+## 3. Memory Management (RAII / Smart Pointers)
 
-- 生ポインタによる動的メモリ管理は禁止。スマートポインタを使用する。
-- 所有権が明確な場合は `std::unique_ptr`、共有が必要な場合は `std::shared_ptr` を使用する。
-- `new` / `delete` は直接使用しない。`std::make_unique` / `std::make_shared` を使う。
-- リソース管理は RAII イディオムに従う。
+- Raw pointer dynamic memory management is prohibited. Use smart pointers.
+- Use `std::unique_ptr` for exclusive ownership, `std::shared_ptr` when sharing is required.
+- Do not use `new` / `delete` directly. Use `std::make_unique` / `std::make_shared`.
+- Follow the RAII idiom for resource management.
 
 ```cpp
 // ✅ Good
@@ -88,18 +88,18 @@ auto client = std::make_unique<HttpClient>(base_url);
 auto cache  = std::make_shared<Cache>();
 
 // ❌ Bad
-HttpClient* client = new HttpClient(base_url);  // 生ポインタ
-// delete 忘れのリスク
+HttpClient* client = new HttpClient(base_url);  // raw pointer
+// Risk of forgetting to delete
 ```
 
 ---
 
 ## 4. const / constexpr
 
-- 変更しない変数・引数には必ず `const` を付ける（const 正確性）。
-- コンパイル時定数には `constexpr` を使用する（`#define` マクロは使わない）。
-- メンバー関数がオブジェクトを変更しない場合は `const` を付ける。
-- 文字列引数は `const std::string&` より `std::string_view` を優先する。
+- Always mark variables and parameters that are not modified with `const` (const correctness).
+- Use `constexpr` for compile-time constants (do not use `#define` macros).
+- Mark member functions that do not modify the object with `const`.
+- Prefer `std::string_view` over `const std::string&` for string parameters.
 
 ```cpp
 // ✅ Good
@@ -113,27 +113,27 @@ class Parser {
 void log(std::string_view message);
 
 // ❌ Bad
-#define BUFFER_SIZE 1024  // マクロ定数
-void log(std::string message);  // 不必要なコピー
+#define BUFFER_SIZE 1024  // macro constant
+void log(std::string message);  // unnecessary copy
 ```
 
 ---
 
-## 5. ヘッダーファイル規約
+## 5. Header File Conventions
 
-- すべてのヘッダーファイルに **インクルードガード**（`#pragma once`）を使用する。
-- 前方宣言（forward declaration）を積極的に使用してインクルード依存を減らす。
-- ヘッダーファイルにはインターフェースのみ記述し、実装は `.cpp` ファイルに書く。
-- インクルード順序: 対応する `.h`、標準ライブラリ、サードパーティ、プロジェクト内。
+- Use an **include guard** (`#pragma once`) in all header files.
+- Actively use forward declarations to reduce include dependencies.
+- Header files should contain only the interface; implementations go in `.cpp` files.
+- Include order: corresponding `.h`, standard library, third-party, project-internal.
 
 ```cpp
-// ✅ Good（user_service.h）
+// ✅ Good (user_service.h)
 #pragma once
 
 #include <memory>
 #include <string>
 
-// 前方宣言（インクルード不要）
+// Forward declarations (no include needed)
 class HttpClient;
 class User;
 
@@ -147,19 +147,19 @@ class UserService {
 };
 
 // ❌ Bad
-#ifndef USER_SERVICE_H  // 古いインクルードガード（#pragma once を使う）
+#ifndef USER_SERVICE_H  // old-style include guard (use #pragma once)
 #define USER_SERVICE_H
-#include "http_client.h"  // 前方宣言で十分なのにインクルード
+#include "http_client.h"  // forward declaration is sufficient here
 ```
 
 ---
 
-## 6. モダン C++（C++17 / C++20 機能の活用）
+## 6. Modern C++ (Leveraging C++17 / C++20 Features)
 
-- 範囲 `for` ループを使用する（インデックスループより優先）。
-- 構造化束縛（`auto [a, b] = ...`）を活用する。
-- `std::optional` で値の存在を表現する（ポインタや番兵値は使わない）。
-- ラムダ式でキャプチャは最小限にする（`[&]` の乱用禁止）。
+- Use range-based `for` loops (prefer over index-based loops).
+- Use structured bindings (`auto [a, b] = ...`).
+- Use `std::optional` to represent optional values (do not use pointers or sentinel values).
+- Keep lambda captures minimal (avoid overusing `[&]`).
 
 ```cpp
 // ✅ Good
@@ -173,26 +173,26 @@ std::optional<User> findUser(std::string_view id) {
   return it->second;
 }
 
-auto transform = [](const std::string& s) { return s.size(); };  // 必要なもののみキャプチャ
+auto transform = [](const std::string& s) { return s.size(); };  // capture only what is needed
 
 // ❌ Bad
 for (int i = 0; i < config_map.size(); ++i) { /* ... */ }
 
 User* findUser(std::string_view id) {
-  return nullptr;  // ポインタで存在を表現
+  return nullptr;  // use pointer to represent optionality
 }
 
-auto transform = [&]() { return data_.size(); };  // [&] の乱用
+auto transform = [&]() { return data_.size(); };  // overuse of [&]
 ```
 
 ---
 
-## 7. エラーハンドリング
+## 7. Error Handling
 
-- エラーは例外（`std::exception` 派生クラス）で伝播させる。
-- 戻り値でエラーを表現する場合は `std::expected`（C++23）または `std::optional` を使用する。
-- エラーコードの整数値をそのまま戻り値にしない。
-- デストラクタで例外をスローしない（`noexcept` を付ける）。
+- Propagate errors using exceptions (derived from `std::exception`).
+- When representing errors as return values, use `std::expected` (C++23) or `std::optional`.
+- Do not return raw integer error codes as return values.
+- Do not throw exceptions in destructors (mark with `noexcept`).
 
 ```cpp
 // ✅ Good
@@ -212,34 +212,34 @@ try {
 }
 
 // ❌ Bad
-int fetchUser(const std::string& id);  // 戻り値がエラーコード
+int fetchUser(const std::string& id);  // return value is an error code
 ```
 
 ---
 
-## 8. コメント規約
+## 8. Comment Conventions
 
-- コードのロジックが自明でない箇所にのみコメントを付ける。
-- 公開 API には **Doxygen** 形式のドキュメントコメントを付ける。
-- TODO / FIXME は `// TODO: 説明` の形式で記述し、チケット番号を添える。
+- Add comments only where the logic is not self-evident.
+- Add **Doxygen** documentation comments to all public APIs.
+- Write TODO / FIXME in the format `// TODO: description` and include a ticket number.
 
 ```cpp
 /**
- * @brief 指定した ID のユーザーを取得します。
- * @param id ユーザー識別子
- * @return ユーザーオブジェクト
- * @throws NetworkException HTTP リクエストが失敗した場合
- * @throws std::invalid_argument id が空の場合
+ * @brief Retrieves the user with the specified ID.
+ * @param id User identifier
+ * @return User object
+ * @throws NetworkException If the HTTP request fails
+ * @throws std::invalid_argument If id is empty
  */
 User fetchUser(std::string_view id) const;
 
-// TODO: #101 キャッシュ TTL の設定を追加する
+// TODO: #101 Add cache TTL configuration
 ```
 
 ---
 
-## 9. プロジェクト固有のルール
+## 9. Project-Specific Rules
 
-<!-- プロジェクトに応じて追記してください -->
+<!-- Add project-specific content here -->
 
-- {プロジェクト固有のルールをここに記載}
+- {Add project-specific rules here}

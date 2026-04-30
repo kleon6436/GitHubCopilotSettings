@@ -1,60 +1,60 @@
 ---
 name: security-practices
-description: 'セキュリティベストプラクティスを参照・適用する。認証・認可・入力バリデーション・暗号化・APIキー管理・OWASP Top 10・プラットフォーム別セキュリティ対策を確認・適用したいときに使用。Use when: implementing authentication, securing API keys, input validation, encryption, OWASP Top 10 compliance, platform-specific security.'
-argument-hint: '確認・適用したいセキュリティ項目（省略可）'
+description: 'Reference and apply security best practices. Use when: implementing authentication, securing API keys, input validation, encryption, OWASP Top 10 compliance, platform-specific security.'
+argument-hint: 'Security topic to check or apply (optional)'
 ---
 
-# セキュリティベストプラクティス
+# Security Best Practices
 
-## 概要
+## Overview
 
-このスキルはアプリケーションのセキュリティ実装ガイドラインを定義します。
-OWASP Top 10 を基準に、プラットフォーム横断のセキュリティ対策を網羅します。
+This skill defines security implementation guidelines for applications.
+It covers cross-platform security measures based on the OWASP Top 10.
 
 ---
 
-## 1. 認証・認可
+## 1. Authentication and Authorization
 
-### 原則
+### Principles
 
-- **最小権限の原則** — ユーザーが必要とする最低限の権限のみ付与する
-- **認証と認可を分離** — 「誰か」の確認と「何ができるか」の確認を別々に実装する
-- **セッション管理** — セッション ID は十分なランダム性を持ち、ログアウト後は無効化する
+- **Principle of Least Privilege** — Grant users only the minimum permissions they need
+- **Separate Authentication from Authorization** — Implement "who are you" and "what can you do" independently
+- **Session Management** — Session IDs must have sufficient randomness and be invalidated after logout
 
-### トークン管理
+### Token Management
 
 ```ts
-// ✅ Good: HttpOnly Cookie にトークンを保存（Web）
-// → JavaScript からアクセス不可 → XSS 耐性
+// ✅ Good: Store token in HttpOnly Cookie (Web)
+// → Not accessible from JavaScript → XSS-resistant
 res.cookie('accessToken', token, {
   httpOnly: true,
   secure: true,
   sameSite: 'strict',
-  maxAge: 15 * 60 * 1000, // 15分
+  maxAge: 15 * 60 * 1000, // 15 minutes
 });
 
-// ❌ Bad: localStorage にトークンを保存（XSS で盗まれる）
+// ❌ Bad: Store token in localStorage (stolen by XSS)
 localStorage.setItem('accessToken', token);
 ```
 
-### JWT の扱い
+### JWT Handling
 
-- ペイロードに機密情報（パスワード・クレジットカード番号等）を含めない
-- 有効期限（`exp`）を短く設定し、リフレッシュトークンで更新する
-- 署名アルゴリズムは `RS256`（RSA）または `ES256`（ECDSA）を使う。`HS256` は共有シークレット管理が必要なため注意
+- Do not include sensitive information (passwords, credit card numbers, etc.) in the payload
+- Set a short expiry (`exp`) and use refresh tokens to renew
+- Use `RS256` (RSA) or `ES256` (ECDSA) for the signing algorithm. Use `HS256` with caution as it requires shared secret management
 
 ---
 
-## 2. 入力バリデーション
+## 2. Input Validation
 
-### 原則
+### Principles
 
-- **サーバーサイドで必ず検証** — クライアントサイドのバリデーションは UX 補助にすぎない
-- **ホワイトリスト方式** — 許可する形式を定義し、それ以外を拒否する
-- **バリデーションライブラリを使う** — 自前パース実装はバグの温床になる
+- **Always validate server-side** — Client-side validation is only a UX aid
+- **Whitelist approach** — Define allowed formats and reject everything else
+- **Use a validation library** — Hand-rolled parsing implementations are a source of bugs
 
 ```ts
-// ✅ Good: Zod でスキーマ検証（TypeScript / Web）
+// ✅ Good: Schema validation with Zod (TypeScript / Web)
 import { z } from 'zod';
 
 const UserSchema = z.object({
@@ -69,64 +69,64 @@ if (!parsed.success) {
 }
 ```
 
-### SQL インジェクション対策
+### SQL Injection Prevention
 
 ```ts
-// ✅ Good: プリペアドステートメント
+// ✅ Good: Prepared statements
 const user = await db.query(
   'SELECT * FROM users WHERE email = $1',
   [email]
 );
 
-// ❌ Bad: 文字列結合
+// ❌ Bad: String concatenation
 const user = await db.query(
   `SELECT * FROM users WHERE email = '${email}'`
 );
 ```
 
-### XSS 対策
+### XSS Prevention
 
 ```ts
-// ✅ Good: React は自動エスケープ
+// ✅ Good: React auto-escapes
 <p>{userInput}</p>
 
-// ❌ Bad: dangerouslySetInnerHTML（やむを得ない場合は DOMPurify でサニタイズ）
+// ❌ Bad: dangerouslySetInnerHTML (sanitize with DOMPurify if unavoidable)
 <div dangerouslySetInnerHTML={{ __html: userInput }} />
 
-// DOMPurify を使う場合
+// When using DOMPurify
 import DOMPurify from 'dompurify';
 <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(userInput) }} />
 ```
 
 ---
 
-## 3. シークレット・API キー管理
+## 3. Secrets and API Key Management
 
-### 原則
+### Principles
 
-- **コードにシークレットをハードコードしない**
-- **リポジトリにシークレットをコミットしない**（`.env` は `.gitignore` に追加）
-- **最小スコープのシークレット** — 必要なアクセス権のみ付与する
+- **Do not hardcode secrets in code**
+- **Do not commit secrets to the repository** (add `.env` to `.gitignore`)
+- **Minimum-scope secrets** — Grant only the required access
 
-### Web / サーバーサイド
+### Web / Server-side
 
 ```bash
-# .env ファイル（リポジトリには含めない）
+# .env file (not included in the repository)
 DATABASE_URL=postgresql://...
 STRIPE_SECRET_KEY=sk_live_...
 JWT_SECRET=...
 ```
 
 ```ts
-// ✅ Good: 環境変数から読み込む
+// ✅ Good: Read from environment variables
 const apiKey = process.env.STRIPE_SECRET_KEY;
 if (!apiKey) throw new Error('STRIPE_SECRET_KEY is not set');
 ```
 
-### iOS / macOS（Swift）
+### iOS / macOS (Swift)
 
 ```swift
-// ✅ Good: Keychain に保存
+// ✅ Good: Save to Keychain
 import Security
 
 func saveToKeychain(key: String, value: String) {
@@ -139,14 +139,14 @@ func saveToKeychain(key: String, value: String) {
     SecItemAdd(query as CFDictionary, nil)
 }
 
-// ❌ Bad: UserDefaults に機密情報を保存
+// ❌ Bad: Save sensitive data in UserDefaults
 UserDefaults.standard.set(apiKey, forKey: "apiKey")
 ```
 
-### Android（Kotlin）
+### Android (Kotlin)
 
 ```kotlin
-// ✅ Good: EncryptedSharedPreferences に保存
+// ✅ Good: Save in EncryptedSharedPreferences
 val masterKey = MasterKey.Builder(context)
     .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
     .build()
@@ -160,74 +160,74 @@ val prefs = EncryptedSharedPreferences.create(
 
 ---
 
-## 4. 暗号化
+## 4. Encryption
 
-### データ保存時の暗号化
+### Encryption at Rest
 
-| プラットフォーム | 推奨方式 |
+| Platform | Recommended Approach |
 |--------------|---------|
-| iOS / macOS | Keychain（シークレット）・`CryptoKit`（データ暗号化） |
+| iOS / macOS | Keychain (secrets) · `CryptoKit` (data encryption) |
 | Android | `EncryptedSharedPreferences` / `EncryptedFile` / Keystore |
-| Web（ブラウザ） | Web Crypto API（機密データはサーバー側で管理を推奨） |
-| サーバー | AES-256-GCM、argon2id（パスワードハッシュ） |
+| Web (browser) | Web Crypto API (recommended to manage sensitive data server-side) |
+| Server | AES-256-GCM, argon2id (password hashing) |
 
-### 通信の暗号化
+### Encryption in Transit
 
-- すべての通信は **HTTPS（TLS 1.2 以上）** を使う
-- HTTP へのフォールバックを禁止する（HSTS 設定を推奨）
-- 証明書の有効性を検証し、自己署名証明書を本番環境で使わない
+- Use **HTTPS (TLS 1.2 or higher)** for all communication
+- Forbid fallback to HTTP (HSTS configuration recommended)
+- Validate certificate validity and do not use self-signed certificates in production
 
 ---
 
-## 5. OWASP Top 10 対応チェックリスト
+## 5. OWASP Top 10 Compliance Checklist
 
-| # | リスク | 対策 |
+| # | Risk | Countermeasure |
 |---|--------|------|
-| A01 | アクセス制御の不備 | 最小権限の原則・サーバーサイド認可チェック |
-| A02 | 暗号化の失敗 | TLS・AES-256・argon2id・Keychain/Keystore |
-| A03 | インジェクション | プリペアドステートメント・入力バリデーション |
-| A04 | 安全でない設計 | 脅威モデリング・セキュリティ要件の定義 |
-| A05 | セキュリティの設定ミス | デフォルト設定の見直し・不要なポートを閉じる |
-| A06 | 脆弱なコンポーネント | 定期的な依存ライブラリ更新・Dependabot 設定 |
-| A07 | 認証の失敗 | MFA・ブルートフォース対策・セッション管理 |
-| A08 | ソフトウェア整合性の失敗 | CI/CD パイプラインの署名検証 |
-| A09 | ログとモニタリングの不備 | 認証失敗ログ・異常検知アラート |
-| A10 | SSRF | 外部リクエスト URL のホワイトリスト検証 |
+| A01 | Broken Access Control | Principle of least privilege · server-side authorization checks |
+| A02 | Cryptographic Failures | TLS · AES-256 · argon2id · Keychain/Keystore |
+| A03 | Injection | Prepared statements · input validation |
+| A04 | Insecure Design | Threat modeling · define security requirements |
+| A05 | Security Misconfiguration | Review default settings · close unnecessary ports |
+| A06 | Vulnerable and Outdated Components | Regular dependency updates · configure Dependabot |
+| A07 | Identification and Authentication Failures | MFA · brute-force protection · session management |
+| A08 | Software and Data Integrity Failures | Signature verification in CI/CD pipelines |
+| A09 | Security Logging and Monitoring Failures | Log authentication failures · anomaly detection alerts |
+| A10 | Server-Side Request Forgery (SSRF) | Whitelist validation for external request URLs |
 
 ---
 
-## 6. プラットフォーム別注意事項
+## 6. Platform-Specific Notes
 
 ### iOS / macOS
 
-- App Transport Security（ATS）は無効化しない
-- ディープリンク URL の処理では必ずホワイトリスト検証を行う
-- iCloud / バックアップ対象から機密データを除外する（`isExcludedFromBackup`）
+- Do not disable App Transport Security (ATS)
+- Always apply whitelist validation when handling deep link URLs
+- Exclude sensitive data from iCloud / backup (`isExcludedFromBackup`)
 
 ### Android
 
-- `android:exported="true"` は必要な Activity のみに設定する
-- `WebView.setJavaScriptEnabled(true)` を使う場合は信頼できる URL のみ許可する
-- `StrictMode` を開発環境で有効にしてネットワーク・ディスクアクセスを検査する
+- Set `android:exported="true"` only on necessary Activities
+- When using `WebView.setJavaScriptEnabled(true)`, allow only trusted URLs
+- Enable `StrictMode` in development environments to inspect network and disk access
 
 ### Web
 
-- `Content-Security-Policy`（CSP）ヘッダを設定する
-- `X-Frame-Options: DENY` でクリックジャッキングを防ぐ
-- Cookie には `HttpOnly`・`Secure`・`SameSite=Strict` を設定する
+- Set `Content-Security-Policy` (CSP) headers
+- Prevent clickjacking with `X-Frame-Options: DENY`
+- Set `HttpOnly`, `Secure`, and `SameSite=Strict` on cookies
 
 ---
 
-## 7. セキュリティレビュー手順
+## 7. Security Review Process
 
-実装後は `agents/security-reviewer.agent.md` を使ってセキュリティレビューを実施すること。
+After implementation, conduct a security review using `agents/security-reviewer.agent.md`.
 
-### レビューポイント
+### Review Points
 
-- [ ] シークレット・API キーがコードにハードコードされていない
-- [ ] すべての入力がサーバーサイドでバリデーションされている
-- [ ] 認証・認可のチェックがサーバーサイドで行われている
-- [ ] データ保存・通信が適切に暗号化されている
-- [ ] 依存ライブラリに既知の脆弱性がないか確認した
-- [ ] エラーメッセージに内部情報（スタックトレース等）を含めていない
-- [ ] ログに機密情報（パスワード・トークン等）を出力していない
+- [ ] No secrets or API keys hardcoded in the code
+- [ ] All inputs validated server-side
+- [ ] Authentication and authorization checks performed server-side
+- [ ] Data storage and communication properly encrypted
+- [ ] Checked for known vulnerabilities in dependencies
+- [ ] Error messages do not expose internal information (stack traces, etc.)
+- [ ] Logs do not output sensitive information (passwords, tokens, etc.)

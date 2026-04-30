@@ -1,27 +1,27 @@
 ---
 name: css-coding-standards
-description: 'CSS・Tailwind CSSのコーディング規約を参照・適用する。CSS・Tailwind コーディング規約、命名規則（BEM）、セレクター規約、プロパティ記述順序、Tailwind使用方針、レスポンシブデザイン、CSS Variables（カスタムプロパティ）、コメント規約を確認・適用したいときに使用。Use when: applying CSS or Tailwind CSS style guide, BEM naming, selector conventions, property ordering, responsive design, CSS custom properties, utility-first styling.'
-argument-hint: '確認・適用したいコーディング規約の項目（省略可）'
+description: 'Reference and apply CSS and Tailwind CSS coding standards. Use when: applying CSS or Tailwind CSS style guide, BEM naming, selector conventions, property ordering, responsive design, CSS custom properties, utility-first styling.'
+argument-hint: 'Coding standard item to check or apply (optional)'
 ---
 
-# CSS / Tailwind CSS コーディング規約
+# CSS / Tailwind CSS Coding Standards
 
-## 概要
+## Overview
 
-このスキルは CSS および Tailwind CSS のコーディング規約を定義します。
-Tailwind CSS を使用するプロジェクトでは Tailwind の方針を優先し、素の CSS は補助的に使用します。
-コードレビュー・新規実装の際はこの規約に従ってください。
+This skill defines the coding standards for CSS and Tailwind CSS.
+For projects using Tailwind CSS, the Tailwind approach takes priority; plain CSS is used only as a supplement.
+Follow these standards during code reviews and new implementations.
 
 ---
 
-## 1. 命名規則
+## 1. Naming Conventions
 
-### 素の CSS を書く場合：BEM（Block Element Modifier）
+### When Writing Plain CSS: BEM (Block Element Modifier)
 
-- **Block**：独立したコンポーネント → `block`
-- **Element**：Block の構成要素 → `block__element`
-- **Modifier**：状態や見た目のバリエーション → `block--modifier` / `block__element--modifier`
-- クラス名はすべて `kebab-case` を使用する。
+- **Block**: independent component → `block`
+- **Element**: part of a Block → `block__element`
+- **Modifier**: state or visual variation → `block--modifier` / `block__element--modifier`
+- Use `kebab-case` for all class names.
 
 ```css
 /* ✅ Good */
@@ -33,29 +33,29 @@ Tailwind CSS を使用するプロジェクトでは Tailwind の方針を優先
 
 /* ❌ Bad */
 .UserCard { }          /* UpperCamelCase */
-.userCard_avatar { }   /* BEM ではない */
-.card.featured { }     /* Modifier を別クラスで表現 */
+.userCard_avatar { }   /* not BEM */
+.card.featured { }     /* Modifier expressed as a separate class */
 ```
 
-### Tailwind CSS を使用する場合：Utility-First
+### When Using Tailwind CSS: Utility-First
 
-- ユーティリティクラスを直接 HTML / JSX に記述する。
-- カスタムクラスは `@apply` を多用せず、コンポーネント分割で対応する。
-- 繰り返しが多いパターンのみ `@apply` でまとめる。
+- Apply utility classes directly in HTML / JSX.
+- Avoid overusing `@apply` for custom classes; prefer component decomposition instead.
+- Use `@apply` only for frequently repeated patterns.
 
 ```html
 <!-- ✅ Good -->
 <div class="flex items-center gap-4 rounded-lg border border-gray-200 p-4 shadow-sm">
   <img class="h-12 w-12 rounded-full object-cover" src="..." alt="...">
-  <p class="text-sm font-medium text-gray-900">ユーザー名</p>
+  <p class="text-sm font-medium text-gray-900">Username</p>
 </div>
 
 <!-- ❌ Bad -->
-<div class="custom-card">  <!-- カスタムクラスに @apply で全部書く -->
+<div class="custom-card">  <!-- write everything with @apply in a custom class -->
 ```
 
 ```css
-/* ❌ Bad（@apply の乱用） */
+/* ❌ Bad (@apply overuse) */
 .custom-card {
   @apply flex items-center gap-4 rounded-lg border border-gray-200 p-4 shadow-sm;
 }
@@ -63,12 +63,12 @@ Tailwind CSS を使用するプロジェクトでは Tailwind の方針を優先
 
 ---
 
-## 2. セレクター規約
+## 2. Selector Conventions
 
-- ID セレクター（`#id`）はスタイリングに使用しない（JavaScript フックには使用可）。
-- タグセレクター（`div`, `p` 等）の単独使用を避け、クラスと組み合わせる。
-- セレクターの詳細度（specificity）はできる限り低く保つ。
-- `!important` は原則使用しない。使用する場合は理由をコメントで明示する。
+- Do not use ID selectors (`#id`) for styling (they may be used as JavaScript hooks).
+- Avoid using tag selectors (`div`, `p`, etc.) alone; combine them with classes.
+- Keep selector specificity as low as possible.
+- Do not use `!important` as a rule. If used, document the reason in a comment.
 
 ```css
 /* ✅ Good */
@@ -77,58 +77,58 @@ Tailwind CSS を使用するプロジェクトでは Tailwind の方針を優先
 .user-card > .user-card__avatar { }
 
 /* ❌ Bad */
-#user-card { }          /* ID セレクター */
-div.user-card { }       /* 不必要なタグ修飾 */
+#user-card { }          /* ID selector */
+div.user-card { }       /* unnecessary tag qualifier */
 .user-card { color: red !important; }  /* !important */
 ```
 
 ---
 
-## 3. プロパティ記述順序
+## 3. Property Declaration Order
 
-プロパティは以下のカテゴリ順に記述する。
+Declare properties in the following category order.
 
-1. **配置・表示**：`display`, `position`, `top/right/bottom/left`, `z-index`, `float`, `clear`
-2. **ボックスモデル**：`width`, `height`, `margin`, `padding`, `border`, `border-radius`
-3. **テキスト・フォント**：`font-family`, `font-size`, `font-weight`, `line-height`, `color`, `text-align`
-4. **背景・装飾**：`background`, `box-shadow`, `opacity`
-5. **トランジション・アニメーション**：`transition`, `animation`, `transform`
-6. **その他**：`cursor`, `overflow`, `pointer-events`, `content`
+1. **Layout & Display**: `display`, `position`, `top/right/bottom/left`, `z-index`, `float`, `clear`
+2. **Box Model**: `width`, `height`, `margin`, `padding`, `border`, `border-radius`
+3. **Text & Font**: `font-family`, `font-size`, `font-weight`, `line-height`, `color`, `text-align`
+4. **Background & Decoration**: `background`, `box-shadow`, `opacity`
+5. **Transition & Animation**: `transition`, `animation`, `transform`
+6. **Other**: `cursor`, `overflow`, `pointer-events`, `content`
 
 ```css
 /* ✅ Good */
 .button {
-  /* 配置 */
+  /* Layout */
   display: inline-flex;
   position: relative;
-  /* ボックスモデル */
+  /* Box Model */
   padding: 8px 16px;
   border: 1px solid transparent;
   border-radius: 4px;
-  /* テキスト */
+  /* Text */
   font-size: 14px;
   font-weight: 500;
   color: #fff;
-  /* 背景 */
+  /* Background */
   background-color: #3b82f6;
-  /* トランジション */
+  /* Transition */
   transition: background-color 150ms ease;
-  /* その他 */
+  /* Other */
   cursor: pointer;
 }
 ```
 
 ---
 
-## 4. Tailwind CSS 使用方針
+## 4. Tailwind CSS Usage Guidelines
 
-- `tailwind.config` でデザイントークン（色・フォント・スペーシング等）を定義し、任意の値（`text-[14px]` 等）は最小限にする。
-- クラスの記述順序は **レイアウト → ボックス → テキスト → 色・背景 → 状態** の順にする。
-- `dark:` / `hover:` / `focus:` 等のバリアントは対象クラスに隣接させる。
-- レスポンシブプレフィックスは `sm:` → `md:` → `lg:` → `xl:` の順に記述する。
+- Define design tokens (colors, fonts, spacing, etc.) in `tailwind.config`; minimize arbitrary values (e.g., `text-[14px]`).
+- Write classes in the order: **layout → box → text → color/background → state**.
+- Place variants such as `dark:` / `hover:` / `focus:` adjacent to the target class.
+- Write responsive prefixes in the order `sm:` → `md:` → `lg:` → `xl:`.
 
 ```html
-<!-- ✅ Good（記述順序） -->
+<!-- ✅ Good (class ordering) -->
 <button class="
   flex items-center justify-center
   h-10 w-full px-4 rounded-md
@@ -138,25 +138,25 @@ div.user-card { }       /* 不必要なタグ修飾 */
   disabled:cursor-not-allowed disabled:opacity-50
   transition-colors
 ">
-  送信
+  Submit
 </button>
 ```
 
 ---
 
-## 5. レスポンシブデザイン
+## 5. Responsive Design
 
-- **モバイルファースト**で設計する（ベーススタイルはモバイル向け、ブレークポイントで拡張）。
-- Tailwind の場合：プレフィックスなし → `sm:` → `md:` → `lg:` → `xl:` の順に記述する。
-- 素の CSS の場合：`min-width` メディアクエリを使用する。
+- Design **mobile-first** (base styles target mobile; expand with breakpoints).
+- With Tailwind: write in the order no prefix → `sm:` → `md:` → `lg:` → `xl:`.
+- With plain CSS: use `min-width` media queries.
 
 ```html
-<!-- ✅ Good（モバイルファースト） -->
+<!-- ✅ Good (mobile-first) -->
 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 ```
 
 ```css
-/* ✅ Good（モバイルファースト） */
+/* ✅ Good (mobile-first) */
 .grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -171,18 +171,18 @@ div.user-card { }       /* 不必要なタグ修飾 */
   .grid { grid-template-columns: repeat(3, 1fr); }
 }
 
-/* ❌ Bad（デスクトップファースト） */
+/* ❌ Bad (desktop-first) */
 @media (max-width: 1024px) { .grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 640px)  { .grid { grid-template-columns: 1fr; } }
 ```
 
 ---
 
-## 6. カスタムプロパティ（CSS Variables）
+## 6. Custom Properties (CSS Variables)
 
-- デザイントークン（色・スペーシング・フォント等）は CSS カスタムプロパティで定義する。
-- カスタムプロパティは `:root` に定義し、`--` プレフィックスで命名する。
-- Tailwind を使う場合は `tailwind.config` でトークンを管理し、カスタムプロパティとの二重管理を避ける。
+- Define design tokens (colors, spacing, fonts, etc.) as CSS custom properties.
+- Define custom properties on `:root` and name them with the `--` prefix.
+- When using Tailwind, manage tokens in `tailwind.config` and avoid duplicating them as custom properties.
 
 ```css
 /* ✅ Good */
@@ -202,7 +202,7 @@ div.user-card { }       /* 不必要なタグ修飾 */
   padding: var(--spacing-sm) var(--spacing-md);
 }
 
-/* ❌ Bad（ハードコードされた値） */
+/* ❌ Bad (hardcoded values) */
 .button {
   background-color: #3b82f6;
   border-radius: 6px;
@@ -212,36 +212,36 @@ div.user-card { }       /* 不必要なタグ修飾 */
 
 ---
 
-## 7. コメント規約
+## 7. Comment Conventions
 
-- ファイルの先頭に目的・スコープを記述する。
-- セクションの区切りにはコメントブロックを使用する。
-- コードが自明でない箇所（ハック、ブラウザ対応等）にのみコメントを付ける。
-- TODO / FIXME は `/* TODO: 説明 */` の形式で記述する。
+- Describe the purpose and scope at the top of the file.
+- Use comment blocks to separate sections.
+- Add comments only for non-obvious code (hacks, browser compatibility, etc.).
+- Write TODO / FIXME in the format `/* TODO: description */`.
 
 ```css
 /* ==========================================================================
-   Button コンポーネント
+   Button Component
    ========================================================================== */
 
-/* プライマリボタン */
+/* Primary button */
 .button--primary { }
 
-/* セカンダリボタン */
+/* Secondary button */
 .button--secondary { }
 
-/* Safari 16 以下の gap バグに対応するためのハック */
+/* Hack to work around the gap bug in Safari 16 and below */
 .flex-container > * + * {
   margin-left: var(--spacing-sm);
 }
 
-/* TODO: ダークモード対応を追加する */
+/* TODO: Add dark mode support */
 ```
 
 ---
 
-## 8. プロジェクト固有のルール
+## 8. Project-Specific Rules
 
-<!-- プロジェクトに応じて追記してください -->
+<!-- Add project-specific rules as needed -->
 
-- {プロジェクト固有のルールをここに記載}
+- {Add project-specific rules here}

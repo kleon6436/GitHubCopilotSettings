@@ -1,314 +1,314 @@
 ---
 name: ui-accessibility
-description: 'クロスプラットフォーム UI アクセシビリティ原則。WCAG 2.2 AA、コントラスト比、フォーカス順序、スクリーンリーダー（VoiceOver / TalkBack / Narrator / NVDA / JAWS）、キーボード操作、Reduce Motion、ユーザー設定尊重を確認・適用したいときに使用。Use when: reviewing UI accessibility across any platform; applying WCAG; designing inclusive experiences.'
-argument-hint: '確認したい項目（コントラスト / フォーカス / スクリーンリーダー など、省略可）'
+description: 'Cross-platform UI accessibility principles. Use to review and apply WCAG 2.2 AA, contrast ratios, focus order, screen readers (VoiceOver / TalkBack / Narrator / NVDA / JAWS), keyboard operation, Reduce Motion, and respecting user settings. Use when: reviewing UI accessibility across any platform; applying WCAG; designing inclusive experiences.'
+argument-hint: 'Item to review (contrast / focus / screen reader, etc. — optional)'
 ---
 
-# UI アクセシビリティガイドライン（クロスプラットフォーム共通）
+# UI Accessibility Guidelines (Cross-Platform Common)
 
-## 概要
+## Overview
 
-このスキルはプラットフォームを問わず UI アクセシビリティを確保するための共通原則を定義します。
-個別プラットフォームの実装詳細は各 UI スキル（`apple-ui-guidelines` / `windows-ui-guidelines` / `web-ui-guidelines` / `android-ui-guidelines`）を参照してください。
+This skill defines common principles for ensuring UI accessibility regardless of platform.
+For platform-specific implementation details, refer to the respective UI skills (`apple-ui-guidelines` / `windows-ui-guidelines` / `web-ui-guidelines` / `android-ui-guidelines`).
 
-参考:
+References:
 - [WCAG 2.2](https://www.w3.org/TR/WCAG22/)
 - [Inclusive Design Principles](https://inclusivedesignprinciples.org/)
 
 ---
 
-## 1. 4 原則（POUR）
+## 1. The 4 Principles (POUR)
 
-WCAG の基本原則。すべての UI 判断はこの 4 つに立ち返って評価します。
+The foundational principles of WCAG. All UI decisions should be evaluated against these four.
 
-| 原則 | 意味 |
+| Principle | Meaning |
 |---|---|
-| **Perceivable**（知覚可能） | 情報は利用者が知覚できる形で提供される（視覚・聴覚・触覚のいずれか） |
-| **Operable**（操作可能） | UI はあらゆる入力手段（キーボード・マウス・タッチ・音声）で操作できる |
-| **Understandable**（理解可能） | 情報と操作方法は利用者が理解できる |
-| **Robust**（堅牢） | 多様な支援技術から確実に解釈される |
+| **Perceivable** | Information is presented in a form that users can perceive (visual, auditory, or tactile) |
+| **Operable** | The UI can be operated by any input method (keyboard, mouse, touch, voice) |
+| **Understandable** | Information and methods of operation are understandable to users |
+| **Robust** | Content can be reliably interpreted by a wide range of assistive technologies |
 
 ---
 
-## 2. コントラスト
+## 2. Contrast
 
-WCAG AA 基準:
+WCAG AA criteria:
 
-| 対象 | 通常 | 大テキスト（18pt / 14pt bold） | 非テキスト（アイコン・境界線） |
+| Target | Normal | Large Text (18pt / 14pt bold) | Non-text (icons, borders) |
 |---|---|---|---|
-| コントラスト比 | **4.5:1** | **3:1** | **3:1** |
+| Contrast ratio | **4.5:1** | **3:1** | **3:1** |
 
-AAA を目指す場合は **7:1 / 4.5:1**。
+For AAA, aim for **7:1 / 4.5:1**.
 
-### 実装上のポイント
+### Implementation Notes
 
-- プレースホルダーテキストも本文と同等のコントラストを満たす。薄すぎるプレースホルダーは不可。
-- 無効（disabled）状態は **例外的に緩和可** だが、重要情報を disabled で隠さない。
-- フォーカスインジケーターは背景に対し **3:1 以上**。
-- ツール: [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/) / Figma Contrast プラグイン / Xcode Accessibility Inspector / Chrome DevTools。
+- Placeholder text must also meet the same contrast requirements as body text. Excessively faint placeholders are not acceptable.
+- Disabled states may be **relaxed as an exception**, but do not hide important information with a disabled state.
+- Focus indicators must have a contrast of **3:1 or more** against the background.
+- Tools: [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/) / Figma Contrast plugin / Xcode Accessibility Inspector / Chrome DevTools.
 
-### 色だけに頼らない
+### Don’t Rely on Color Alone
 
-情報は色以外の手がかり（アイコン・テキスト・パターン）でも伝える:
+Convey information with cues beyond color (icons, text, patterns):
 
-- エラー: 赤色 **+ アイコン + テキスト**
-- リンク: 色 **+ 下線**
-- 必須フィールド: 色 **+ 「*」 + `aria-required`**
-- 選択状態: 背景色 **+ チェックマーク**
+- Error: red **+ icon + text**
+- Link: color **+ underline**
+- Required field: color **+ “*” + `aria-required`**
+- Selected state: background color **+ checkmark**
 
 ---
 
-## 3. タッチターゲットサイズ
+## 3. Touch Target Size
 
-| プラットフォーム | 最小推奨 |
+| Platform | Minimum Recommended |
 |---|---|
-| Web（WCAG 2.5.5 AA） | **24×24 CSS px**（最小）/ **44×44 推奨** |
+| Web (WCAG 2.5.5 AA) | **24×24 CSS px** (minimum) / **44×44 recommended** |
 | iOS / iPadOS | **44×44 pt** |
 | Android | **48×48 dp** |
-| Windows | **40×40 px**（タッチ時推奨 48×48） |
+| Windows | **40×40 px** (48×48 recommended for touch) |
 
-- 隣接ターゲット間に最低 **8px** の余白を確保。
-- 視覚的サイズが小さくても、ヒット領域（`hitSlop` / padding）を拡大すれば OK。
+- Ensure at least **8px** of space between adjacent targets.
+- Even if the visual size is small, enlarging the hit area (`hitSlop` / padding) is acceptable.
 
 ---
 
-## 4. キーボード操作
+## 4. Keyboard Operation
 
-### 必須要件
+### Requirements
 
-- **すべてのインタラクティブ要素がキーボードのみで到達・操作できる**（WCAG 2.1.1）。
-- **キーボードトラップを作らない**（WCAG 2.1.2）。フォーカスはすべての要素から抜け出せる。
-- **操作順序が論理的**（WCAG 2.4.3）。DOM / 視覚順序と一致させる。
+- **All interactive elements must be reachable and operable by keyboard alone** (WCAG 2.1.1).
+- **Do not create keyboard traps** (WCAG 2.1.2). Focus must be able to leave every element.
+- **Logical operation order** (WCAG 2.4.3). Align with DOM / visual order.
 
-### 標準ショートカット
+### Standard Shortcuts
 
-| 操作 | キー |
+| Action | Key |
 |---|---|
-| 次要素へ | `Tab` |
-| 前要素へ | `Shift + Tab` |
-| ボタン実行 | `Space` / `Enter` |
-| リンク追跡 | `Enter` |
-| チェックボックス切替 | `Space` |
-| ドロップダウン展開 | `Space` / `Enter` / 矢印キー |
-| モーダル閉じる | `Esc` |
-| リスト移動 | 矢印キー |
+| Move to next element | `Tab` |
+| Move to previous element | `Shift + Tab` |
+| Activate button | `Space` / `Enter` |
+| Follow link | `Enter` |
+| Toggle checkbox | `Space` |
+| Expand dropdown | `Space` / `Enter` / Arrow keys |
+| Close modal | `Esc` |
+| Navigate list | Arrow keys |
 
-### フォーカスインジケーター
+### Focus Indicators
 
-- **フォーカスリングを消さない**（`:focus { outline: none }` 禁止）。
-- Web では `:focus-visible` を活用し、マウスクリック時のみ非表示にできる。
-- プラットフォームネイティブのフォーカスリングを尊重し、代替時は視認性（3:1 以上）を確保。
+- **Do not remove focus rings** (prohibit `:focus { outline: none }`).
+- On the Web, use `:focus-visible` to hide the ring only on mouse click.
+- Respect the platform's native focus ring; when replacing it, ensure visibility (3:1 or more).
 
 ---
 
-## 5. スクリーンリーダー対応
+## 5. Screen Reader Support
 
-### 主要スクリーンリーダー
+### Major Screen Readers
 
-| プラットフォーム | スクリーンリーダー |
+| Platform | Screen Reader |
 |---|---|
 | iOS / iPadOS | **VoiceOver** |
 | macOS | **VoiceOver** |
 | Android | **TalkBack** |
 | Windows | **Narrator** / **NVDA** / **JAWS** |
-| Web | すべて対応可能（ブラウザ + SR） |
+| Web | All supported (browser + SR) |
 
-### 共通要件
+### Common Requirements
 
-- すべてのインタラクティブ要素に **アクセシブルな名前**（accessible name）を提供:
-  - Web: `<button>削除</button>` / `aria-label="削除"`
-  - iOS: `.accessibilityLabel("削除")`
-  - Android: `contentDescription = "削除"`
-  - Windows: `AutomationProperties.Name="削除"`
-- アイコンのみのボタンには必ずラベル。
-- 装飾的な画像・アイコンは支援技術から **隠す**:
+- Provide an **accessible name** for every interactive element:
+  - Web: `<button>Delete</button>` / `aria-label="Delete"`
+  - iOS: `.accessibilityLabel("Delete")`
+  - Android: `contentDescription = "Delete"`
+  - Windows: `AutomationProperties.Name="Delete"`
+- Icon-only buttons must always have a label.
+- Decorative images/icons must be **hidden** from assistive technologies:
   - Web: `aria-hidden="true"` / `alt=""`
   - iOS: `.accessibilityHidden(true)`
   - Android: `contentDescription = null`
-- 状態変化を **ライブリージョン**で通知（読み上げ）:
+- Announce state changes via **live regions** (read aloud):
   - Web: `aria-live="polite"` / `role="status"`
   - iOS: `AccessibilityNotification.Announcement`
   - Android: `Modifier.semantics { liveRegion = LiveRegionMode.Polite }`
 
-### セマンティクスの正しい表現
+### Correct Semantics Representation
 
-- **役割（role）**: button / link / checkbox / radio など本来の役割を明示。
-- **状態（state）**: 選択・展開・無効・押下中などを `aria-expanded` / `aria-selected` / `aria-pressed` 等で提供。
-- **プロパティ（property）**: 関連要素（`aria-describedby` / `aria-labelledby`）、必須性（`aria-required`）。
-
----
-
-## 6. テキスト・可読性
-
-- **行の長さ**: 1 行あたり **45〜75 文字**（日本語は 30〜40 文字目安）。
-- **行間**: 本文 **1.5 倍以上**（WCAG 1.4.12）。
-- **段落間**: 行間の **2 倍**以上。
-- **テキストのリサイズ**: 200% まで拡大しても内容・機能が失われない（WCAG 1.4.4）。
-- **リフロー**: 幅 **320 CSS px** で横スクロールなしに表示できる（WCAG 1.4.10）。
-- **テキスト画像を避ける**（ロゴ除く）。実テキストで表現。
-- 行長・文字間隔・行間・段落間隔をユーザーが調整可能なテキストスペーシング（WCAG 1.4.12）で崩れない。
+- **Role**: Explicitly declare the true role — button / link / checkbox / radio, etc.
+- **State**: Provide selected, expanded, disabled, pressed, etc. via `aria-expanded` / `aria-selected` / `aria-pressed`, etc.
+- **Property**: Related elements (`aria-describedby` / `aria-labelledby`), required state (`aria-required`).
 
 ---
 
-## 7. Reduce Motion（動きの低減）
+## 6. Text & Readability
 
-ユーザーが「動きの低減」を有効にしている場合、アニメーションを最小化:
+- **Line length**: **45–75 characters** per line (approx. 30–40 for Japanese).
+- **Line spacing**: **1.5× or more** for body text (WCAG 1.4.12).
+- **Paragraph spacing**: **2×** the line spacing or more.
+- **Text resize**: Content and functionality must not be lost when text is enlarged up to 200% (WCAG 1.4.4).
+- **Reflow**: Displayable without horizontal scrolling at **320 CSS px** width (WCAG 1.4.10).
+- **Avoid images of text** (except logos). Represent content with real text.
+- Text spacing must not break layout when line length, letter spacing, line height, and paragraph spacing are adjusted by the user (WCAG 1.4.12).
 
-| プラットフォーム | API |
+---
+
+## 7. Reduce Motion
+
+When a user has enabled "Reduce Motion", minimize animations:
+
+| Platform | API |
 |---|---|
 | Web | `@media (prefers-reduced-motion: reduce)` |
 | iOS | `@Environment(\.accessibilityReduceMotion)` |
 | Android | `Settings.Global.ANIMATOR_DURATION_SCALE` / `AccessibilityManager` |
 | Windows | `UISettings.AnimationsEnabled` |
 
-対応ルール:
-- 視差効果・無限ループ・自動再生・点滅を停止、または簡略化。
-- 必要なフィードバックはフェード等の穏やかな表現に置換。
-- **自動再生コンテンツ**（動画・カルーセル）には一時停止手段を必ず提供。
-- **3 回/秒を超える点滅を禁止**（光感受性発作対策、WCAG 2.3.1）。
+Guidelines:
+- Stop or simplify parallax effects, infinite loops, autoplay, and flashing.
+- Replace necessary feedback with gentle transitions such as fades.
+- **Autoplay content** (video, carousels) must always provide a way to pause.
+- **Prohibit flashing more than 3 times per second** (photosensitive seizure prevention, WCAG 2.3.1).
 
 ---
 
 ## 8. Reduce Transparency / High Contrast
 
-- **透明度の低減**: 半透明背景（Liquid Glass / Acrylic / frosted glass）はフォールバックを用意。
+- **Reduce Transparency**: Provide fallbacks for semi-transparent backgrounds (Liquid Glass / Acrylic / frosted glass).
   - iOS/macOS: `@Environment(\.accessibilityReduceTransparency)`
-  - Windows: System Backdrop が自動調整
+  - Windows: System Backdrop adjusts automatically
   - Web: `@media (prefers-reduced-transparency: reduce)`
 - **High Contrast / Increased Contrast**:
-  - iOS/macOS: `@Environment(\.colorSchemeContrast)` / Assets の Increased Contrast バリアント
-  - Windows: **High Contrast テーマ**で `SystemColor*Brush` を使用
+  - iOS/macOS: `@Environment(\.colorSchemeContrast)` / Increased Contrast variants in Assets
+  - Windows: Use `SystemColor*Brush` in **High Contrast themes**
   - Web: `@media (prefers-contrast: more)` / `forced-colors: active`
 
 ---
 
-## 9. フォームアクセシビリティ
+## 9. Form Accessibility
 
-- すべての入力に **可視ラベル**を関連付ける（`<label for>` / `.accessibilityLabel` / `ContentDescription`）。
-- **エラーメッセージ**:
-  - エラー内容を明示的に（「入力エラー」ではなく「メールアドレスに @ が含まれていません」）
-  - エラー位置を明示（`aria-describedby` / `accessibilityHint`）
-  - 修正提案を提示
-- **必須フィールド**を視覚 + 支援技術両方で示す（`aria-required="true"` / `required`）。
-- **autocomplete / autofill** を適切に設定（WCAG 1.3.5）。
-- 成功メッセージもライブリージョンで通知。
-
----
-
-## 10. 画像・メディア
-
-### 代替テキスト
-
-- **情報を伝える画像**: 内容を簡潔に説明する `alt` / `accessibilityLabel`。
-- **装飾画像**: `alt=""` / `accessibilityHidden`。
-- **機能を持つ画像**（リンク画像・ボタン画像）: 機能を説明するテキスト。
-- **複雑な画像**（図表・グラフ）: 短い alt + 長文説明（`aria-describedby` / 近隣テキスト）。
-
-### 動画・音声
-
-- **字幕（Captions）**: 音声情報を持つ動画に必須（WCAG 1.2.2）。
-- **音声ガイド（Audio Description）**: 視覚情報の音声説明（WCAG 1.2.5）。
-- **トランスクリプト**: 音声コンテンツの文字起こし。
-- 自動再生はミュートで、停止手段を明示。
+- Associate a **visible label** with every input (`<label for>` / `.accessibilityLabel` / `ContentDescription`).
+- **Error messages**:
+  - Be explicit about the error (e.g., “Email address does not contain @” rather than “Input error”)
+  - Indicate the error location (`aria-describedby` / `accessibilityHint`)
+  - Provide a suggestion for correction
+- Indicate **required fields** both visually and to assistive technologies (`aria-required="true"` / `required`).
+- Configure **autocomplete / autofill** appropriately (WCAG 1.3.5).
+- Also announce success messages via live regions.
 
 ---
 
-## 11. 言語・地域対応
+## 10. Images & Media
 
-- ドキュメント言語を明示（`<html lang="ja">` / `UIAccessibility.announceLanguage`）。
-- 部分的な別言語には `lang` 属性（発音を SR に伝える）。
-- 日付・数値・通貨はロケールに応じてフォーマット（`Intl` / `NumberFormatter`）。
+### Alternative Text
+
+- **Informative images**: Provide a concise `alt` / `accessibilityLabel` describing the content.
+- **Decorative images**: `alt=""` / `accessibilityHidden`.
+- **Functional images** (linked images, button images): Text describing the function.
+- **Complex images** (diagrams, charts): Short alt + long description (`aria-describedby` / nearby text).
+
+### Video & Audio
+
+- **Captions**: Required for videos with audio content (WCAG 1.2.2).
+- **Audio Description**: Verbal description of visual information (WCAG 1.2.5).
+- **Transcript**: Text version of audio content.
+- Autoplay must be muted, with a clear way to stop.
 
 ---
 
-## 12. タイムアウト
+## 11. Language & Localization
 
-- タイムアウトがある場合、ユーザーに **延長・解除・再開始**のいずれかを提供（WCAG 2.2.1）。
-- **20 時間以内**のセッションは維持可能に。
-- 自動更新・リダイレクトはユーザーが停止できるようにする。
+- Declare the document language (`<html lang="en">` / `UIAccessibility.announceLanguage`).
+- Use `lang` attributes for inline content in a different language (informs the SR about pronunciation).
+- Format dates, numbers, and currencies according to the locale (`Intl` / `NumberFormatter`).
 
 ---
 
-## 13. テスト・検証
+## 12. Timeouts
 
-### 自動テスト
+- If a timeout is present, offer the user at least one of the following: **extend, disable, or restart** (WCAG 2.2.1).
+- Sessions within **20 hours** should be maintainable.
+- Auto-refresh and redirects must be stoppable by the user.
 
-| ツール | 対象 |
+---
+
+## 13. Testing & Validation
+
+### Automated Testing
+
+| Tool | Target |
 |---|---|
 | **axe DevTools** | Web |
 | **Lighthouse** | Web |
 | **WAVE** | Web |
-| **Accessibility Inspector**（Xcode） | iOS / macOS |
+| **Accessibility Inspector** (Xcode) | iOS / macOS |
 | **Accessibility Scanner** | Android |
 | **Accessibility Insights** | Windows / Web |
 
-### 手動テスト（必須）
+### Manual Testing (Required)
 
-1. **キーボードのみで全機能を操作**（マウス・トラックパッド不使用）
-2. **スクリーンリーダーで全画面を走査**（VoiceOver / TalkBack / NVDA）
-3. **フォントサイズ 200%** で崩れを確認
-4. **Reduce Motion ON** でアニメーション動作確認
-5. **High Contrast / Dark Mode** で視認性確認
-6. **ズーム 400%**（Web の場合）で横スクロールなしに操作可能か確認
+1. **Operate all features with keyboard only** (no mouse or trackpad)
+2. **Navigate every screen with a screen reader** (VoiceOver / TalkBack / NVDA)
+3. **Font size at 200%** — check for layout breakage
+4. **Reduce Motion ON** — verify animation behavior
+5. **High Contrast / Dark Mode** — verify visual legibility
+6. **Zoom 400%** (for Web) — verify usable without horizontal scrolling
 
-### ユーザーテスト
+### User Testing
 
-可能な限り実際の障害を持つユーザーによるテストを実施。自動テストでは約 **30%** の問題しか検出できない。
-
----
-
-## 14. 認知的アクセシビリティ
-
-- **シンプルな言葉**を使う（専門用語は必要時に定義）。
-- **一貫したナビゲーション**（WCAG 3.2.3）。同じ機能は同じ場所に。
-- **一貫した識別**（WCAG 3.2.4）。同じ機能は同じラベル・アイコン。
-- **重要な操作には確認ステップ**（削除・決済）。取り消し可能にする（WCAG 3.3.4）。
-- **プログレスインジケーター**で長時間処理を明示。
-- **エラー防止** — 入力前のヒント・リアルタイム検証・送信前確認。
+Conduct testing with real users who have disabilities whenever possible. Automated tests detect only approximately **30%** of issues.
 
 ---
 
-## 15. WCAG 2.2 新規要件（重要）
+## 14. Cognitive Accessibility
 
-2023 年以降に追加された基準:
-
-- **2.4.11 Focus Not Obscured (Minimum)** (AA) — フォーカスされた要素が他の UI（固定ヘッダ等）に隠れない。
-- **2.5.7 Dragging Movements** (AA) — ドラッグで実行できる操作はシングルポインター（クリック・タップ）でも可能に。
-- **2.5.8 Target Size (Minimum)** (AA) — 入力ターゲットは **24×24 CSS px 以上**（例外あり）。
-- **3.2.6 Consistent Help** (A) — ヘルプ機能は一貫した位置に。
-- **3.3.7 Redundant Entry** (A) — 同一プロセス内で一度入力した情報の再入力を要求しない。
-- **3.3.8 Accessible Authentication (Minimum)** (AA) — 認知機能テスト（パズル・画像選択）に依存しない認証手段を提供。
+- Use **simple language** (define technical terms when necessary).
+- **Consistent navigation** (WCAG 3.2.3). Same features in the same place.
+- **Consistent identification** (WCAG 3.2.4). Same features use the same labels and icons.
+- **Confirmation steps for critical actions** (delete, payment). Make them undoable (WCAG 3.3.4).
+- Use **progress indicators** to communicate long-running operations.
+- **Error prevention** — hints before input, real-time validation, confirmation before submission.
 
 ---
 
-## 16. レビュー観点チェックリスト
+## 15. WCAG 2.2 New Requirements (Important)
 
-UI レビュー時に以下を必ず確認:
+Criteria added since 2023:
 
-- [ ] すべてのインタラクティブ要素にアクセシブルな名前がある
-- [ ] キーボードのみで全機能が操作できる
-- [ ] フォーカスインジケーターが視認できる（3:1 以上）
-- [ ] フォーカス順序が論理的
-- [ ] Esc でモーダル・ポップオーバーが閉じる
-- [ ] テキストコントラストが AA 以上（4.5:1 / 3:1）
-- [ ] 色だけで情報を伝えていない
-- [ ] タッチターゲットが推奨サイズ以上
-- [ ] フォント拡大 200% で崩れない
-- [ ] Dark Mode / High Contrast で視認可能
-- [ ] Reduce Motion ON で過剰なアニメーションが抑制される
-- [ ] 画像に適切な alt / 装飾画像は SR から隠されている
-- [ ] 動画に字幕がある
-- [ ] フォームのラベルと入力が関連付けられている
-- [ ] エラーメッセージが具体的で、修正方法が分かる
-- [ ] ライブリージョンで動的変化が SR に通知される
-- [ ] ドラッグ操作に代替手段がある
+- **2.4.11 Focus Not Obscured (Minimum)** (AA) — A focused element must not be fully hidden by other UI (e.g., a fixed header).
+- **2.5.7 Dragging Movements** (AA) — Any action achievable by dragging must also be achievable with a single pointer (click/tap).
+- **2.5.8 Target Size (Minimum)** (AA) — Input targets must be **at least 24×24 CSS px** (with exceptions).
+- **3.2.6 Consistent Help** (A) — Help features must be in a consistent location.
+- **3.3.7 Redundant Entry** (A) — Do not require re-entry of information already entered within the same process.
+- **3.3.8 Accessible Authentication (Minimum)** (AA) — Provide an authentication method that does not rely on cognitive function tests (puzzles, image selection).
 
 ---
 
-## 関連スキル
+## 16. Review Checklist
+
+Verify all of the following during UI review:
+
+- [ ] All interactive elements have accessible names
+- [ ] All features are operable by keyboard alone
+- [ ] Focus indicators are visible (3:1 or more)
+- [ ] Focus order is logical
+- [ ] Modals / popovers close with `Esc`
+- [ ] Text contrast meets AA or above (4.5:1 / 3:1)
+- [ ] Information is not conveyed by color alone
+- [ ] Touch targets meet recommended size or larger
+- [ ] Layout does not break at 200% font scaling
+- [ ] Visible in Dark Mode / High Contrast
+- [ ] Reduce Motion ON suppresses excessive animations
+- [ ] Images have appropriate alt text / decorative images are hidden from SR
+- [ ] Videos have captions
+- [ ] Form labels are associated with inputs
+- [ ] Error messages are specific and indicate how to fix them
+- [ ] Dynamic changes are announced to SR via live regions
+- [ ] Drag operations have an alternative means
+
+---
+
+## Related Skills
 
 - Apple UI: `skills/apple-ui-guidelines/SKILL.md`
 - Windows UI: `skills/windows-ui-guidelines/SKILL.md`
 - Web UI: `skills/web-ui-guidelines/SKILL.md`
 - Android UI: `skills/android-ui-guidelines/SKILL.md`
-- UI レビュー: `skills/ui-review-checklist/SKILL.md`
+- UI Review: `skills/ui-review-checklist/SKILL.md`

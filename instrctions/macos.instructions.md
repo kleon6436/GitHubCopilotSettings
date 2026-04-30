@@ -1,51 +1,51 @@
 ---
-description: "Apple macOSアプリの開発ガイドライン"
+description: "Development guidelines for Apple macOS apps"
 applyTo: []
 ---
 
-# プロジェクトガイドライン（macOS Tahoe アプリ開発用）
+# Project Guidelines (macOS Tahoe App Development)
 
-## プロジェクト概要
+## Project Overview
 
-<!-- プロジェクトに応じて以下を記入してください -->
+<!-- Fill in the following according to your project -->
 
-- **プロジェクト名**: {プロジェクト名}
-- **概要**: {プロジェクトの目的・概要を簡潔に記述}
-- **対象プラットフォーム**: macOS 26（macOS Tahoe）以上
-- **最低 Deployment Target**: macOS 26.0
-- **リポジトリ構成**: {シングルレポ / モノレポ、主なディレクトリ構成の説明}
+- **Project Name**: {Project Name}
+- **Overview**: {Brief description of the project's purpose and overview}
+- **Target Platform**: macOS 26 (macOS Tahoe) or later
+- **Minimum Deployment Target**: macOS 26.0
+- **Repository Structure**: {Single repo / Monorepo, description of main directory structure}
 
-## 技術スタック
+## Tech Stack
 
-| カテゴリ | 技術 / ツール | バージョン | 備考 |
+| Category | Technology / Tool | Version | Notes |
 |---------|-------------|-----------|------|
-| 言語 | Swift | 6 | |
+| Language | Swift | 6 | |
 | IDE | Xcode | 26 | |
-| プロジェクト管理 | XcodeGen | 最新 | project.yml で管理 |
-| パッケージマネージャ | Swift Package Manager | | |
-| UI フレームワーク | SwiftUI | macOS 26 SDK | AppKit との混在は最小限に |
-| アーキテクチャ | MVC | | |
-| テスト | XCTest / Swift Testing | | 両フレームワーク併用可 |
-| リンター / フォーマッター | SwiftLint | 最新 | .swiftlint.yml で設定 |
-| アイコン作成 | Icon Composer | Xcode 26 内蔵 | レイヤー構造のアイコンを作成 |
-| CI/CD | {例: GitHub Actions} | | |
+| Project Management | XcodeGen | Latest | Managed via project.yml |
+| Package Manager | Swift Package Manager | | |
+| UI Framework | SwiftUI | macOS 26 SDK | Minimize mixing with AppKit |
+| Architecture | MVC | | |
+| Testing | XCTest / Swift Testing | | Both frameworks can be used together |
+| Linter / Formatter | SwiftLint | Latest | Configured via .swiftlint.yml |
+| Icon Creation | Icon Composer | Built into Xcode 26 | Create layered icons |
+| CI/CD | {e.g., GitHub Actions} | | |
 
-## 推奨 Copilot agent 構成
+## Recommended Copilot Agent Configuration
 
-- 複数 agent で進める場合は `agents/orchestrator.agent.md` を起点にする。
-- 要件整理は `agents/product-manager.agent.md`、技術設計は `agents/architect.agent.md`、実装は `agents/developer.agent.md` を使い分ける。
-- UI や HIG / Liquid Glass の検討を伴う場合は `agents/ui-designer.agent.md` を併用し、情報設計とアクセシビリティを早めに固める。
-- 実装後は `agents/reviewer.agent.md` と `agents/tester.agent.md` を品質ゲートとして使う。
+- When working with multiple agents, use `agents/orchestrator.agent.md` as the starting point.
+- Use `agents/product-manager.agent.md` for requirements clarification, `agents/architect.agent.md` for technical design, and `agents/developer.agent.md` for implementation.
+- For UI work involving HIG / Liquid Glass considerations, use `agents/ui-designer.agent.md` in conjunction to finalize information architecture and accessibility early.
+- After implementation, use `agents/reviewer.agent.md` and `agents/tester.agent.md` as quality gates.
 
-## UI ガイドライン
+## UI Guidelines
 
-macOS の UI 設計・実装（HIG、Liquid Glass、ウィンドウ、ナビゲーション、キーボードショートカット、アイコン等）については以下のスキルを参照すること。
+For UI design and implementation on macOS (HIG, Liquid Glass, windows, navigation, keyboard shortcuts, icons, etc.), refer to the following skills:
 
-- `skills/apple-ui-guidelines/SKILL.md` — Apple プラットフォーム UI ガイドライン（iOS / iPadOS / macOS 共通）
-- `skills/ui-accessibility/SKILL.md` — アクセシビリティ共通原則
-- `skills/ui-review-checklist/SKILL.md` — UI レビュー時のチェックリスト
+- `skills/apple-ui-guidelines/SKILL.md` — Apple Platform UI Guidelines (iOS / iPadOS / macOS common)
+- `skills/ui-accessibility/SKILL.md` — Common accessibility principles
+- `skills/ui-review-checklist/SKILL.md` — Checklist for UI review
 
 
-## コーディング規約
+## Coding Standards
 
-Swift のコーディング規約については `skills/swift-coding-standards/SKILL.md` を参照すること。
+For Swift coding standards, refer to `skills/swift-coding-standards/SKILL.md`.

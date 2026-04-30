@@ -1,117 +1,117 @@
 ---
-description: "Windows アプリの開発ガイドライン"
+description: "Development guidelines for Windows apps"
 applyTo: []
 ---
 
-# プロジェクトガイドライン（Windows アプリ開発用）
+# Project Guidelines (Windows App Development)
 
-## プロジェクト概要
+## Project Overview
 
-<!-- プロジェクトに応じて以下を記入してください -->
+<!-- Fill in the following according to your project -->
 
-- **プロジェクト名**: {プロジェクト名}
-- **概要**: {プロジェクトの目的・概要を簡潔に記述}
-- **対象プラットフォーム**: Windows 11 以上（Windows 10 サポートは任意）
-- **最低対応バージョン**: {Windows 11 22H2 / Windows 10 1903}（該当するものを選択）
-- **配布方式**: {Microsoft Store / サイドローディング / MSIX / Win32インストーラー}（選択）
-- **リポジトリ構成**: {シングルレポ / モノレポ、主なディレクトリ構成の説明}
+- **Project Name**: {Project Name}
+- **Overview**: {Brief description of the project's purpose and overview}
+- **Target Platform**: Windows 11 or later (Windows 10 support is optional)
+- **Minimum Supported Version**: {Windows 11 22H2 / Windows 10 1903} (select as applicable)
+- **Distribution Method**: {Microsoft Store / Sideloading / MSIX / Win32 Installer} (select)
+- **Repository Structure**: {Single repo / Monorepo, description of main directory structure}
 
-## 技術スタック
+## Tech Stack
 
-| カテゴリ | 技術 / ツール | バージョン | 備考 |
+| Category | Technology / Tool | Version | Notes |
 |---------|-------------|-----------|------|
-| 言語 | C# | 最新安定版 | nullable 有効 |
-| IDE | Visual Studio / VS Code | 最新安定版 | |
-| UI フレームワーク | WinUI 3 | 最新安定版 | Windows App SDK 使用 |
-| SDK | Windows App SDK | 最新安定版 | |
-| アーキテクチャ | MVVM | | CommunityToolkit.Mvvm 推奨 |
-| 非同期処理 | async/await | | |
-| テスト | MSTest v3 / xUnit | 最新安定版 | |
-| パッケージ管理 | NuGet | | |
-| リンター / フォーマッター | Roslyn Analyzers / EditorConfig | | |
-| CI/CD | {例: GitHub Actions} | | |
+| Language | C# | Latest stable | nullable enabled |
+| IDE | Visual Studio / VS Code | Latest stable | |
+| UI Framework | WinUI 3 | Latest stable | Uses Windows App SDK |
+| SDK | Windows App SDK | Latest stable | |
+| Architecture | MVVM | | CommunityToolkit.Mvvm recommended |
+| Async | async/await | | |
+| Testing | MSTest v3 / xUnit | Latest stable | |
+| Package Management | NuGet | | |
+| Linter / Formatter | Roslyn Analyzers / EditorConfig | | |
+| CI/CD | {e.g., GitHub Actions} | | |
 
-## 推奨 Copilot agent 構成
+## Recommended Copilot Agent Configuration
 
-- 複数 agent で進める場合は `agents/orchestrator.agent.md` を起点にする。
-- 要件整理は `agents/product-manager.agent.md`、技術設計は `agents/architect.agent.md`、実装は `agents/developer.agent.md` を使い分ける。
-- Fluent Design や WinUI 3 コンポーネントの検討には `agents/ui-designer.agent.md` を併用する。
-- 実装後は `agents/reviewer.agent.md` と `agents/tester.agent.md` を品質ゲートとして使う。
-- パッケージング・配布パイプラインは `agents/devops.agent.md` を使う。
+- When working with multiple agents, use `agents/orchestrator.agent.md` as the starting point.
+- Use `agents/product-manager.agent.md` for requirements clarification, `agents/architect.agent.md` for technical design, and `agents/developer.agent.md` for implementation.
+- Use `agents/ui-designer.agent.md` in conjunction for Fluent Design and WinUI 3 component considerations.
+- After implementation, use `agents/reviewer.agent.md` and `agents/tester.agent.md` as quality gates.
+- Use `agents/devops.agent.md` for packaging and distribution pipelines.
 
-## UI ガイドライン
+## UI Guidelines
 
-Windows の UI 設計・実装（Fluent Design、WinUI 3、ナビゲーション、タイトルバー統合等）については以下のスキルを参照すること。
+For UI design and implementation on Windows (Fluent Design, WinUI 3, navigation, title bar integration, etc.), refer to the following skills:
 
-- `skills/windows-ui-guidelines/SKILL.md` — Windows UI ガイドライン（Fluent Design / WinUI 3）
-- `skills/mfc-ui-guidelines/SKILL.md` — MFC アプリケーション UI ガイドライン
-- `skills/ui-accessibility/SKILL.md` — アクセシビリティ共通原則
-- `skills/ui-review-checklist/SKILL.md` — UI レビュー時のチェックリスト
+- `skills/windows-ui-guidelines/SKILL.md` — Windows UI Guidelines (Fluent Design / WinUI 3)
+- `skills/mfc-ui-guidelines/SKILL.md` — MFC Application UI Guidelines
+- `skills/ui-accessibility/SKILL.md` — Common accessibility principles
+- `skills/ui-review-checklist/SKILL.md` — Checklist for UI review
 
-## コーディング規約
+## Coding Standards
 
-C# のコーディング規約については `skills/csharp-coding-standards/SKILL.md` を参照すること。
+For C# coding standards, refer to `skills/csharp-coding-standards/SKILL.md`.
 
-## アーキテクチャ方針
+## Architecture Policy
 
-### レイヤー構成（MVVM）
+### Layer Structure (MVVM)
 
 ```
-Views/           — XAML ページ・UserControl・ダイアログ
-ViewModels/      — ViewModel（INotifyPropertyChanged）
-Models/          — ドメインモデル・DTO
-Services/        — ビジネスロジック・外部 API
-Repository/      — データアクセス層
+Views/           — XAML pages · UserControls · dialogs
+ViewModels/      — ViewModel (INotifyPropertyChanged)
+Models/          — Domain models · DTOs
+Services/        — Business logic · external APIs
+Repository/      — Data access layer
 ```
 
-### MVVM の運用
+### MVVM Practice
 
-- `CommunityToolkit.Mvvm` の `ObservableObject` / `RelayCommand` を活用する
-- `[ObservableProperty]` ソースジェネレータを使い、ボイラープレートを削減する
-- View は ViewModel を介してのみデータを取得し、コードビハインドにロジックを書かない
-- ViewModel は View に直接参照を持たない
+- Leverage `ObservableObject` / `RelayCommand` from `CommunityToolkit.Mvvm`
+- Use `[ObservableProperty]` source generators to reduce boilerplate
+- Views access data only through ViewModels; do not write logic in code-behind
+- ViewModels do not hold direct references to Views
 
-### 依存注入
+### Dependency Injection
 
-- `Microsoft.Extensions.DependencyInjection` を使用する
-- `App.xaml.cs` または `Program.cs` で DI コンテナを構成する
+- Use `Microsoft.Extensions.DependencyInjection`
+- Configure the DI container in `App.xaml.cs` or `Program.cs`
 
-## ウィンドウ管理
+## Window Management
 
-- マルチウィンドウは `Microsoft.UI.Xaml.Window` で管理する
-- ウィンドウ状態（位置・サイズ）は `ApplicationData.Current.LocalSettings` で永続化する
-- タイトルバー統合には `ExtendsContentIntoTitleBar` を使い、アプリコンテンツを最大限活用する
+- Manage multi-windows with `Microsoft.UI.Xaml.Window`
+- Persist window state (position, size) with `ApplicationData.Current.LocalSettings`
+- Use `ExtendsContentIntoTitleBar` for title bar integration to maximize app content area
 
-## 入力対応
+## Input Handling
 
-- **マウス / キーボード** を主軸に設計し、タッチ・ペンはオプションとして対応する
-- キーボードショートカットは `KeyboardAccelerator` で定義し、`ToolTip` に表示する
-- タッチ対応では最小タップターゲットを 44×44px とする
+- Design primarily for **mouse / keyboard**, with touch and pen as optional
+- Define keyboard shortcuts with `KeyboardAccelerator` and display in `ToolTip`
+- Minimum tap target size for touch support is 44×44px
 
-## テスト方針
+## Testing Policy
 
-- ViewModel・サービスは **MSTest v3** または **xUnit** で単体テスト
-- UI テストは **Appium + WinAppDriver** を検討する
-- テスト可能性のために、サービスはインターフェースを介して依存を持つ
+- Unit test ViewModels and services with **MSTest v3** or **xUnit**
+- Consider **Appium + WinAppDriver** for UI tests
+- Services should depend on interfaces for testability
 
-## パッケージングと配布
+## Packaging and Distribution
 
-- 配布形式は **MSIX** パッケージを推奨する
-- Microsoft Store 配布の場合は Store アソシエーションを早期に設定する
-- バージョンは `Package.appxmanifest` の `Version` 属性でセマンティックバージョニングに従う
+- **MSIX** package is the recommended distribution format
+- Set up Store association early when distributing via Microsoft Store
+- Follow semantic versioning with the `Version` attribute in `Package.appxmanifest`
 
-## セキュリティ
+## Security
 
-- 機密データは `PasswordVault`（Windows Credential Manager）で保存する
-- アプリデータは `ApplicationData.Current.LocalFolder` に格納し、適切なパーミッションを設定する
-- ネットワーク通信は HTTPS のみ許可する
+- Store sensitive data in `PasswordVault` (Windows Credential Manager)
+- Store app data in `ApplicationData.Current.LocalFolder` with appropriate permissions
+- Allow HTTPS only for network traffic
 
-詳細は `skills/security-practices/SKILL.md` を参照すること。
+For details, refer to `skills/security-practices/SKILL.md`.
 
-## 国際化（i18n）
+## Internationalization (i18n)
 
-- テキストは `Resources.resw` で管理し、コード中にハードコードしない
-- `ResourceLoader` を介してリソースを読み込む
-- 日付・数値・通貨は `Windows.Globalization` API を使う
+- Manage text with `Resources.resw`; do not hardcode in code
+- Load resources via `ResourceLoader`
+- Use `Windows.Globalization` APIs for dates, numbers, and currencies
 
-詳細は `skills/i18n-localization/SKILL.md` を参照すること。
+For details, refer to `skills/i18n-localization/SKILL.md`.

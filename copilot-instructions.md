@@ -1,83 +1,138 @@
-# プロジェクトガイドライン
+# Project Guidelines
 
-## 前提
+## Assumptions
 
-- **回答は必ず日本語で行うこと。**
-- コードの変更をする際、変更量が200行を超える可能性が高い場合は、事前に「この指示では変更量が200行を超える可能性がありますが、実行しますか？」とユーザーに確認をとること。
-- 何か大きい変更を加える場合、まず何をするのか計画を立てた上で、ユーザーに「このような計画で進めようと思います。」と提案すること。
-- 考えてから書くこと
-- シンプル優先
-- 必要な部分だけ触ること
-- ゴール基準で動くこと
-- 変更後、必ずコードレビューとテストを実施すること
+- When making code changes that are likely to exceed 200 lines, first ask the user: "This instruction may result in changes exceeding 200 lines. Do you want to proceed?"
+- Before making any large changes, plan what to do first, then propose to the user: "Here is the plan I'd like to follow."
+- Think before you write
+- Prefer simplicity
+- Only touch what is necessary
+- Work toward goals
+- After changes, always perform code review and testing
 
-## プロジェクト概要
+## Project Overview
 
-<!-- プロジェクトに応じて以下を記入してください -->
+<!-- Fill in the following as appropriate for your project -->
 
-- **プロジェクト名**: {プロジェクト名}
-- **概要**: {プロジェクトの目的・概要を簡潔に記述}
-- **対象プラットフォーム**: {iOS / Android / Web / Server 等}
-- **リポジトリ構成**: {モノレポ / シングルレポ、主なディレクトリ構成の説明}
+- **Project Name**: {Project Name}
+- **Overview**: {Brief description of the project's purpose and overview}
+- **Target Platform**: {iOS / Android / Web / Server, etc.}
+- **Repository Structure**: {Monorepo / Single repo, description of main directory structure}
 
-## 技術スタック
+## Tech Stack
 
-<!-- プロジェクトで使用する技術をプラットフォームごとに記入してください -->
-<!-- 不要な行は削除し、必要に応じて行を追加してください -->
+<!-- Fill in technologies used in the project per platform -->
+<!-- Delete unnecessary rows and add rows as needed -->
 
-| カテゴリ | 技術 / ツール | バージョン | 備考 |
+| Category | Technology / Tool | Version | Notes |
 |---------|-------------|-----------|------|
-| 言語 | {例: Swift} | {例: 5.9} | |
-| IDE / エディタ | {例: Xcode} | {例: 15.0} | |
-| プロジェクト管理 | {例: XcodeGen} | {例: 2.38} | |
-| パッケージマネージャ | {例: Swift Package Manager} | | |
-| UIフレームワーク | {例: SwiftUI} | | |
-| アーキテクチャ | {例: MVVM} | | |
-| テスト | {例: XCTest} | | |
-| CI/CD | {例: GitHub Actions} | | |
-| リンター / フォーマッター | {例: SwiftLint} | | |
-| その他 | | | |
+| Language | {e.g. Swift} | {e.g. 5.9} | |
+| IDE / Editor | {e.g. Xcode} | {e.g. 15.0} | |
+| Project Management | {e.g. XcodeGen} | {e.g. 2.38} | |
+| Package Manager | {e.g. Swift Package Manager} | | |
+| UI Framework | {e.g. SwiftUI} | | |
+| Architecture | {e.g. MVVM} | | |
+| Testing | {e.g. XCTest} | | |
+| CI/CD | {e.g. GitHub Actions} | | |
+| Linter / Formatter | {e.g. SwiftLint} | | |
+| Other | | | |
 
-## 推奨 Copilot agent 構成
+## Recommended Copilot Agent Configuration
 
-- オーケストレーションパターンで進める場合は `agents/` 配下のテンプレートを利用する。
-- 中核は `agents/orchestrator.agent.md` とし、要件整理は `product-manager`、技術設計は `architect`、実装は `developer`、レビューは `reviewer`、テストは `tester` を使い分ける。
-- UI を伴う作業では `agents/ui-designer.agent.md` も組み合わせ、情報設計・状態設計・アクセシビリティ観点を早い段階で入れる。
-- CI/CD・インフラ・デプロイ設定には `agents/devops.agent.md` を使う。
-- セキュリティリスクの評価・脆弱性レビューには `agents/security-reviewer.agent.md` を通す。
+- When using the orchestration pattern, use the templates under `agents/`.
+- Use `agents/sisyphus.agent.md` as the central entry point and delegate to specialist agents based on task type.
+- Handle small tasks and typo fixes with `sisyphus-junior` to save high-cost model usage.
+- Always plan with `prometheus` and run `metis` gap analysis before implementing.
+- Always have important changes reviewed by `momus`.
 
-### agent 一覧（9種類）
+### Agent List (10 agents)
 
-| agent | 主な責務 |
-|-------|---------|
-| `orchestrator` | 要件分解・委譲・品質ゲート管理・統合 |
-| `product-manager` | 要件整理・受け入れ条件・優先順位 |
-| `architect` | 技術設計・責務分割・移行戦略 |
-| `developer` | 実装・修正・リファクタリング |
-| `ui-designer` | 情報設計・状態設計・アクセシビリティ |
-| `reviewer` | コードレビュー・リスク指摘・保守性評価 |
-| `tester` | テスト計画・ケース設計・品質リスク評価 |
-| `devops` | CI/CD・インフラ・デプロイ・監視 |
-| `security-reviewer` | セキュリティ脅威分析・脆弱性評価・コンプライアンス |
+**Discipline Layer**
 
-## プラットフォーム別ガイドライン
+| Agent | Model | Primary Responsibilities |
+|-------|--------|------|
+| `sisyphus` | Claude Sonnet 4.6 | Main orchestrator. Intent analysis, delegation, verification, integration, BOULDER.md management |
+| `sisyphus-junior` | GPT-5 mini | Lightweight orchestrator. Dedicated to typos, single-line changes, and small tasks |
+| `prometheus` | Claude Sonnet 4.6 | Strategic planner. Requirements gathering, acceptance criteria, plan creation. Does not write code |
+| `hephaestus` | GPT-5.3-Codex | Autonomous deep worker. Self-contained explore→plan→execute→verify cycle. Explicit activation only |
 
-各プラットフォームの詳細な開発ガイドラインは以下の指示ファイルを使用すること。
+**Specialized Layer**
 
-| プラットフォーム | 指示ファイル |
+| Agent | Model | Primary Responsibilities |
+|-------|--------|------|
+| `oracle` | GPT-5.4 | Top-level consultant. Complex debugging, architecture decisions. Explicit activation only when the path forward is unclear |
+| `librarian` | GPT-5 mini | Evidence-based researcher. Official docs, GitHub examples. URL/permalink required |
+| `explore` | Grok Code Fast 1 | Fast codebase scanner. Parallel activation allowed. Read-only |
+| `metis` | GPT-5.4 mini | Plan consultant. Catches ambiguity, gaps, and incorrect assumptions in the planning phase |
+| `momus` | GPT-5.4 | Relentless verifier. Comprehensive code review, test quality, security (OWASP Top 10) |
+| `atlas` | GPT-5.4 mini | Implementer. Executes verified plans. Also handles CI/CD and deployment |
+
+### Category Quick Reference
+
+| Category | Example Tasks | Recommended Agent | Recommended Model |
+|---------|---------|-----------|----------|
+| quick | typo, single-line fix, config value change | `sisyphus-junior` | GPT-5 mini |
+| plan | requirements, planning, acceptance criteria | `prometheus` | Claude Sonnet 4.6 |
+| deep | autonomous large-scale implementation | `hephaestus` | GPT-5.3-Codex |
+| ultrabrain | architecture decisions, complex debugging | `oracle` | GPT-5.4 |
+| writing | documentation, research, cited answers | `librarian` | GPT-5 mini |
+| search | codebase grep, dependency analysis | `explore` | Grok Code Fast 1 |
+| review | code quality, testing, security | `momus` | GPT-5.4 |
+| implement | implementation, fixes, CI/CD | `atlas` | GPT-5.4 mini |
+| visual-engineering | UI/UX, accessibility | `atlas` (using Gemini 3.1 Pro) | Gemini 3.1 Pro |
+
+### Model Cost Policy
+
+- **High cost (evaluate each time)**: Claude Sonnet 4.6 / GPT-5.4 / GPT-5.3-Codex — limit to complex reasoning, critical design decisions, and large-scale implementation
+- **Medium cost (use actively)**: GPT-5.4 mini / Gemini 3.1 Pro — planning assistance, implementation, visual tasks
+- **Low cost (use freely)**: GPT-5 mini / Grok Code Fast 1 — small tasks, search, research
+
+> `atlas` uses GPT-5.4 mini for lighter cases; consider switching to Claude Sonnet 4.6 for large-scale refactoring or implementations that must closely follow existing conventions.
+
+### BOULDER.md Protocol
+
+For session continuity, `sisyphus` manages `BOULDER.md` in the project root.
+
+```markdown
+# Boulder - Session State
+Last Updated: {datetime}
+Task: {task summary}
+
+## Completed ✅
+- [x] ...
+
+## In Progress 🔄
+- [ ] ...
+
+## On Hold / Blockers
+- ...
+
+## Handoff Notes
+{Important information and decision rationale for the next session}
+```
+
+- **Session start**: `sisyphus` reads `BOULDER.md` to understand incomplete tasks before starting work
+- **After each major step**: Update Completed / In Progress / On Hold
+- **Session end**: Record remaining tasks and handoff notes before closing
+
+## Platform-Specific Guidelines
+
+For detailed development guidelines per platform, refer to the following instruction files.
+
+| Platform | Instruction File |
 |--------------|-------------|
 | iOS / iPadOS | `instrctions/ios.instructions.md` |
 | macOS | `instrctions/macos.instructions.md` |
 | Android | `instrctions/android.instructions.md` |
 | Web | `instrctions/web.instructions.md` |
 | Windows | `instrctions/windows.instructions.md` |
-| クロスプラットフォーム | `instrctions/cross-platform.instructions.md` |
+| Cross-Platform | `instrctions/cross-platform.instructions.md` |
 
-## スキル一覧
+## Skills List
 
-| カテゴリ | スキル |
+| Category | Skills |
 |---------|-------|
-| **コーディング規約** | `swift-coding-standards` / `kotlin-coding-standards` / `typescript-coding-standards` / `javascript-coding-standards` / `python-coding-standards` / `cpp-coding-standards` / `csharp-coding-standards` / `rust-coding-standards` / `css-coding-standards` / `react-coding-standards` |
+| **Coding Standards** | `swift-coding-standards` / `kotlin-coding-standards` / `typescript-coding-standards` / `javascript-coding-standards` / `python-coding-standards` / `cpp-coding-standards` / `csharp-coding-standards` / `rust-coding-standards` / `css-coding-standards` / `react-coding-standards` |
 | **UI / UX** | `apple-ui-guidelines` / `android-ui-guidelines` / `web-ui-guidelines` / `windows-ui-guidelines` / `mfc-ui-guidelines` / `ui-accessibility` / `ui-review-checklist` / `design-system` |
-| **品質・セキュリティ** | `security-practices` / `cicd-deployment` / `performance-optimization` / `apple-app-store-submission` |
-| **国際化** | `i18n-localization` |
+| **Quality & Security** | `security-practices` / `cicd-deployment` / `performance-optimization` / `apple-app-store-submission` |
+| **Internationalization** | `i18n-localization` |

@@ -1,28 +1,28 @@
 ---
 name: react-coding-standards
-description: 'Reactのコーディング規約を参照・適用する。React コーディング規約、コンポーネント設計、命名規則、Props型定義、State管理、Hooks、パフォーマンス最適化、スタイリング方針、テストを確認・適用したいときに使用。Use when: applying React style guide, reviewing React code conventions, component design, props typing, hooks usage, memo/useMemo/useCallback, testing components.'
-argument-hint: '確認・適用したいコーディング規約の項目（省略可）'
+description: 'Reference and apply React coding standards. Use when: applying React style guide, reviewing React code conventions, component design, props typing, hooks usage, memo/useMemo/useCallback, testing components.'
+argument-hint: 'Coding standard item to check or apply (optional)'
 ---
 
-# React コーディング規約
+# React Coding Standards
 
-## 概要
+## Overview
 
-このスキルは React コードのコーディング規約を定義します。
-TypeScript との併用を前提としています。
-コードレビュー・新規実装の際はこの規約に従ってください。
+This skill defines coding standards for React code.
+It assumes usage together with TypeScript.
+Follow these conventions during code review and new implementation.
 
 ---
 
-## 1. コンポーネント設計原則
+## 1. Component Design Principles
 
-- **単一責任**：1コンポーネント1責務。肥大化したら分割する。
-- **関数コンポーネント**のみ使用する。クラスコンポーネントは使わない。
-- UI ロジックとビジネスロジックを分離する（カスタム Hooks に切り出す）。
-- コンポーネントは純粋な関数として扱い、副作用は `useEffect` に限定する。
+- **Single Responsibility**: One component, one concern. Split when a component grows too large.
+- Use **function components** only. Do not use class components.
+- Separate UI logic from business logic (extract into custom Hooks).
+- Treat components as pure functions and limit side effects to `useEffect`.
 
 ```tsx
-// ✅ Good（UI とロジックを分離）
+// ✅ Good (separate UI and logic)
 function useUserProfile(userId: string) {
   const [user, setUser] = useState<User | null>(null);
   useEffect(() => { fetchUser(userId).then(setUser); }, [userId]);
@@ -35,7 +35,7 @@ function UserProfileCard({ userId }: { userId: string }) {
   return <Card title={user.name} />;
 }
 
-// ❌ Bad（UI コンポーネント内で直接 fetch）
+// ❌ Bad (fetch directly inside UI component)
 function UserProfileCard({ userId }: { userId: string }) {
   useEffect(() => { fetch(`/api/users/${userId}`).then(/* ... */); }, [userId]);
   // ...
@@ -44,16 +44,16 @@ function UserProfileCard({ userId }: { userId: string }) {
 
 ---
 
-## 2. 命名規則
+## 2. Naming Conventions
 
-| 種別 | 規則 | 例 |
-|------|------|----|
-| コンポーネント | `UpperCamelCase` | `UserProfileCard` |
-| コンポーネントファイル | `UpperCamelCase.tsx` | `UserProfileCard.tsx` |
-| カスタム Hooks | `use` プレフィックス + `lowerCamelCase` | `useUserProfile` |
-| Props 型 | コンポーネント名 + `Props` | `UserProfileCardProps` |
-| イベントハンドラー | `handle` + イベント名 | `handleSubmit`, `handleClick` |
-| Props のコールバック | `on` + イベント名 | `onSubmit`, `onClick` |
+| Category | Rule | Example |
+|----------|------|---------|
+| Component | `UpperCamelCase` | `UserProfileCard` |
+| Component file | `UpperCamelCase.tsx` | `UserProfileCard.tsx` |
+| Custom Hooks | `use` prefix + `lowerCamelCase` | `useUserProfile` |
+| Props type | Component name + `Props` | `UserProfileCardProps` |
+| Event handler | `handle` + event name | `handleSubmit`, `handleClick` |
+| Props callback | `on` + event name | `onSubmit`, `onClick` |
 
 ```tsx
 // ✅ Good
@@ -73,12 +73,12 @@ function userProfileCard({ id, editCallback }: any) { }
 
 ---
 
-## 3. Props の型定義
+## 3. Props Type Definitions
 
-- すべての Props は TypeScript の `interface` で型定義する。
-- オプショナルな Props にはデフォルト値を設定する。
-- `children` は `React.ReactNode` を使用する。
-- コールバック Props の型は具体的に定義する（`Function` は使わない）。
+- Define all Props with TypeScript `interface`.
+- Set default values for optional Props.
+- Use `React.ReactNode` for `children`.
+- Define callback Props types specifically (do not use `Function`).
 
 ```tsx
 // ✅ Good
@@ -101,19 +101,19 @@ function Button(props: { onClick: Function }) { }
 
 ---
 
-## 4. State 管理
+## 4. State Management
 
-- ローカル State は `useState`、複雑な State 遷移は `useReducer` を使用する。
-- State の型は明示的に指定する。
-- State をできる限り最小化し、派生値は `useMemo` で計算する。
-- グローバル State は {例: Zustand / Jotai / Redux Toolkit} を使用する（プロジェクトに応じて変更）。
+- Use `useState` for local state and `useReducer` for complex state transitions.
+- Specify State types explicitly.
+- Minimize State as much as possible and compute derived values with `useMemo`.
+- Use {e.g. Zustand / Jotai / Redux Toolkit} for global state (adjust per project).
 
 ```tsx
-// ✅ Good（単純な State）
+// ✅ Good (simple State)
 const [isOpen, setIsOpen] = useState(false);
 const [user, setUser] = useState<User | null>(null);
 
-// ✅ Good（複雑な State は useReducer）
+// ✅ Good (complex State — use useReducer)
 type Action =
   | { type: 'SET_LOADING' }
   | { type: 'SET_DATA'; payload: User[] }
@@ -122,16 +122,16 @@ type Action =
 function reducer(state: State, action: Action): State { /* ... */ }
 
 // ❌ Bad
-const [state, setState] = useState<any>({});  // any 型
+const [state, setState] = useState<any>({});  // any type
 ```
 
 ---
 
-## 5. Hooks の使い方
+## 5. Using Hooks
 
-- Hooks はコンポーネントのトップレベルでのみ呼び出す（条件分岐・ループ内は禁止）。
-- `useEffect` の依存配列は省略しない。不要な依存は `useCallback` / `useMemo` で安定化する。
-- カスタム Hooks を積極的に作成して再利用する。
+- Call Hooks only at the top level of components (not inside conditionals or loops).
+- Never omit the `useEffect` dependency array. Stabilize unnecessary dependencies with `useCallback` / `useMemo`.
+- Actively create and reuse custom Hooks.
 
 ```tsx
 // ✅ Good
@@ -144,27 +144,27 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
-// ❌ Bad（条件分岐内で Hooks を呼び出す）
+// ❌ Bad (calling Hooks inside a conditional)
 function Component({ isLoggedIn }: { isLoggedIn: boolean }) {
   if (isLoggedIn) {
-    const [data, setData] = useState(null);  // ルール違反
+    const [data, setData] = useState(null);  // Rules violation
   }
 }
 ```
 
 ---
 
-## 6. パフォーマンス最適化
+## 6. Performance Optimization
 
-- 最初から最適化しない。プロファイリングで問題が確認されてから適用する。
-- `React.memo` で不要な再レンダリングを防ぐ。
-- `useCallback` は Props として渡すコールバックに使用する。
-- `useMemo` は計算コストが高い派生値に使用する。
+- Do not optimize prematurely. Apply only after profiling confirms a problem.
+- Use `React.memo` to prevent unnecessary re-renders.
+- Use `useCallback` for callbacks passed as Props.
+- Use `useMemo` for derived values with high computation cost.
 
 ```tsx
-// ✅ Good（プロファイリング後に適用）
+// ✅ Good (apply after profiling)
 const MemoizedItem = React.memo(function Item({ item, onRemove }: ItemProps) {
-  return <li>{item.name} <button onClick={() => onRemove(item.id)}>削除</button></li>;
+  return <li>{item.name} <button onClick={() => onRemove(item.id)}>Remove</button></li>;
 });
 
 function List({ items }: { items: Item[] }) {
@@ -183,22 +183,22 @@ function List({ items }: { items: Item[] }) {
 
 ---
 
-## 7. スタイリング方針
+## 7. Styling Guidelines
 
-<!-- プロジェクトに応じて方針を選択・変更してください -->
+<!-- Select and adjust the approach according to the project -->
 
-- スタイリング手法: {例: Tailwind CSS / CSS Modules / styled-components}
-- コンポーネントのスタイルはコンポーネントファイルと同じディレクトリに配置する。
-- インラインスタイル（`style` Props）は動的な値のみに限定する。
+- Styling method: {e.g. Tailwind CSS / CSS Modules / styled-components}
+- Place component styles in the same directory as the component file.
+- Limit inline styles (`style` Props) to dynamic values only.
 
 ```tsx
-// ✅ Good（Tailwind CSS の例）
+// ✅ Good (Tailwind CSS example)
 function Badge({ label, variant }: { label: string; variant: 'success' | 'error' }) {
   const variantClass = variant === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
   return <span className={`inline-flex items-center px-2 py-1 rounded ${variantClass}`}>{label}</span>;
 }
 
-// ❌ Bad（インラインスタイルを多用）
+// ❌ Bad (overusing inline styles)
 function Badge({ label }: { label: string }) {
   return <span style={{ display: 'inline-flex', padding: '4px 8px', borderRadius: '4px' }}>{label}</span>;
 }
@@ -206,23 +206,23 @@ function Badge({ label }: { label: string }) {
 
 ---
 
-## 8. テスト
+## 8. Testing
 
-- コンポーネントのテストは {例: Vitest / Jest} + React Testing Library を使用する。
-- 実装詳細ではなく、**ユーザーの操作・見た目**をテストする。
-- スナップショットテストは変化の検知のみに使い、多用しない。
+- Use {e.g. Vitest / Jest} + React Testing Library for component tests.
+- Test **user interactions and appearance**, not implementation details.
+- Use snapshot tests only for change detection; do not overuse them.
 
 ```tsx
-// ✅ Good（ユーザー操作をテスト）
-test('クリックでカウントが増加する', async () => {
+// ✅ Good (testing user interactions)
+test('count increases on click', async () => {
   render(<Counter initialCount={0} />);
-  const button = screen.getByRole('button', { name: '増やす' });
+  const button = screen.getByRole('button', { name: 'Increment' });
   await userEvent.click(button);
   expect(screen.getByText('1')).toBeInTheDocument();
 });
 
-// ❌ Bad（実装詳細をテスト）
-test('setState が呼ばれる', () => {
+// ❌ Bad (testing implementation details)
+test('setState is called', () => {
   const instance = createComponent();
   instance.setState({ count: 1 });
   expect(instance.state.count).toBe(1);
@@ -231,29 +231,29 @@ test('setState が呼ばれる', () => {
 
 ---
 
-## 9. コメント規約
+## 9. Comment Conventions
 
-- コンポーネントの Props に JSDoc / TSDoc コメントを付ける。
-- 複雑なロジックには必ずコメントを付ける。
-- TODO / FIXME は `// TODO: 説明` の形式で記述し、チケット番号を添える。
+- Add JSDoc / TSDoc comments to component Props.
+- Always add comments to complex logic.
+- Write TODO / FIXME in the format `// TODO: description` and include a ticket number.
 
 ```tsx
 /**
- * ユーザープロフィールカードを表示するコンポーネント。
- * @param userId - プロフィールを表示するユーザーの ID
- * @param onEdit - 編集ボタンクリック時のコールバック
+ * Component that displays a user profile card.
+ * @param userId - ID of the user whose profile is displayed
+ * @param onEdit - Callback fired when the edit button is clicked
  */
 function UserProfileCard({ userId, onEdit }: UserProfileCardProps) {
   // ...
 }
 
-// TODO: #789 スケルトン UI に切り替える
+// TODO: #789 Switch to skeleton UI
 ```
 
 ---
 
-## 10. プロジェクト固有のルール
+## 10. Project-Specific Rules
 
-<!-- プロジェクトに応じて追記してください -->
+<!-- Add rules specific to your project here -->
 
-- {プロジェクト固有のルールをここに記載}
+- {List project-specific rules here}

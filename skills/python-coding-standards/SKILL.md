@@ -1,30 +1,30 @@
 ---
 name: python-coding-standards
-description: 'Pythonのコーディング規約を参照・適用する。Python コーディング規約、PEP8、命名規則、スタイルガイド、型ヒント、インポート順序、docstring、エラーハンドリングを確認・適用したいときに使用。Use when: applying Python style guide, reviewing Python code conventions, PEP8, type hints, import order, docstring format.'
-argument-hint: '確認・適用したいコーディング規約の項目（省略可）'
+description: 'Reference and apply Python coding standards. Use when: applying Python style guide, reviewing Python code conventions, PEP8, type hints, import order, docstring format.'
+argument-hint: 'Coding standard item to review or apply (optional)'
 ---
 
-# Python コーディング規約
+# Python Coding Standards
 
-## 概要
+## Overview
 
-このスキルは Python コードのコーディング規約を定義します。
-基本的に [PEP 8](https://peps.python.org/pep-0008/) に準拠しつつ、プロジェクト固有のルールを追記しています。
-コードレビュー・新規実装の際はこの規約に従ってください。
+This skill defines coding standards for Python code.
+Follows [PEP 8](https://peps.python.org/pep-0008/) as the baseline, with additional project-specific rules.
+Follow these conventions during code reviews and new implementations.
 
 ---
 
-## 1. 命名規則
+## 1. Naming Conventions
 
-| 種別 | 規則 | 例 |
-|------|------|----|
-| モジュール / パッケージ | `snake_case`（短く・簡潔に） | `user_service.py` |
-| クラス | `UpperCamelCase` | `UserProfile` |
-| 関数 / メソッド | `snake_case` | `fetch_user_data()` |
-| 変数 / 引数 | `snake_case` | `user_name` |
-| 定数 | `UPPER_SNAKE_CASE` | `MAX_RETRY_COUNT = 3` |
-| プライベートメンバ | 先頭 `_` | `_cache: dict` |
-| 名前マングリング | 先頭 `__`（必要な場合のみ） | `__secret` |
+| Type | Convention | Example |
+|------|------|-----|
+| Module / Package | `snake_case` (short & concise) | `user_service.py` |
+| Class | `UpperCamelCase` | `UserProfile` |
+| Function / Method | `snake_case` | `fetch_user_data()` |
+| Variable / Parameter | `snake_case` | `user_name` |
+| Constant | `UPPER_SNAKE_CASE` | `MAX_RETRY_COUNT = 3` |
+| Private Member | leading `_` | `_cache: dict` |
+| Name Mangling | leading `__` (only when necessary) | `__secret` |
 
 ```python
 # ✅ Good
@@ -46,20 +46,20 @@ class networkmanager:
 
 ---
 
-## 2. コードフォーマット
+## 2. Code Formatting
 
-<!-- プロジェクトに応じて値を変更してください -->
+<!-- Adjust values as needed for your project -->
 
-| 項目 | 設定値 |
-|------|--------|
-| インデント | スペース {4} 個（タブ不可） |
-| 1行の最大文字数 | {120} 文字 |
-| 文字列クォート | {ダブルクォート `"` を優先} |
-| 末尾カンマ | 複数行の場合は末尾カンマを付ける |
-| フォーマッター | {例: Ruff / Black} |
+| Item | Value |
+|------|-----|
+| Indent | {4} spaces (no tabs) |
+| Max line length | {120} characters |
+| String quotes | {prefer double quotes `"`} |
+| Trailing comma | Add trailing commas for multi-line |
+| Formatter | {e.g. Ruff / Black} |
 
 ```python
-# ✅ Good（複数行の末尾カンマ）
+# ✅ Good (trailing comma for multi-line)
 SUPPORTED_FORMATS = [
     "json",
     "csv",
@@ -73,12 +73,12 @@ SUPPORTED_FORMATS = ["json", "csv",
 
 ---
 
-## 3. 型ヒント (Type Hints)
+## 3. Type Hints
 
-- すべての関数・メソッドの引数と戻り値に型ヒントを付ける。
-- Python 3.10+ の `X | Y` 構文を使用する（`Union[X, Y]` は使わない）。
-- `Optional[X]` の代わりに `X | None` を使用する。
-- 型チェックには `mypy` または `pyright` を使用する（strict モード推奨）。
+- Add type hints to all function/method parameters and return values.
+- Use Python 3.10+ `X | Y` syntax (do not use `Union[X, Y]`).
+- Use `X | None` instead of `Optional[X]`.
+- Use `mypy` or `pyright` for type checking (strict mode recommended).
 
 ```python
 # ✅ Good
@@ -99,13 +99,13 @@ def get_user(user_id: int) -> Optional[UserProfile]:
 
 ---
 
-## 4. インポート順序
+## 4. Import Order
 
-以下の順番で記述し、各グループは空行で区切る（`isort` / `Ruff` で自動整形）。
+Write imports in the following order, separated by blank lines (auto-formatted by `isort` / `Ruff`).
 
-1. 標準ライブラリ
-2. サードパーティライブラリ
-3. ローカル（プロジェクト内）モジュール
+1. Standard library
+2. Third-party libraries
+3. Local (project) modules
 
 ```python
 # ✅ Good
@@ -120,57 +120,57 @@ from app.models import UserProfile
 from app.services import user_service
 ```
 
-ワイルドカードインポート（`from module import *`）は禁止。
+Wildcard imports (`from module import *`) are prohibited.
 
 ---
 
-## 5. Docstring 規約
+## 5. Docstring Conventions
 
-- すべての公開クラス・関数・メソッドに Docstring を付ける。
-- 形式は **{Google スタイル / NumPy スタイル}** を使用する。
+- Add docstrings to all public classes, functions, and methods.
+- Use **{Google style / NumPy style}** format.
 
 ```python
-# ✅ Good（Google スタイル）
+# ✅ Good (Google style)
 def fetch_user(user_id: int) -> UserProfile:
-    """指定された ID のユーザー情報を取得する。
+    """Retrieves user information for the specified ID.
 
     Args:
-        user_id: 対象ユーザーの識別子。
+        user_id: Identifier of the target user.
 
     Returns:
-        対象ユーザーの UserProfile オブジェクト。
+        The UserProfile object for the target user.
 
     Raises:
-        UserNotFoundError: 指定された ID のユーザーが存在しない場合。
-        NetworkError: ネットワーク接続に失敗した場合。
+        UserNotFoundError: If no user with the given ID exists.
+        NetworkError: If the network connection fails.
     """
     ...
 ```
 
 ---
 
-## 6. エラーハンドリング
+## 6. Error Handling
 
-- 具体的な例外クラスを `except` で捕捉する（`except Exception` は原則禁止）。
-- プロジェクト固有の例外は基底クラスを継承して定義する。
-- `except` 節では必ずログを記録するかエラーを再送出する。
+- Catch specific exception classes with `except` (`except Exception` is generally prohibited).
+- Define project-specific exceptions by inheriting from a base class.
+- Always log or re-raise in `except` blocks.
 
 ```python
 # ✅ Good
 class AppError(Exception):
-    """アプリケーション基底例外クラス。"""
+    """Base application exception class."""
 
 class UserNotFoundError(AppError):
-    """ユーザーが見つからない場合の例外。"""
+    """Exception raised when a user is not found."""
 
 def get_user(user_id: int) -> UserProfile:
     try:
         return repository.find(user_id)
     except DatabaseConnectionError as e:
-        logger.error("DB接続エラー: %s", e)
+        logger.error("DB connection error: %s", e)
         raise
     except RecordNotFoundError as e:
-        raise UserNotFoundError(f"ユーザー {user_id} が見つかりません") from e
+        raise UserNotFoundError(f"User {user_id} not found") from e
 
 # ❌ Bad
 def get_user(user_id: int):
@@ -182,10 +182,10 @@ def get_user(user_id: int):
 
 ---
 
-## 7. クラス設計
+## 7. Class Design
 
-- `dataclass` または `pydantic.BaseModel` をデータ保持クラスに活用する。
-- `__init__` が単純なデータ格納のみの場合は `@dataclass` を優先する。
+- Use `dataclass` or `pydantic.BaseModel` for data-holding classes.
+- Prefer `@dataclass` when `__init__` only stores data.
 
 ```python
 # ✅ Good
@@ -201,11 +201,11 @@ class UserProfile:
 
 ---
 
-## 8. 非同期処理
+## 8. Asynchronous Processing
 
-- I/O バウンドな処理には `async/await` を使用する。
-- `asyncio.gather` で並列処理を行う。
-- 非同期コンテキストマネージャ（`async with`）を適切に使用する。
+- Use `async/await` for I/O-bound operations.
+- Use `asyncio.gather` for concurrent execution.
+- Use async context managers (`async with`) appropriately.
 
 ```python
 # ✅ Good
@@ -216,14 +216,14 @@ async def fetch_all(user_ids: list[int]) -> list[UserProfile]:
 
 ---
 
-## 9. テスト規約
+## 9. Testing Conventions
 
-<!-- プロジェクトで使用するテストフレームワークに応じて変更してください -->
+<!-- Adjust according to the test framework used in your project -->
 
-- テストフレームワーク: **{pytest}**
-- テストファイルは `tests/` ディレクトリに配置し、`test_*.py` の命名規則に従う。
-- テスト関数名は `test_<対象>_<条件>_<期待結果>` の形式で記述する。
-- フィクスチャは `conftest.py` に定義する。
+- Test framework: **{pytest}**
+- Place test files in the `tests/` directory following the `test_*.py` naming convention.
+- Name test functions using the `test_<subject>_<condition>_<expected_result>` format.
+- Define fixtures in `conftest.py`.
 
 ```python
 # ✅ Good
@@ -238,8 +238,8 @@ def test_fetch_user_with_invalid_id_raises_not_found() -> None:
 
 ---
 
-## 10. プロジェクト固有のルール
+## 10. Project-Specific Rules
 
-<!-- プロジェクトに応じて追記してください -->
+<!-- Add project-specific content here -->
 
-- {プロジェクト固有のルールをここに記載}
+- {Add project-specific rules here}

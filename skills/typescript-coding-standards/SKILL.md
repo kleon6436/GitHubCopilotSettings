@@ -1,28 +1,28 @@
 ---
 name: typescript-coding-standards
-description: 'TypeScriptのコーディング規約を参照・適用する。TypeScript コーディング規約、命名規則、スタイルガイド、型定義、interface vs type alias、ジェネリクス、型ガード、null/undefined処理、非同期処理を確認・適用したいときに使用。Use when: applying TypeScript style guide, reviewing TypeScript code conventions, type definitions, generics, type guards, null handling, async/await, TSDoc.'
-argument-hint: '確認・適用したいコーディング規約の項目（省略可）'
+description: 'Reference and apply TypeScript coding standards. Use when: applying TypeScript style guide, reviewing TypeScript code conventions, type definitions, generics, type guards, null handling, async/await, TSDoc.'
+argument-hint: 'Coding standard item to check or apply (optional)'
 ---
 
-# TypeScript コーディング規約
+# TypeScript Coding Standards
 
-## 概要
+## Overview
 
-このスキルは TypeScript コードのコーディング規約を定義します。
-コードレビュー・新規実装の際はこの規約に従ってください。
+This skill defines the coding standards for TypeScript code.
+Follow these standards during code reviews and new implementations.
 
 ---
 
-## 1. 命名規則
+## 1. Naming Conventions
 
-| 種別 | 規則 | 例 |
-|------|------|----|
-| 変数 / 関数 / メソッド | `lowerCamelCase` | `fetchUserData()` |
-| クラス / インターフェース / 型 / 列挙型 | `UpperCamelCase` | `UserProfile`, `ApiError` |
-| 定数（モジュールスコープ） | `UPPER_SNAKE_CASE` | `MAX_RETRY_COUNT` |
-| プライベートメンバ | 先頭 `#`（クラスフィールド）または `_`（慣例） | `#cache`, `_session` |
-| ファイル名 | `kebab-case` | `user-service.ts` |
-| 型パラメータ | 単一大文字 or 意味のある名前 | `T`, `TKey`, `TValue` |
+| Category | Rule | Example |
+|----------|------|---------|
+| Variable / Function / Method | `lowerCamelCase` | `fetchUserData()` |
+| Class / Interface / Type / Enum | `UpperCamelCase` | `UserProfile`, `ApiError` |
+| Constant (module scope) | `UPPER_SNAKE_CASE` | `MAX_RETRY_COUNT` |
+| Private member | Leading `#` (class field) or `_` (convention) | `#cache`, `_session` |
+| File name | `kebab-case` | `user-service.ts` |
+| Type parameter | Single uppercase letter or descriptive name | `T`, `TKey`, `TValue` |
 
 ```ts
 // ✅ Good
@@ -41,27 +41,27 @@ const maxTimeout = 30;
 
 ---
 
-## 2. コードフォーマット
+## 2. Code Formatting
 
-<!-- プロジェクトに応じて値を変更してください -->
+<!-- Change values as needed for your project -->
 
-| 項目 | 設定値 |
-|------|--------|
-| インデント | スペース {2} 個（タブ不可） |
-| 1行の最大文字数 | {120} 文字 |
-| 文字列クォート | {シングルクォート `'` を優先} |
-| セミコロン | {付ける} |
-| 末尾カンマ | 複数行の場合は末尾カンマを付ける |
-| フォーマッター | {例: Prettier} |
-| リンター | {例: ESLint + typescript-eslint} |
+| Item | Value |
+|------|-------|
+| Indentation | {2} spaces (no tabs) |
+| Max line length | {120} characters |
+| String quotes | {prefer single quotes `'`} |
+| Semicolons | {use semicolons} |
+| Trailing commas | Add trailing commas in multi-line expressions |
+| Formatter | {e.g., Prettier} |
+| Linter | {e.g., ESLint + typescript-eslint} |
 
 ---
 
-## 3. 型定義（interface vs type alias）
+## 3. Type Definitions (interface vs type alias)
 
-- **`interface`** はオブジェクト型・クラスの契約定義に使用する。宣言マージが必要な場合も `interface`。
-- **`type`** はユニオン型・交差型・プリミティブ型エイリアス・タプルに使用する。
-- `any` は使用しない。やむを得ない場合は `unknown` を使用し、型ガードで絞り込む。
+- **`interface`** is used for object type and class contract definitions. Use `interface` when declaration merging is needed as well.
+- **`type`** is used for union types, intersection types, primitive type aliases, and tuples.
+- Do not use `any`. If unavoidable, use `unknown` and narrow with a type guard.
 
 ```ts
 // ✅ Good
@@ -76,19 +76,19 @@ type Status = 'active' | 'inactive' | 'pending';
 type ApiResponse<T> = { data: T; error: null } | { data: null; error: string };
 
 // ❌ Bad
-type User = {  // オブジェクト型に type を使う（拡張性が下がる）
+type User = {  // using type for an object type (reduces extensibility)
   id: string;
 };
-const response: any = await fetch('/api');  // any を使う
+const response: any = await fetch('/api');  // using any
 ```
 
 ---
 
-## 4. ジェネリクス
+## 4. Generics
 
-- 意味のある型パラメータ名を付ける（単一文字は汎用コンテナのみ）。
-- 不必要なジェネリクスは避ける。
-- 型パラメータに制約（`extends`）を積極的に使用する。
+- Use meaningful type parameter names (single letters only for general-purpose containers).
+- Avoid unnecessary generics.
+- Actively use constraints (`extends`) on type parameters.
 
 ```ts
 // ✅ Good
@@ -107,11 +107,11 @@ function getProperty<T, K>(obj: T, key: K): any {
 
 ---
 
-## 5. 型アサーション・型ガード
+## 5. Type Assertions & Type Guards
 
-- 型アサーション（`as`）はやむを得ない場合のみ使用する。
-- ユーザー定義型ガード（`is` キーワード）を積極的に使用する。
-- `as unknown as T` のような二段階アサーションは禁止。
+- Use type assertions (`as`) only when unavoidable.
+- Actively use user-defined type guards (`is` keyword).
+- Double-step assertions such as `as unknown as T` are prohibited.
 
 ```ts
 // ✅ Good
@@ -129,17 +129,17 @@ if (isUser(response)) {
 }
 
 // ❌ Bad
-const user = response as User;  // 検証なしのアサーション
-const user2 = response as unknown as User;  // 二段階アサーション
+const user = response as User;  // assertion without validation
+const user2 = response as unknown as User;  // double-step assertion
 ```
 
 ---
 
-## 6. null / undefined の扱い
+## 6. null / undefined Handling
 
-- `strict` モードを有効にし、`strictNullChecks` を必ず有効にする。
-- `null` と `undefined` は明示的に使い分ける（存在しない値は `undefined`、意図的な空値は `null`）。
-- オプショナルチェーン（`?.`）と null 合体演算子（`??`）を活用する。
+- Enable `strict` mode; always enable `strictNullChecks`.
+- Use `null` and `undefined` explicitly and distinctly (non-existent values → `undefined`; intentional empty values → `null`).
+- Use optional chaining (`?.`) and the null-coalescing operator (`??`).
 
 ```ts
 // ✅ Good
@@ -154,11 +154,11 @@ const name = user && user.profile && user.profile.displayName
 
 ---
 
-## 7. エラーハンドリング
+## 7. Error Handling
 
-- `Error` を継承したカスタムエラークラスを使用する。
-- `catch` の引数は `unknown` 型として受け取り、型ガードで絞り込む。
-- エラーを握りつぶさない。
+- Use custom error classes that extend `Error`.
+- Receive `catch` arguments as `unknown` and narrow with a type guard.
+- Do not swallow errors.
 
 ```ts
 // ✅ Good
@@ -186,17 +186,17 @@ try {
 try {
   const data = await fetchData();
 } catch (e) {
-  console.log(e);  // 型不明のまま使用
+  console.log(e);  // used without type narrowing
 }
 ```
 
 ---
 
-## 8. 非同期処理
+## 8. Asynchronous Processing
 
-- `async / await` を優先する。`.then()` チェーンは避ける。
-- `Promise.all` / `Promise.allSettled` で並列処理を行う。
-- 戻り値の型は `Promise<T>` を明示する。
+- Prefer `async / await`. Avoid `.then()` chains.
+- Use `Promise.all` / `Promise.allSettled` for parallel execution.
+- Explicitly declare the return type as `Promise<T>`.
 
 ```ts
 // ✅ Good
@@ -218,30 +218,30 @@ function loadDashboard(userId: string) {
 
 ---
 
-## 9. コメント規約
+## 9. Comment Conventions
 
-- コードのロジックが自明でない箇所にのみコメントを付ける。
-- 公開 API には **TSDoc** 形式のドキュメントコメントを付ける。
-- TODO / FIXME は `// TODO: 説明` の形式で記述し、チケット番号を添える。
+- Add comments only where the code logic is not self-evident.
+- Add **TSDoc** documentation comments to all public APIs.
+- Write TODO / FIXME in the format `// TODO: description` and include a ticket number.
 
 ```ts
 /**
- * 指定した ID のユーザーを取得します。
- * @param id - ユーザー識別子
- * @returns ユーザーオブジェクト
- * @throws {@link ApiError} ユーザーが存在しない場合
+ * Retrieves the user with the specified ID.
+ * @param id - User identifier
+ * @returns User object
+ * @throws {@link ApiError} if the user does not exist
  */
 async function fetchUser(id: string): Promise<User> {
   // ...
 }
 
-// TODO: #456 キャッシュ戦略を実装する
+// TODO: #456 Implement caching strategy
 ```
 
 ---
 
-## 10. プロジェクト固有のルール
+## 10. Project-Specific Rules
 
-<!-- プロジェクトに応じて追記してください -->
+<!-- Add project-specific rules as needed -->
 
-- {プロジェクト固有のルールをここに記載}
+- {Add project-specific rules here}

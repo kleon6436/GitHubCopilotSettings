@@ -1,45 +1,45 @@
 ---
 name: design-system
-description: 'デザインシステムとデザイントークン管理のガイドラインを参照・適用する。カラーシステム・タイポグラフィ・スペーシング・コンポーネント仕様・プラットフォーム間のブランド統一を確認・適用したいときに使用。Use when: establishing design tokens, color system, typography scale, spacing system, component specifications, cross-platform brand consistency.'
-argument-hint: '確認・適用したいデザインシステムの項目（省略可）'
+description: 'Reference and apply design system and design token management guidelines. Use when establishing design tokens, color system, typography scale, spacing system, component specifications, cross-platform brand consistency.'
+argument-hint: 'The design system item to review or apply (optional)'
 ---
 
-# デザインシステム・トークン管理 ガイドライン
+# Design System & Token Management Guidelines
 
-## 概要
+## Overview
 
-このスキルはデザインシステムとデザイントークン管理の規約を定義します。
-プラットフォーム間でブランドの一貫性を保ちながら、各プラットフォームのデザイン言語にも適応するための実践的なガイドラインを提供します。
+This skill defines conventions for design systems and design token management.
+It provides practical guidelines for maintaining brand consistency across platforms while adapting to each platform's design language.
 
 ---
 
-## 1. デザイントークンとは
+## 1. What are Design Tokens?
 
-デザイントークンは、カラー・タイポグラフィ・スペーシング等のデザイン上の決定事項を**言語に依存しない形式で管理する仕組み**です。
-Single Source of Truth として Figma や JSON で定義し、各プラットフォームの形式に変換して使用します。
+Design tokens are a **platform-agnostic mechanism for managing design decisions** such as colors, typography, and spacing.
+They are defined as a Single Source of Truth in Figma or JSON, then converted to each platform's format.
 
-### トークンの階層
+### Token Hierarchy
 
 ```
-Foundation（基礎）
-  └── Semantic（意味付き）
-        └── Component（コンポーネント固有）
+Foundation
+  └── Semantic
+        └── Component
 ```
 
-| 階層 | 例 | 用途 |
+| Tier | Example | Usage |
 |------|----|----|
-| **Foundation** | `color.blue.500 = #2563EB` | 原色パレット。直接使用しない |
-| **Semantic** | `color.primary = color.blue.500` | 意味で参照。コンポーネントはここを使う |
-| **Component** | `button.primary.background = color.primary` | コンポーネント固有の設定 |
+| **Foundation** | `color.blue.500 = #2563EB` | Raw color palette. Do not use directly |
+| **Semantic** | `color.primary = color.blue.500` | Referenced by meaning. Components use this tier |
+| **Component** | `button.primary.background = color.primary` | Component-specific settings |
 
 ---
 
-## 2. カラーシステム
+## 2. Color System
 
-### ライト / ダークモード対応
+### Light / Dark Mode Support
 
 ```json
-// tokens.json（Style Dictionary 形式）
+// tokens.json (Style Dictionary format)
 {
   "color": {
     "background": {
@@ -72,100 +72,100 @@ Foundation（基礎）
 }
 ```
 
-### アクセシビリティ要件（WCAG 2.2 AA）
+### Accessibility Requirements (WCAG 2.2 AA)
 
-| コントラスト比 | 用途 |
+| Contrast Ratio | Usage |
 |--------------|------|
-| 4.5 : 1 以上 | 通常テキスト（18px 未満） |
-| 3 : 1 以上 | 大きなテキスト（18px 以上 / Bold 14px 以上）・UI コンポーネント |
+| 4.5 : 1 or higher | Normal text (under 18px) |
+| 3 : 1 or higher | Large text (18px or above / Bold 14px or above) · UI components |
 
-詳細は `skills/ui-accessibility/SKILL.md` を参照すること。
+For details, refer to `skills/ui-accessibility/SKILL.md`.
 
 ---
 
-## 3. タイポグラフィスケール
+## 3. Typography Scale
 
-### スケール定義
+### Scale Definition
 
-| トークン | サイズ | Weight | 用途 |
+| Token | Size | Weight | Usage |
 |---------|-------|--------|------|
-| `text.display` | 34px / 36px | Bold | ヒーロー見出し |
-| `text.title1` | 28px / 34px | Regular / Bold | ページタイトル |
-| `text.title2` | 22px / 28px | Regular / Bold | セクションタイトル |
-| `text.title3` | 20px / 24px | Regular / Semibold | サブセクション |
-| `text.headline` | 17px / 20px | Semibold | カード見出し |
-| `text.body` | 17px / 16px | Regular | 本文 |
-| `text.callout` | 16px / 15px | Regular | 補足情報 |
-| `text.subheadline` | 15px / 14px | Regular | ラベル |
-| `text.footnote` | 13px / 12px | Regular | 注釈 |
-| `text.caption` | 12px / 11px | Regular | キャプション |
+| `text.display` | 34px / 36px | Bold | Hero headings |
+| `text.title1` | 28px / 34px | Regular / Bold | Page titles |
+| `text.title2` | 22px / 28px | Regular / Bold | Section titles |
+| `text.title3` | 20px / 24px | Regular / Semibold | Subsections |
+| `text.headline` | 17px / 20px | Semibold | Card headings |
+| `text.body` | 17px / 16px | Regular | Body text |
+| `text.callout` | 16px / 15px | Regular | Supplementary info |
+| `text.subheadline` | 15px / 14px | Regular | Labels |
+| `text.footnote` | 13px / 12px | Regular | Annotations |
+| `text.caption` | 12px / 11px | Regular | Captions |
 
-### プラットフォーム適応
+### Platform Adaptation
 
-| プラットフォーム | 推奨フォント | スケーリング |
+| Platform | Recommended Font | Scaling |
 |--------------|-----------|------------|
-| iOS / macOS | SF Pro / SF Pro Rounded | Dynamic Type 対応 |
-| Android | Roboto / Google Sans | sp 単位で定義 |
-| Web | system-ui / Inter / Noto Sans | rem 単位で定義 |
+| iOS / macOS | SF Pro / SF Pro Rounded | Dynamic Type support |
+| Android | Roboto / Google Sans | Defined in sp units |
+| Web | system-ui / Inter / Noto Sans | Defined in rem units |
 | Windows | Segoe UI Variable | WinUI 3 TextBlock |
 
 ---
 
-## 4. スペーシングシステム
+## 4. Spacing System
 
-### ベースグリッド: 4px
+### Base Grid: 4px
 
 ```
-space-1  =  4px  — 極小（アイコン内余白）
-space-2  =  8px  — 小（関連要素間）
-space-3  = 12px  — 小中（コンパクトな余白）
-space-4  = 16px  — 中（標準余白・パディング）
-space-5  = 20px  — 中大
-space-6  = 24px  — 大（セクション内余白）
-space-8  = 32px  — 特大（セクション間余白）
-space-10 = 40px  — 超大
-space-12 = 48px  — ページレベルの余白
-space-16 = 64px  — 最大余白
+space-1  =  4px  — Extra small (icon inner padding)
+space-2  =  8px  — Small (between related elements)
+space-3  = 12px  — Small-medium (compact padding)
+space-4  = 16px  — Medium (standard padding)
+space-5  = 20px  — Medium-large
+space-6  = 24px  — Large (section inner padding)
+space-8  = 32px  — Extra large (between sections)
+space-10 = 40px  — 2XL
+space-12 = 48px  — Page-level padding
+space-16 = 64px  — Maximum padding
 ```
 
-### 原則
+### Principles
 
-- 隣接する **関連要素は小さい余白**、関連しない要素は**大きい余白**で分ける
-- コンテンツとエッジの余白は `space-4`（16px）を基準にする
-- プラットフォームのシステムの余白（Safe Area・Status Bar 等）を考慮する
+- Use **smaller spacing** between adjacent related elements; use **larger spacing** between unrelated elements
+- Base content-to-edge padding on `space-4` (16px)
+- Account for platform system spacing (Safe Area, Status Bar, etc.)
 
 ---
 
-## 5. コンポーネント仕様
+## 5. Component Specifications
 
-### ボタン
+### Buttons
 
-| バリアント | 用途 | 見た目 |
+| Variant | Usage | Appearance |
 |---------|------|-------|
-| `Primary` | 主要アクション（1画面に1つを原則） | Filled・ブランドカラー |
-| `Secondary` | 副次アクション | Outlined または Tonal |
-| `Tertiary` | 補助的なアクション | Text only |
-| `Destructive` | 削除・キャンセル等 | 赤色系 |
-| `Ghost` | 最低優先度 | 背景なし・文字のみ |
+| `Primary` | Main action (one per screen as a rule) | Filled · brand color |
+| `Secondary` | Secondary actions | Outlined or Tonal |
+| `Tertiary` | Supplementary actions | Text only |
+| `Destructive` | Delete / cancel, etc. | Red tones |
+| `Ghost` | Lowest priority | No background · text only |
 
 ```
-最小タップターゲット: 44×44px（iOS HIG / WCAG 準拠）
+Minimum tap target: 44×44px (iOS HIG / WCAG compliant)
 ```
 
-### 状態設計（すべてのインタラクティブ要素に必須）
+### State Design (required for all interactive elements)
 
-| 状態 | 定義 |
+| State | Definition |
 |------|------|
-| **Default** | 通常表示 |
-| **Hover** | マウスカーソルが上にある（Desktop） |
-| **Pressed** | タップ / クリック中 |
-| **Focused** | キーボードフォーカス（アクセシビリティ必須） |
-| **Disabled** | 操作不可 |
-| **Loading** | 処理中 |
+| **Default** | Normal display |
+| **Hover** | Mouse cursor over (Desktop) |
+| **Pressed** | Being tapped / clicked |
+| **Focused** | Keyboard focus (required for accessibility) |
+| **Disabled** | Not interactive |
+| **Loading** | Processing |
 
 ---
 
-## 6. トークン変換（Style Dictionary）
+## 6. Token Conversion (Style Dictionary)
 
 ```js
 // style-dictionary.config.js
@@ -196,20 +196,20 @@ module.exports = {
 
 ---
 
-## 7. Figma との連携
+## 7. Figma Integration
 
-- Figma の **Variables** / **Styles** でトークンを管理し、開発と同期する
-- **Tokens Studio**（Figma プラグイン）で JSON エクスポートを自動化する
-- デザイナーと開発者が同じトークン名を使うことで、実装のズレを防ぐ
+- Manage tokens in Figma **Variables** / **Styles** and sync with development
+- Automate JSON export with **Tokens Studio** (Figma plugin)
+- Using the same token names between designers and developers prevents implementation drift
 
 ---
 
-## 8. チェックリスト
+## 8. Checklist
 
-- [ ] Foundation / Semantic / Component の 3 階層でトークンを定義している
-- [ ] カラーにライト / ダークモード両方のバリューが定義されている
-- [ ] テキストコントラストが WCAG 2.2 AA を満たしている
-- [ ] スペーシングが 4px グリッドに沿っている
-- [ ] すべてのインタラクティブコンポーネントに 6 つの状態が定義されている
-- [ ] トークンが各プラットフォームの形式（CSS / Swift / XML）に自動変換されている
-- [ ] Figma のトークン定義とコードが同期されている
+- [ ] Tokens are defined in 3 tiers: Foundation / Semantic / Component
+- [ ] Colors have both light and dark mode values defined
+- [ ] Text contrast meets WCAG 2.2 AA
+- [ ] Spacing follows the 4px grid
+- [ ] All interactive components have 6 states defined
+- [ ] Tokens are auto-converted to each platform's format (CSS / Swift / XML)
+- [ ] Figma token definitions and code are in sync

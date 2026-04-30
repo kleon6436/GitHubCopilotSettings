@@ -1,24 +1,24 @@
 ---
 name: swift-coding-standards
-description: 'Swiftのコーディング規約を参照・適用する。Swift コーディング規約、命名規則、スタイルガイド、フォーマット、アクセス制御、エラーハンドリング、コメント規約を確認・適用したいときに使用。Use when: applying Swift style guide, reviewing Swift code conventions, naming rules, access control, error handling patterns.'
-argument-hint: '確認・適用したいコーディング規約の項目（省略可）'
+description: 'Reference and apply Swift coding standards. Use when applying Swift style guide, reviewing Swift code conventions, naming rules, code format, access control, error handling patterns, and comment conventions.'
+argument-hint: 'The coding standard item to check or apply (optional)'
 ---
 
-# Swift コーディング規約
+# Swift Coding Standards
 
-## 概要
+## Overview
 
-このスキルは Swift コードのコーディング規約を定義します。
-コードレビュー・新規実装の際はこの規約に従ってください。
+This skill defines coding standards for Swift code.
+Follow these standards during code reviews and new implementations.
 
 ---
 
-## 1. 命名規則
+## 1. Naming Conventions
 
-### 型・プロトコル・列挙型
+### Types, Protocols, and Enumerations
 
-- **UpperCamelCase** を使用する。
-- 意味が明確で説明的な名前をつける。
+- Use **UpperCamelCase**.
+- Use clear and descriptive names.
 
 ```swift
 // ✅ Good
@@ -32,10 +32,10 @@ struct userprofile { }
 class NM { }
 ```
 
-### 変数・定数・関数・メソッド
+### Variables, Constants, Functions, and Methods
 
-- **lowerCamelCase** を使用する。
-- ブール値は `is`, `has`, `can`, `should` などのプレフィックスを使う。
+- Use **lowerCamelCase**.
+- Boolean values should use prefixes such as `is`, `has`, `can`, `should`.
 
 ```swift
 // ✅ Good
@@ -49,9 +49,9 @@ var LoggedIn: Bool
 func FetchUserData() { }
 ```
 
-### 定数・列挙値
+### Constants and Enumeration Cases
 
-- `static let` 定数および `enum` のケースは **lowerCamelCase** を使用する。
+- `static let` constants and `enum` cases use **lowerCamelCase**.
 
 ```swift
 // ✅ Good
@@ -63,17 +63,17 @@ static let maxRetryCount = 3
 
 ---
 
-## 2. コードフォーマット
+## 2. Code Format
 
-<!-- プロジェクトに応じて値を変更してください -->
+<!-- Change values as needed for your project -->
 
-| 項目 | 設定値 |
-|------|--------|
-| インデント | スペース {4} 個（タブ不可） |
-| 1行の最大文字数 | {120} 文字 |
-| 中括弧 `{` の位置 | 行末（K&R スタイル） |
-| 末尾スペース | 禁止 |
-| ファイル末尾の改行 | 必須 |
+| Item | Setting |
+|------|-----|
+| Indent | {4} spaces (no tabs) |
+| Max line length | {120} characters |
+| Opening brace `{` position | End of line (K&R style) |
+| Trailing whitespace | Prohibited |
+| Newline at end of file | Required |
 
 ```swift
 // ✅ Good
@@ -90,33 +90,33 @@ func greet(name: String) -> String
 
 ---
 
-## 3. アクセス制御
+## 3. Access Control
 
-- 外部に公開する必要がないものには必ず `private` または `fileprivate` を付ける。
-- `public` / `open` は本当に外部公開が必要な場合のみ使用する。
-- デフォルト（`internal`）は明示しない。
+- Always apply `private` or `fileprivate` to anything that does not need to be exposed externally.
+- Use `public` / `open` only when external exposure is truly necessary.
+- Do not explicitly state the default (`internal`).
 
 ```swift
 // ✅ Good
 private var cache: [String: Data] = [:]
 private func parseResponse(_ data: Data) { }
 
-// ❌ Bad（不必要に internal のまま）
+// ❌ Bad（unnecessarily left as internal）
 var cache: [String: Data] = [:]
 ```
 
 ---
 
-## 4. 型推論・型アノテーション
+## 4. Type Inference and Type Annotations
 
-- 型が明確に推論できる場合は型アノテーションを省略する。
-- 公開 API や可読性向上のために必要な場合は明示する。
+- Omit type annotations when the type can be clearly inferred.
+- Explicitly annotate when needed for public APIs or improved readability.
 
 ```swift
 // ✅ Good
 let count = 10
 let message = "Hello"
-let items: [Item] = []   // 空配列は明示
+let items: [Item] = []   // Explicit annotation for empty arrays
 
 // ❌ Bad
 let count: Int = 10
@@ -125,11 +125,11 @@ let message: String = "Hello"
 
 ---
 
-## 5. オプショナル
+## 5. Optionals
 
-- `!` による強制アンラップは原則禁止。IBOutlet / IBAction を除く。
-- `guard let` / `if let` によるオプショナルバインディングを優先する。
-- `??` によるデフォルト値を活用する。
+- Force-unwrapping with `!` is prohibited in principle. Exceptions: IBOutlet / IBAction.
+- Prefer optional binding with `guard let` / `if let`.
+- Make use of default values via `??`.
 
 ```swift
 // ✅ Good
@@ -142,11 +142,11 @@ let user = currentUser!
 
 ---
 
-## 6. エラーハンドリング
+## 6. Error Handling
 
-- `throws` / `try` / `catch` を使用する。
-- エラーは `enum` で定義し、`Error` プロトコルに準拠させる。
-- `try?` は値が不要な場合のみ使用し、`try!` は原則禁止。
+- Use `throws` / `try` / `catch`.
+- Define errors as `enum` conforming to the `Error` protocol.
+- Use `try?` only when the value is not needed; `try!` is prohibited in principle.
 
 ```swift
 // ✅ Good
@@ -163,18 +163,18 @@ func fetchData() throws -> Data {
 do {
     let data = try fetchData()
 } catch APIError.networkFailure {
-    // ネットワークエラー処理
+    // Network error handling
 } catch {
-    // その他のエラー処理
+    // Other error handling
 }
 ```
 
 ---
 
-## 7. コレクション・クロージャ
+## 7. Collections and Closures
 
-- 末尾クロージャ構文を使用する。
-- `map`, `filter`, `compactMap` 等の高階関数を積極的に使用する。
+- Use trailing closure syntax.
+- Make active use of higher-order functions such as `map`, `filter`, `compactMap`.
 
 ```swift
 // ✅ Good
@@ -187,31 +187,31 @@ let doubled = numbers.map({ (n: Int) -> Int in return n * 2 })
 
 ---
 
-## 8. コメント規約
+## 8. Comment Conventions
 
-- コードのロジックが自明でない箇所にのみコメントを付ける。
-- 公開 API には **DocC 形式**のドキュメントコメントを付ける。
-- TODO / FIXME は `// TODO: 説明` の形式で記述し、チケット番号を添える。
+- Only add comments where the code logic is not self-evident.
+- Attach **DocC-style** documentation comments to public APIs.
+- Write TODO / FIXME in the format `// TODO: description` and include a ticket number.
 
 ```swift
-/// ユーザー情報を取得します。
-/// - Parameter id: 対象ユーザーの識別子
-/// - Returns: 対象ユーザーの `UserProfile`
-/// - Throws: ユーザーが存在しない場合 `APIError.notFound`
+/// Fetches user information.
+/// - Parameter id: The identifier of the target user
+/// - Returns: The `UserProfile` of the target user
+/// - Throws: `APIError.notFound` if the user does not exist
 func fetchUser(id: String) async throws -> UserProfile {
     // ...
 }
 
-// TODO: #123 キャッシュ最適化を実装する
+// TODO: #123 Implement cache optimization
 ```
 
 ---
 
-## 9. 非同期処理
+## 9. Asynchronous Processing
 
-- `async/await` を優先する（Combine / callback は段階的に移行）。
-- `@MainActor` を UI 更新を行うクラス・メソッドに付与する。
-- `Task` のライフサイクルを管理し、不要なタスクはキャンセルする。
+- Prefer `async/await` (migrate from Combine / callbacks incrementally).
+- Apply `@MainActor` to classes and methods that perform UI updates.
+- Manage `Task` lifecycles and cancel unnecessary tasks.
 
 ```swift
 // ✅ Good
@@ -228,8 +228,8 @@ func loadData() async throws {
 
 ---
 
-## 10. プロジェクト固有のルール
+## 10. Project-Specific Rules
 
-<!-- プロジェクトに応じて追記してください -->
+<!-- Add project-specific content as needed -->
 
-- {プロジェクト固有のルールをここに記載}
+- {Add project-specific rules here}
