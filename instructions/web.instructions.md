@@ -5,40 +5,14 @@ applyTo: []
 
 # Project Guidelines (Web App Development)
 
-## Project Overview
-
-<!-- Fill in the following according to your project -->
-
-- **Project Name**: {Project Name}
-- **Overview**: {Brief description of the project's purpose and overview}
-- **Target Browsers**: {e.g., Chrome 120+ / Firefox 120+ / Safari 17+ / Edge 120+}
-- **Rendering Method**: {CSR / SSR / SSG / ISR} (select as applicable)
-- **Repository Structure**: {Single repo / Monorepo, description of main directory structure}
-
-## Tech Stack
-
-| Category | Technology / Tool | Version | Notes |
-|---------|-------------|-----------|------|
-| Language | TypeScript | Latest stable 5.x | strict mode enabled |
-| UI Framework | {e.g., React / Vue 3 / Svelte} | Latest stable | |
-| Meta-framework | {e.g., Next.js / Nuxt / SvelteKit} | Latest stable | |
-| Styling | {e.g., Tailwind CSS / CSS Modules} | Latest stable | |
-| State Management | {e.g., Zustand / Pinia / Jotai} | Latest stable | |
-| Data Fetching | {e.g., TanStack Query / SWR} | Latest stable | |
-| Testing | Vitest + Testing Library + Playwright | Latest stable | |
-| Formatter | Prettier | Latest stable | |
-| Linter | ESLint + typescript-eslint | Latest stable | |
-| Package Manager | {e.g., pnpm / npm / yarn} | Latest stable | |
-| CI/CD | {e.g., GitHub Actions + Vercel / Cloudflare Pages} | | |
-
 ## Recommended Copilot Agent Configuration
 
-- When working with multiple agents, use `agents/orchestrator.agent.md` as the starting point.
-- Use `agents/product-manager.agent.md` for requirements clarification, `agents/architect.agent.md` for technical design, and `agents/developer.agent.md` for implementation.
-- For UI design involving WCAG 2.2 AA compliance, use `agents/ui-designer.agent.md` in conjunction.
-- After implementation, use `agents/reviewer.agent.md` and `agents/tester.agent.md` as quality gates.
-- Use `agents/devops.agent.md` for deployment and infrastructure configuration.
-- Route security reviews through `agents/security-reviewer.agent.md`.
+- Use `sisyphus` as the main orchestrator. All tasks start here.
+- Use `prometheus` for requirements gathering and plan creation before writing any code.
+- Run `metis` gap analysis and `momus` review on all plans and implementations.
+- For UI work involving WCAG 2.2 AA compliance, pass as a visual-engineering task to `atlas` (using Gemini 3.1 Pro).
+- For deployment and infrastructure configuration, use `atlas` for CI/CD.
+- For security-related changes (auth, CSP, input handling, XSS/CSRF), route reviews through `momus-deep`.
 
 ## UI Guidelines
 

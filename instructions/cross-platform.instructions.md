@@ -10,47 +10,29 @@ applyTo: []
 These guidelines apply to projects developing concurrently across multiple platforms: iOS / iPadOS, macOS, Android, Web, and Windows.
 Use in conjunction with platform-specific guidelines; this file defines **common policies**.
 
-## Project Overview
-
-<!-- Fill in the following according to your project -->
-
-- **Project Name**: {Project Name}
-- **Overview**: {Brief description of the project's purpose and overview}
-- **Target Platforms**: {iOS / iPadOS / macOS / Android / Web / Windows} (list all applicable)
-- **Shared Code Strategy**: {Kotlin Multiplatform / Shared Business Logic Only / API Contract Sharing} (select)
-- **Repository Structure**: {Single repo / Monorepo (per-platform directories)}
-
 ## Platform-Specific Guideline References
 
 For details on each platform, follow the instruction files below:
 
 | Platform | Instruction File |
 |--------------|-------------|
-| iOS / iPadOS | `instrctions/ios.instructions.md` |
-| macOS | `instrctions/macos.instructions.md` |
-| Android | `instrctions/android.instructions.md` |
-| Web | `instrctions/web.instructions.md` |
-| Windows | `instrctions/windows.instructions.md` |
+| iOS / iPadOS | `instructions/ios.instructions.md` |
+| macOS | `instructions/macos.instructions.md` |
+| Android | `instructions/android.instructions.md` |
+| Web | `instructions/web.instructions.md` |
+| Windows | `instructions/windows.instructions.md` |
 
 ## Recommended Copilot Agent Configuration
 
 Agent coordination is especially important in cross-platform projects.
 
-```
-Orchestrator
-  ├── Product Manager (requirements, priorities, platform diff definitions)
-  ├── Architect (common API, data specs, shared logic design)
-  ├── Developer (platform-specific implementation)
-  ├── UI Designer (HIG and guideline compliance for each platform)
-  ├── Reviewer (consistency checks between common logic and platform implementations)
-  ├── Tester (cross-platform behavioral consistency testing)
-  ├── DevOps (multi-platform CI/CD pipelines)
-  └── Security Reviewer (unified security policy across all platforms)
-```
-
-- **Platform difference definitions** are handled by `agents/product-manager.agent.md`
-- **Common API specifications** are designed by `agents/architect.agent.md` and referenced by all platforms
-- **UI is platform-native** by principle; even when functionality is shared, UI is not unified
+- Use `sisyphus` as the main orchestrator. All tasks start here.
+- Use `prometheus` for requirements gathering, platform difference definitions, and acceptance criteria.
+- Use `oracle` for cross-platform architecture decisions and shared API design.
+- Use `metis` / `metis-deep` for gap analysis on plans spanning multiple platforms.
+- For visual-engineering tasks on each platform, pass to `atlas` (using Gemini 3.1 Pro) with explicit platform context.
+- For security-sensitive changes (auth, cross-platform data handling), route reviews through `momus-deep`.
+- **UI is platform-native** by principle; even when functionality is shared, UI is not unified.
 
 ## Common Architecture Policy
 
@@ -126,12 +108,12 @@ Orchestrator
 ## CI/CD
 
 - Each platform has an independent pipeline while sharing common quality gates
-- For details, refer to `skills/cicd-deployment/SKILL.md` and `agents/devops.agent.md`
+- For details, refer to `skills/cicd-deployment/SKILL.md`
 
 ## Security
 
 - Unify authentication and authorization policies across all platforms
-- For details, refer to `skills/security-practices/SKILL.md` and `agents/security-reviewer.agent.md`
+- For details, refer to `skills/security-practices/SKILL.md`
 
 ## Internationalization (i18n)
 

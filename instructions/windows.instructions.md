@@ -5,39 +5,14 @@ applyTo: []
 
 # Project Guidelines (Windows App Development)
 
-## Project Overview
-
-<!-- Fill in the following according to your project -->
-
-- **Project Name**: {Project Name}
-- **Overview**: {Brief description of the project's purpose and overview}
-- **Target Platform**: Windows 11 or later (Windows 10 support is optional)
-- **Minimum Supported Version**: {Windows 11 22H2 / Windows 10 1903} (select as applicable)
-- **Distribution Method**: {Microsoft Store / Sideloading / MSIX / Win32 Installer} (select)
-- **Repository Structure**: {Single repo / Monorepo, description of main directory structure}
-
-## Tech Stack
-
-| Category | Technology / Tool | Version | Notes |
-|---------|-------------|-----------|------|
-| Language | C# | Latest stable | nullable enabled |
-| IDE | Visual Studio / VS Code | Latest stable | |
-| UI Framework | WinUI 3 | Latest stable | Uses Windows App SDK |
-| SDK | Windows App SDK | Latest stable | |
-| Architecture | MVVM | | CommunityToolkit.Mvvm recommended |
-| Async | async/await | | |
-| Testing | MSTest v3 / xUnit | Latest stable | |
-| Package Management | NuGet | | |
-| Linter / Formatter | Roslyn Analyzers / EditorConfig | | |
-| CI/CD | {e.g., GitHub Actions} | | |
-
 ## Recommended Copilot Agent Configuration
 
-- When working with multiple agents, use `agents/orchestrator.agent.md` as the starting point.
-- Use `agents/product-manager.agent.md` for requirements clarification, `agents/architect.agent.md` for technical design, and `agents/developer.agent.md` for implementation.
-- Use `agents/ui-designer.agent.md` in conjunction for Fluent Design and WinUI 3 component considerations.
-- After implementation, use `agents/reviewer.agent.md` and `agents/tester.agent.md` as quality gates.
-- Use `agents/devops.agent.md` for packaging and distribution pipelines.
+- Use `sisyphus` as the main orchestrator. All tasks start here.
+- Use `prometheus` for requirements gathering and plan creation before writing any code.
+- Run `metis` gap analysis and `momus` review on all plans and implementations.
+- For UI work involving Fluent Design and WinUI 3, pass as a visual-engineering task to `atlas` (using Gemini 3.1 Pro).
+- For packaging and distribution pipelines (MSIX, Store), use `atlas` for CI/CD.
+- For security-related changes (auth, PasswordVault, credentials), route reviews through `momus-deep`.
 
 ## UI Guidelines
 

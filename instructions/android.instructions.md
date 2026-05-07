@@ -5,41 +5,14 @@ applyTo: []
 
 # Project Guidelines (Android App Development)
 
-## Project Overview
-
-<!-- Fill in the following according to your project -->
-
-- **Project Name**: {Project Name}
-- **Overview**: {Brief description of the project's purpose and overview}
-- **Target Platform**: Android 10 (API 29) or later
-- **Minimum minSdk**: {29}
-- **Target SDK**: {Latest stable}
-- **Repository Structure**: {Single repo / Monorepo, description of main directory structure}
-
-## Tech Stack
-
-| Category | Technology / Tool | Version | Notes |
-|---------|-------------|-----------|------|
-| Language | Kotlin | Latest stable | |
-| IDE | Android Studio | Latest stable | |
-| Build System | Gradle (KTS) | | Use build.gradle.kts |
-| UI Framework | Jetpack Compose | Latest stable | Minimize mixing with View system |
-| DI | Hilt | Latest stable | |
-| Navigation | Navigation Compose | Latest stable | |
-| Async | Kotlin Coroutines / Flow | Latest stable | |
-| Networking | Retrofit + OkHttp | Latest stable | |
-| Architecture | MVVM + Clean Architecture | | |
-| Testing | JUnit 5 / Espresso / Compose Testing | Latest stable | |
-| Linter | ktlint / Detekt | Latest stable | |
-| CI/CD | {e.g., GitHub Actions} | | |
-
 ## Recommended Copilot Agent Configuration
 
-- When working with multiple agents, use `agents/orchestrator.agent.md` as the starting point.
-- Use `agents/product-manager.agent.md` for requirements clarification, `agents/architect.agent.md` for technical design, and `agents/developer.agent.md` for implementation.
-- For UI work involving Material Design 3 considerations, use `agents/ui-designer.agent.md` in conjunction to finalize information architecture and accessibility early.
-- After implementation, use `agents/reviewer.agent.md` and `agents/tester.agent.md` as quality gates.
-- Use `agents/devops.agent.md` for CI/CD configuration and distribution pipelines.
+- Use `sisyphus` as the main orchestrator. All tasks start here.
+- Use `prometheus` for requirements gathering and plan creation before writing any code.
+- Run `metis` gap analysis and `momus` review on all plans and implementations.
+- For UI work involving Material Design 3, pass as a visual-engineering task to `atlas` (using Gemini 3.1 Pro).
+- For CI/CD configuration and distribution pipelines, use `atlas`.
+- For security-related changes (auth, EncryptedSharedPreferences, API keys), route reviews through `momus-deep`.
 
 ## UI Guidelines
 
