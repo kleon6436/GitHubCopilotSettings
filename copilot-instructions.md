@@ -10,6 +10,17 @@
 - Work toward goals
 - After changes, always perform code review and testing
 
+## Agent Autonomy Principle
+
+Agents are expected to act **autonomously**, not under micromanagement. Agent instructions describe the agent's **role, judgment criteria, and quality bar** — not a step-by-step script. Each agent is trusted to:
+
+- Decide which phases / steps are actually needed for the task at hand and skip the rest
+- Choose its own tools, depth of exploration, and output structure
+- Escalate or hand off only when the situation genuinely calls for it — not as a ritual
+- Treat templates and checklists in this repo as **defaults to deviate from when judgment dictates**, not mandatory gates
+
+Do not pad output with mandatory phase headers, restated checklists, or ceremonial confirmations when they add no value. Do the work, deliver the result.
+
 ## Project Overview
 
 <!-- Fill in the following as appropriate for your project -->
@@ -42,8 +53,8 @@
 - When using the orchestration pattern, use the templates under `agents/`.
 - Use `agents/sisyphus.agent.md` as the central entry point and delegate to specialist agents based on task type.
 - Handle small tasks and typo fixes with `sisyphus-junior` to save high-cost model usage.
-- Always plan with `prometheus` and run `metis` gap analysis before implementing.
-- Always have important changes reviewed by `momus`.
+- For non-trivial changes, planning (`prometheus`) and review (`momus` / `momus-deep`) are the default — the orchestrator may skip them when the task clearly does not warrant the overhead.
+- `metis` / `metis-deep` gap analysis is recommended for risky or cross-cutting plans, not required for every plan.
 
 ### Agent List (12 agents)
 
@@ -96,7 +107,7 @@
 
 ### BOULDER.md Protocol
 
-For session continuity, `sisyphus` manages `BOULDER.md` in the project root.
+When session continuity matters — multi-session work, complex handoffs, or explicit user request — `sisyphus` may manage `BOULDER.md` in the project root. For one-shot tasks, skip it.
 
 ```markdown
 # Boulder - Session State
@@ -116,9 +127,9 @@ Task: {task summary}
 {Important information and decision rationale for the next session}
 ```
 
-- **Session start**: `sisyphus` reads `BOULDER.md` to understand incomplete tasks before starting work
-- **After each major step**: Update Completed / In Progress / On Hold
-- **Session end**: Record remaining tasks and handoff notes before closing
+- **When BOULDER is in use — session start**: read `BOULDER.md` to understand incomplete tasks before starting work
+- **When BOULDER is in use — state changes materially**: update Completed / In Progress / On Hold / Handoff Notes
+- **When BOULDER is not in use**: do not create or mention it ceremonially
 
 ## Platform-Specific Guidelines
 
@@ -126,12 +137,12 @@ For detailed development guidelines per platform, refer to the following instruc
 
 | Platform | Instruction File |
 |--------------|-------------|
-| iOS / iPadOS | `instrctions/ios.instructions.md` |
-| macOS | `instrctions/macos.instructions.md` |
-| Android | `instrctions/android.instructions.md` |
-| Web | `instrctions/web.instructions.md` |
-| Windows | `instrctions/windows.instructions.md` |
-| Cross-Platform | `instrctions/cross-platform.instructions.md` |
+| iOS / iPadOS | `instructions/ios.instructions.md` |
+| macOS | `instructions/macos.instructions.md` |
+| Android | `instructions/android.instructions.md` |
+| Web | `instructions/web.instructions.md` |
+| Windows | `instructions/windows.instructions.md` |
+| Cross-Platform | `instructions/cross-platform.instructions.md` |
 
 ## Skills List
 
@@ -140,4 +151,5 @@ For detailed development guidelines per platform, refer to the following instruc
 | **Coding Standards** | `swift-coding-standards` / `kotlin-coding-standards` / `typescript-coding-standards` / `javascript-coding-standards` / `python-coding-standards` / `cpp-coding-standards` / `csharp-coding-standards` / `rust-coding-standards` / `css-coding-standards` / `react-coding-standards` |
 | **UI / UX** | `apple-ui-guidelines` / `android-ui-guidelines` / `web-ui-guidelines` / `windows-ui-guidelines` / `mfc-ui-guidelines` / `ui-accessibility` / `ui-review-checklist` / `design-system` |
 | **Quality & Security** | `security-practices` / `cicd-deployment` / `performance-optimization` / `apple-app-store-submission` |
+| **Engineering Discipline** | `senior-engineer-standard` |
 | **Internationalization** | `i18n-localization` |
